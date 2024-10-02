@@ -1,0 +1,35 @@
+server:
+  error:
+    include-stacktrace: never
+  port: 8080
+spring:
+  mvc:
+    converters:
+      preferred-json-mapper: gson
+  application:
+    name: Spring Boot Base
+  devtools:
+    livereload:
+      port: 55555
+      enabled: false
+  docker:
+    compose:
+      enabled: false
+      file: docker/docker-compose.yaml
+      profiles:
+        active: dev
+  main:
+    lazy-initialization: true
+    banner-mode: off
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/master
+          jwk-set-uri: http://localhost:8080/realms/master/protocol/openid-connect/certs
+timezone: Europe/Berlin
+springdoc:
+  show-actuator: false
+logging:
+  level:
+    root: off

@@ -1,0 +1,3 @@
+include:
+  - project: 'templates'
+    file: '.gitlab-ci-maven-client-server-jib.yml'
