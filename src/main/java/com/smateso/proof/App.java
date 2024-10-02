@@ -10,15 +10,14 @@ import io.swagger.v3.oas.annotations.security.OAuthScope;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.servers.Server;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 
 import static org.springframework.boot.SpringApplication.run;
 
 @SpringBootApplication
 @OpenAPIDefinition(
         info = @Info(
-                title = "Spring Boot Base",
-                description = "Spring Boot Base",
+                title = "PROOF Data Service",
+                description = "PROOF Data Service",
                 version = "1.0.0",
                 contact = @Contact(name = "Smateso GmbH")
         ),
