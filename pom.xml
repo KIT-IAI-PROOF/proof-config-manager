@@ -176,4 +176,23 @@
         </plugins>
     </build>
 
+    <repositories>
+        <repository>
+            <id>kit</id>
+            <url>https://gitlab.kit.edu/api/v4/groups/180210/-/packages/maven</url>
+        </repository>
+    </repositories>
+
+    <distributionManagement>
+        <repository>
+            <id>kit</id>
+            <url>https://gitlab.kit.edu/api/v4/projects/176830/packages/maven</url>
+        </repository>
+        <snapshotRepository>
+            <id>kit</id>
+            <url>https://gitlab.kit.edu/api/v4/projects/176830/packages/maven</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+
 </project>

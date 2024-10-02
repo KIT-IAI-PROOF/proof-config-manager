@@ -1,0 +1,7 @@
+include:
+  project: '$GITLAB_CI_TEMPLATE_PROJECT'
+  file: 'java/maven-build.yml'
+
+variables:
+  JIB: 'true'
+  DOCKER_IMAGE_NAME: 'proof-2/proof-orchestrator'
