@@ -40,7 +40,7 @@ public interface IWorkflowController {
                     @ApiResponse(responseCode = "200", description = "Retrieval successful", useReturnTypeSchema = true),
                     @ApiResponse(responseCode = "500", description = "Retrieval incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
-    @GetMapping(value = "{id}", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<Workflow> getWorkflow(@PathVariable(value = "id") String id);
+    @GetMapping(value = "{uuid}", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
+    ResponseEntity<Workflow> getWorkflow(@PathVariable(value = "uuid") final String uuid);
 
 }
