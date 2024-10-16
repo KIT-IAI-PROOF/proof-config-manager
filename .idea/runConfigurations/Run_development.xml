@@ -2,7 +2,7 @@
   <configuration default="false" name="Run development" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
     <option name="ACTIVE_PROFILES" value="dev" />
     <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
-    <module name="proof-data-service" />
+    <module name="proof-config-manager" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="com.smateso.proof.App" />
     <method v="2">
       <option name="Make" enabled="true" />

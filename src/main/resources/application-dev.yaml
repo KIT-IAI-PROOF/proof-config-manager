@@ -1,17 +1,27 @@
 server:
   error:
     include-stacktrace: never
-  port: 8080
+  port: 8100
 spring:
-  mvc:
-    converters:
-      preferred-json-mapper: gson
+  jpa:
+    open-in-view: true
+    hibernate:
+      ddl-auto: create
+  datasource:
+    username: admin
+    password: admin
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/proof
+  # mvc:
+    # converters:
+      # preferred-json-mapper: gson
   application:
     name: Spring Boot Base
   devtools:
     livereload:
       port: 55555
       enabled: false
+    add-properties: true
   docker:
     compose:
       enabled: false
@@ -24,8 +34,19 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8080/realms/master
-          jwk-set-uri: http://localhost:8080/realms/master/protocol/openid-connect/certs
+          issuer-uri: http://localhost:8080/realms/proof
+          jwk-set-uri: http://localhost:8080/realms/proof/protocol/openid-connect/certs
+      client:
+        provider:
+          keycloak:
+            token-uri: http://localhost:8080/realms/proof/protocol/openid-connect/token
+            user-name-attribute: preferred_username
+        registration:
+          keycloak:
+            client-id: proof
+            client-secret: TE8xwoZlEA3UvKc2CL6bWLOhVWpDvQSb
+            client-name: proof
+            authorization-grant-type: client_credentials
 timezone: Europe/Berlin
 springdoc:
   show-actuator: false

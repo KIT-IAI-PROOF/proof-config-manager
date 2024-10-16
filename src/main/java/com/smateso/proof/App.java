@@ -23,9 +23,15 @@ import static org.springframework.boot.SpringApplication.run;
         ),
         servers = @Server(
                 description = "Local",
-                url = "http://localhost:8080")
+                url = "http://localhost:8100")
 )
-@SecurityScheme(name = "oauth2", type = SecuritySchemeType.OAUTH2, flows = @OAuthFlows(clientCredentials = @OAuthFlow(tokenUrl = "${spring.security.oauth2.client.provider.keycloak.token-uri}", scopes = {@OAuthScope(name = "openid", description = "openid scope")})))
+@SecurityScheme(
+        name = "oauth2",
+        type = SecuritySchemeType.OAUTH2,
+        flows = @OAuthFlows(
+                clientCredentials = @OAuthFlow(
+                        tokenUrl = "${spring.security.oauth2.client.provider.keycloak.token-uri}",
+                        scopes = {@OAuthScope(name = "openid", description = "openid scope")})))
 public class App {
 
     public static void main(final String... args) {

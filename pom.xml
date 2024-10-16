@@ -9,10 +9,10 @@
     </parent>
 
     <groupId>com.smateso.proof</groupId>
-    <artifactId>proof-data-service</artifactId>
+    <artifactId>proof-config-manager</artifactId>
     <version>1.0.0</version>
-    <name>PROOF Data Service</name>
-    <description>PROOF Data Service</description>
+    <name>PROOF Config Manager</name>
+    <description>PROOF Config Manager</description>
     <packaging>jar</packaging>
 
     <properties>
@@ -21,10 +21,26 @@
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>21</java.version>
-        <git.host>gitlab.kit.edu/</git.host>
-        <git.user.id>kit/iai/webis/proof2</git.user.id>
-        <git.repo.id>proof-data-service</git.repo.id>
+        <gitHost>gitlab.kit.edu/</gitHost>
+        <gitUserId>kit/iai/webis/proof2</gitUserId>
+        <gitRepoId>proof-config-manager</gitRepoId>
     </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>
@@ -75,7 +91,7 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <apiDocsUrl>http://localhost:8080/v3/api-docs</apiDocsUrl>
+                            <apiDocsUrl>http://localhost:8100/v3/api-docs</apiDocsUrl>
                             <outputFileName>api.json</outputFileName>
                             <outputDir>${project.build.directory}</outputDir>
                         </configuration>

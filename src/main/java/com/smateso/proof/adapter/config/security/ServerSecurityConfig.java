@@ -15,8 +15,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.*;
 
-import static java.util.stream.Collectors.toList;
-
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -40,7 +38,7 @@ public class ServerSecurityConfig {
         http
                 .cors((final var cors) -> {
                     CorsConfiguration configuration = new CorsConfiguration();
-                    configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:8081", "http://localhost"));
+                    configuration.setAllowedOrigins(List.of("http://localhost:3000"));
                     configuration.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS", "DELETE", "PUT", "PATCH"));
                     configuration.setAllowedHeaders(Arrays.asList("X-Requested-With", "Origin", "Content-Type", "Accept", "Authorization"));
                     configuration.setAllowCredentials(true);
@@ -57,7 +55,7 @@ public class ServerSecurityConfig {
                                 .jwtAuthenticationConverter((final var converter) -> {
                                     final var grantedAuthorities = new ArrayList<GrantedAuthority>();
                                     // Evaluate roles
-                                    if(converter.hasClaim(REALM_ACCESS)) {
+                                    if (converter.hasClaim(REALM_ACCESS)) {
                                         final Map<String, Collection<String>> realmAccess = converter.getClaim(REALM_ACCESS);
                                         final Collection<String> roles = realmAccess.get(ROLES);
                                         roles.stream()
@@ -65,7 +63,7 @@ public class ServerSecurityConfig {
                                                 .forEach(grantedAuthorities::add);
                                     }
                                     // Evaluate group memberships
-                                    if(converter.hasClaim(GROUPS)) {
+                                    if (converter.hasClaim(GROUPS)) {
                                         final Collection<String> groups = converter.getClaim(GROUPS);
                                         groups.stream()
                                                 .map((final var role) -> new SimpleGrantedAuthority(ROLE + role.replace("/", "")))
