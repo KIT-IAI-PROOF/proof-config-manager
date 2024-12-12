@@ -1,9 +1,11 @@
 package com.smateso.proof.application.repositories;
 
-import com.smateso.proof.application.model.Workflow;
+import edu.kit.iai.webis.proofmodels.Workflow;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface WorkflowRepository extends JpaRepository<Workflow, String> {
+public interface WorkflowRepository extends JpaRepository<Workflow, String>, JpaSpecificationExecutor<Workflow> {
+
 }

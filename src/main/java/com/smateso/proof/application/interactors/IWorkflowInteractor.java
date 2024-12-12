@@ -1,12 +1,12 @@
 package com.smateso.proof.application.interactors;
 
-import com.smateso.proof.application.model.Workflow;
-
-import java.util.List;
+import com.smateso.proof.application.model.Request;
+import edu.kit.iai.webis.proofmodels.Workflow;
+import org.springframework.data.domain.Page;
 
 public interface IWorkflowInteractor {
 
-    List<Workflow> getWorkflows();
+    Page<Workflow> getWorkflows(final Request request);
 
     Workflow getWorkflow(String id);
 

@@ -1,7 +1,8 @@
 package com.smateso.proof.adapter.controller;
 
 import com.smateso.proof.application.interactors.IBlockInteractor;
-import com.smateso.proof.application.model.Block;
+import com.smateso.proof.application.model.Request;
+import edu.kit.iai.webis.proofmodels.Block;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,8 +21,19 @@ public class BlockController implements IBlockController {
     }
 
     @Override
-    public ResponseEntity<List<Block>> getBlocks() {
-        return ResponseEntity.ok(this.blockInteractor.getBlocks());
+    public ResponseEntity<List<Block>> getBlocks(final Request request) {
+        final var result = this.blockInteractor.getBlocks(request);
+        return ResponseEntity.ok(result.stream().toList());
+    }
+
+    @Override
+    public ResponseEntity<Block> getBlock(final String id) {
+        return ResponseEntity.ok(this.blockInteractor.getBlock(id));
+    }
+
+    @Override
+    public ResponseEntity<Block> createBlock(final Block block) {
+        return ResponseEntity.ok(this.blockInteractor.createBlock(block));
     }
 
 }

@@ -10,10 +10,12 @@ import io.swagger.v3.oas.annotations.security.OAuthScope;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.servers.Server;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 
 import static org.springframework.boot.SpringApplication.run;
 
 @SpringBootApplication
+@EntityScan("edu.kit.iai.webis.proofmodels")
 @OpenAPIDefinition(
         info = @Info(
                 title = "PROOF Data Service",

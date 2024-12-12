@@ -1,12 +1,12 @@
 package com.smateso.proof.application.interactors;
 
-import com.smateso.proof.application.model.Block;
-
-import java.util.List;
+import com.smateso.proof.application.model.Request;
+import edu.kit.iai.webis.proofmodels.Block;
+import org.springframework.data.domain.Page;
 
 public interface IBlockInteractor {
 
-    List<Block> getBlocks();
+    Page<Block> getBlocks(final Request request);
 
     Block getBlock(String id);
 

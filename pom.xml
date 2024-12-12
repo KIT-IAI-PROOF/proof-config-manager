@@ -3,14 +3,15 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.smateso</groupId>
-        <artifactId>spring-boot-parent</artifactId>
-        <version>1.0.1</version>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.3.2</version>
+        <relativePath/>
     </parent>
 
-    <groupId>com.smateso.proof</groupId>
+    <groupId>edu.kit.iai.webis</groupId>
     <artifactId>proof-config-manager</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <name>PROOF Config Manager</name>
     <description>PROOF Config Manager</description>
     <packaging>jar</packaging>
@@ -21,6 +22,9 @@
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>21</java.version>
+        <gson.version>2.10.1</gson.version>
+        <lombok.version>1.18.32</lombok.version>
+        <springdoc.version>2.2.0</springdoc.version>
         <gitHost>gitlab.kit.edu/</gitHost>
         <gitUserId>kit/iai/webis/proof2</gitUserId>
         <gitRepoId>proof-config-manager</gitRepoId>
@@ -28,17 +32,73 @@
 
     <dependencies>
         <dependency>
+            <groupId>edu.kit.iai.webis</groupId>
+            <artifactId>proof-models</artifactId>
+            <version>3.0.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-oauth2-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>${gson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>${springdoc.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
     </dependencies>
 
@@ -52,6 +112,13 @@
                     <excludes>
                         <exclude>generated/**</exclude>
                     </excludes>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>1.18.30</version>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
             <plugin>
@@ -126,7 +193,7 @@
                                 <additionalProperty>supportsES6=true</additionalProperty>
                                 <additionalProperty>withInterfaces=true</additionalProperty>
                                 <additionalProperty>npmVersion=${project.version}</additionalProperty>
-                                <additionalProperty>npmName=@proof/data-service-client</additionalProperty>
+                                <additionalProperty>npmName=@proof/config-manager-client</additionalProperty>
                             </additionalProperties>
                         </configuration>
                     </execution>
@@ -147,17 +214,15 @@
                             <gitHost>${gitHost}</gitHost>
                             <gitUserId>${gitUserId}</gitUserId>
                             <gitRepoId>${gitRepoId}</gitRepoId>
-                            <gitHost>gitlab.lubw.de</gitHost>
-                            <gitUserId>smateso</gitUserId>
-                            <gitRepoId>fis-hwrm/hwrm-measure-status-service</gitRepoId>
-                            <artifactId>proof-data-service-client</artifactId>
+                            <gitHost>gitlab.kit.edu</gitHost>
+                            <artifactId>config-manager-client</artifactId>
                             <groupId>com.smateso.proof</groupId>
                             <artifactVersion>${project.version}</artifactVersion>
                             <apiPackage>api</apiPackage>
                             <modelPackage>model</modelPackage>
                             <additionalProperties>
                                 <additionalProperty>annotationLibrary=swagger2</additionalProperty>
-                                <additionalProperty>serializationLibrary=gson</additionalProperty>
+                                <additionalProperty>serializationLibrary=jackson</additionalProperty>
                             </additionalProperties>
                         </configuration>
                     </execution>
@@ -191,24 +256,5 @@
             </plugin>
         </plugins>
     </build>
-
-    <repositories>
-        <repository>
-            <id>kit</id>
-            <url>https://gitlab.kit.edu/api/v4/groups/180210/-/packages/maven</url>
-        </repository>
-    </repositories>
-
-    <distributionManagement>
-        <repository>
-            <id>kit</id>
-            <url>https://gitlab.kit.edu/api/v4/projects/176830/packages/maven</url>
-        </repository>
-        <snapshotRepository>
-            <id>kit</id>
-            <url>https://gitlab.kit.edu/api/v4/projects/176830/packages/maven</url>
-        </snapshotRepository>
-    </distributionManagement>
-
 
 </project>

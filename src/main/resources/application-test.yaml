@@ -3,8 +3,14 @@ server:
     include-stacktrace: never
   port: 8100
 spring:
+  sql:
+    init:
+      mode: always
   jpa:
     open-in-view: true
+    hibernate:
+      ddl-auto: create
+    defer-datasource-initialization: false
   datasource:
     username: admin
     password: admin
@@ -33,12 +39,19 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8080/realms/master
-          jwk-set-uri: http://localhost:8080/realms/master/protocol/openid-connect/certs
+          issuer-uri: http://localhost:8080/realms/proof
+          jwk-set-uri: http://localhost:8080/realms/proof/protocol/openid-connect/certs
       client:
         provider:
           keycloak:
-            token-uri: ""
+            token-uri: http://localhost:8080/realms/proof/protocol/openid-connect/token
+            user-name-attribute: preferred_username
+        registration:
+          keycloak:
+            client-id: proof
+            client-secret: TE8xwoZlEA3UvKc2CL6bWLOhVWpDvQSb
+            client-name: proof
+            authorization-grant-type: client_credentials
 timezone: Europe/Berlin
 springdoc:
   show-actuator: false

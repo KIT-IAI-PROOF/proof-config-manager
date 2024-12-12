@@ -3,10 +3,14 @@ server:
     include-stacktrace: never
   port: 8100
 spring:
+  sql:
+    init:
+      mode: always
   jpa:
     open-in-view: true
     hibernate:
       ddl-auto: create
+    defer-datasource-initialization: false
   datasource:
     username: admin
     password: admin

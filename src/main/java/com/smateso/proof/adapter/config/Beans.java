@@ -5,11 +5,10 @@ import com.google.gson.GsonBuilder;
 import com.smateso.proof.adapter.helper.LocalDateTimeTypeAdapter;
 import com.smateso.proof.adapter.helper.LocalDateTypeAdapter;
 import com.smateso.proof.adapter.helper.OffsetDateTimeTypeAdapter;
-import com.smateso.proof.application.interactors.BlockInteractor;
-import com.smateso.proof.application.interactors.IBlockInteractor;
-import com.smateso.proof.application.interactors.IWorkflowInteractor;
-import com.smateso.proof.application.interactors.WorkflowInteractor;
+import com.smateso.proof.application.interactors.*;
 import com.smateso.proof.application.repositories.BlockRepository;
+import com.smateso.proof.application.repositories.ExecutionRepository;
+import com.smateso.proof.application.repositories.TemplateRepository;
 import com.smateso.proof.application.repositories.WorkflowRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,6 +37,7 @@ public class Beans {
                 .create();
     }
 
+
     @Bean(value = "workflowInteractor", name = "workflowInteractor")
     public IWorkflowInteractor workflowInteractor(@Qualifier("workflowRepository") final WorkflowRepository workflowRepository) {
         return new WorkflowInteractor(workflowRepository);
@@ -46,6 +46,16 @@ public class Beans {
     @Bean(value = "blockInteractor", name = "blockInteractor")
     public IBlockInteractor blockInteractor(@Qualifier("blockRepository") final BlockRepository blockRepository) {
         return new BlockInteractor(blockRepository);
+    }
+
+    @Bean(value = "templateInteractor", name = "templateInteractor")
+    public ITemplateInteractor templateInteractor(@Qualifier("templateRepository") final TemplateRepository templateRepository) {
+        return new TemplateInteractor(templateRepository);
+    }
+
+    @Bean(value = "executionInteractor", name = "executionInteractor")
+    public IExecutionInteractor executionInteractor(@Qualifier("executionRepository") final ExecutionRepository executionRepository) {
+        return new ExecutionInteractor(executionRepository);
     }
 
 }

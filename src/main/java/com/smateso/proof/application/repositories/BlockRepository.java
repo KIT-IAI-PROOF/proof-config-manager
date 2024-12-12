@@ -1,9 +1,10 @@
 package com.smateso.proof.application.repositories;
 
-import com.smateso.proof.application.model.Block;
+import edu.kit.iai.webis.proofmodels.Block;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface BlockRepository extends JpaRepository<Block, String> {
+public interface BlockRepository extends JpaRepository<Block, String>, JpaSpecificationExecutor<Block> {
 }
