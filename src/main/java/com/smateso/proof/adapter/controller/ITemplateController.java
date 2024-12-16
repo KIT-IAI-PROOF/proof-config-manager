@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,7 +30,18 @@ public interface ITemplateController {
                     @ApiResponse(responseCode = "500", description = "Retrieval incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @PostMapping(value = "search", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<List<Template>> getTemplates(@RequestBody final Request request);
+    ResponseEntity<List<Template>> searchTemplates(@RequestBody final Request request);
+
+    @Operation(
+            summary = "Retrieve templates",
+            description = "Retrieve templates",
+            security = @SecurityRequirement(name = "oauth2"),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Retrieval successful", useReturnTypeSchema = true),
+                    @ApiResponse(responseCode = "500", description = "Retrieval incomplete", content = @Content(schema = @Schema(hidden = true))),
+            })
+    @GetMapping(consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
+    ResponseEntity<List<Template>> getTemplates();
 
     @Operation(
             summary = "Retrieve template",
@@ -51,6 +63,17 @@ public interface ITemplateController {
                     @ApiResponse(responseCode = "500", description = "Create incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<Template> createTemplate(@RequestBody Template template);
+    ResponseEntity<Template> createTemplate(@RequestBody final Template template, @RequestParam final String sessionKey, final Authentication authentication);
+
+    @Operation(
+            summary = "Update template",
+            description = "Update template",
+            security = @SecurityRequirement(name = "oauth2"),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Update successful", useReturnTypeSchema = true),
+                    @ApiResponse(responseCode = "500", description = "Update incomplete", content = @Content(schema = @Schema(hidden = true))),
+            })
+    @PostMapping(value = "{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    ResponseEntity<Template> updateTemplate(@PathVariable(value = "id") final String id, @RequestBody final Template template, @RequestParam final String sessionKey, final Authentication authentication);
 
 }

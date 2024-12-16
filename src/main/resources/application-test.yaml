@@ -3,22 +3,25 @@ server:
     include-stacktrace: never
   port: 8100
 spring:
+  data:
+    redis:
+      repositories:
+        enabled: false
   sql:
     init:
       mode: always
+      platform: all
   jpa:
-    open-in-view: true
     hibernate:
       ddl-auto: create
-    defer-datasource-initialization: false
+    defer-datasource-initialization: true
+    open-in-view: false
+    show-sql: false
   datasource:
     username: admin
     password: admin
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/proof
-  # mvc:
-    # converters:
-      # preferred-json-mapper: gson
   application:
     name: Spring Boot Base
   devtools:
@@ -26,14 +29,8 @@ spring:
       port: 55555
       enabled: false
     add-properties: true
-  docker:
-    compose:
-      enabled: false
-      file: docker/docker-compose.yaml
-      profiles:
-        active: dev
   main:
-    lazy-initialization: true
+    lazy-initialization: false
     banner-mode: off
   security:
     oauth2:

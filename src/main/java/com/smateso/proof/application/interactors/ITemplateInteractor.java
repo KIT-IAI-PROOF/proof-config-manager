@@ -3,17 +3,21 @@ package com.smateso.proof.application.interactors;
 import com.smateso.proof.application.model.Request;
 import edu.kit.iai.webis.proofmodels.Template;
 import org.springframework.data.domain.Page;
+import org.springframework.lang.NonNull;
+
+import java.util.List;
 
 public interface ITemplateInteractor {
 
-    Page<Template> getTemplates(final Request request);
+    Page<Template> searchTemplates(@NonNull final Request request);
 
-    Template getTemplate(String id);
+    Template getTemplate(@NonNull final String id);
 
-    Template createTemplate(Template template);
+    Template createTemplate(@NonNull final Template template, @NonNull final String sessionKey, @NonNull final String username);
 
-    Template updateTemplate(String id, Template template);
+    Template updateTemplate(@NonNull final String id, @NonNull final Template template, @NonNull final String sessionKey, @NonNull final String username);
 
-    void deleteTemplate(String id);
+    void deleteTemplate(@NonNull final String id, @NonNull final String sessionKey, @NonNull final String username);
 
+    List<Template> getTemplates();
 }

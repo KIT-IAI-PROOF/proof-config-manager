@@ -1,5 +1,6 @@
 package com.smateso.proof.application.interactors;
 
+import com.smateso.proof.application.exceptions.NotFoundException;
 import com.smateso.proof.application.model.Request;
 import com.smateso.proof.application.repositories.BlockRepository;
 import edu.kit.iai.webis.proofmodels.Block;
@@ -7,26 +8,32 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import org.springframework.cache.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.lang.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.smateso.proof.application.model.Action.*;
 import static org.springframework.data.domain.PageRequest.of;
 import static org.springframework.data.domain.Sort.by;
 
+@CacheConfig(cacheNames = "blockCache")
 public class BlockInteractor implements IBlockInteractor {
 
     private final BlockRepository blockRepository;
+    private final MessageInteractor messageInteractor;
 
-    public BlockInteractor(final BlockRepository blockRepository) {
+    public BlockInteractor(@NonNull final BlockRepository blockRepository, @NonNull final MessageInteractor messageInteractor) {
         this.blockRepository = blockRepository;
+        this.messageInteractor = messageInteractor;
     }
 
     @Override
-    public Page<Block> getBlocks(final Request request) {
+    public Page<Block> searchBlocks(@NonNull final Request request) {
         final Pageable pageable;
         if (request.getPagination() != null) {
             if (request.getSort() != null) {
@@ -41,32 +48,62 @@ public class BlockInteractor implements IBlockInteractor {
         return this.blockRepository.findAll((final Root<Block> root, final CriteriaQuery<?> query, final CriteriaBuilder builder) -> {
             List<Predicate> predicates = new ArrayList<>();
             final var filter = request.getFilter();
-            final var items = filter.getItems();
-            items.forEach((final Request.FilterItem item) -> predicates.add(builder.equal(root.get(item.getField()), item.getValue())));
+            if (filter != null) {
+                final var items = filter.getItems();
+                items.forEach((final Request.FilterItem item) -> predicates.add(builder.equal(root.get(item.getField()), item.getValue())));
+            }
             return builder.and(predicates.toArray(new Predicate[]{}));
         }, pageable);
     }
 
     @Override
-    public Block getBlock(final String id) {
-        return this.blockRepository.findById(id).orElseThrow();
+    @Cacheable(value = "block", key = "#id", unless = "#result == null")
+    public Block getBlock(@NonNull final String id) {
+        final var result = this.blockRepository.findById(id);
+        if (result.isPresent()) {
+            return result.get();
+        } else {
+            throw new NotFoundException("Block with id %s not found".formatted(id));
+        }
     }
 
     @Override
-    public Block createBlock(final Block block) {
-        return this.blockRepository.save(block);
+    @Caching(
+            put = {@CachePut(cacheNames = "block", key = "#block.id", unless = "#block.id == null")},
+            evict = {@CacheEvict(cacheNames = "blocks", allEntries = true)}
+    )
+    public Block createBlock(@NonNull final Block block, @NonNull final String sessionKey, @NonNull final String username) {
+        final var result = this.blockRepository.save(block);
+        this.messageInteractor.blockUpdate(result.getId(), CREATED, sessionKey, username);
+        return result;
     }
 
     @Override
-    public Block updateBlock(String uuid, Block block) {
-        final var existingBlock = this.blockRepository.findById(uuid).orElseThrow();
+    @Caching(
+            put = {@CachePut(cacheNames = "block", key = "#id")},
+            evict = {@CacheEvict(cacheNames = "blocks", allEntries = true)}
+    )
+    public Block updateBlock(@NonNull final String id, @NonNull final Block block, @NonNull final String sessionKey, @NonNull final String username) {
+        final var existingBlock = this.blockRepository.findById(id).orElseThrow();
         block.setId(existingBlock.getId());
-        return this.blockRepository.save(block);
+        final var result = this.blockRepository.save(block);
+        this.messageInteractor.blockUpdate(result.getId(), UPDATED, sessionKey, username);
+        return result;
     }
 
     @Override
-    public void deleteBlock(final String uuid) {
-        this.blockRepository.deleteById(uuid);
+    @Caching(
+            evict = {@CacheEvict(cacheNames = "block", key = "#id"), @CacheEvict(cacheNames = "blocks", allEntries = true)}
+    )
+    public void deleteBlock(@NonNull final String id, @NonNull final String sessionKey, @NonNull final String username) {
+        this.blockRepository.deleteById(id);
+        this.messageInteractor.blockUpdate(id, DELETED, sessionKey, username);
+    }
+
+    @Override
+    @Cacheable(value = "blocks")
+    public List<Block> getBlocks() {
+        return this.blockRepository.findAll();
     }
 
 }

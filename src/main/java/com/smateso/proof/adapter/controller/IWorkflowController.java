@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,7 +30,18 @@ public interface IWorkflowController {
                     @ApiResponse(responseCode = "500", description = "Retrieval incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @PostMapping(value = "search", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<List<Workflow>> getWorkflows(@RequestBody final Request request);
+    ResponseEntity<List<Workflow>> searchWorkflows(@RequestBody final Request request);
+
+    @Operation(
+            summary = "Retrieve workflows",
+            description = "Retrieve workflows",
+            security = @SecurityRequirement(name = "oauth2"),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Retrieval successful", useReturnTypeSchema = true),
+                    @ApiResponse(responseCode = "500", description = "Retrieval incomplete", content = @Content(schema = @Schema(hidden = true))),
+            })
+    @GetMapping(consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
+    ResponseEntity<List<Workflow>> getWorkflows();
 
     @Operation(
             summary = "Retrieve workflow",
@@ -51,6 +63,17 @@ public interface IWorkflowController {
                     @ApiResponse(responseCode = "500", description = "Create incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<Workflow> createWorkflow(@RequestBody final Workflow workflow);
+    ResponseEntity<Workflow> createWorkflow(@RequestBody final Workflow workflow, @RequestParam final String sessionKey, final Authentication authentication);
+
+    @Operation(
+            summary = "Update workflow",
+            description = "Update workflow",
+            security = @SecurityRequirement(name = "oauth2"),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Update successful", useReturnTypeSchema = true),
+                    @ApiResponse(responseCode = "500", description = "Update incomplete", content = @Content(schema = @Schema(hidden = true))),
+            })
+    @PostMapping(value = "{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    ResponseEntity<Workflow> updateWorkflow(@PathVariable(value = "id") final String id, @RequestBody final Workflow workflow, @RequestParam final String sessionKey, final Authentication authentication);
 
 }

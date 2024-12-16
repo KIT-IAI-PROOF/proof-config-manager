@@ -5,12 +5,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
-import org.springframework.security.oauth2.client.AuthorizedClientServiceReactiveOAuth2AuthorizedClientManager;
-import org.springframework.security.oauth2.client.InMemoryReactiveOAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.InMemoryReactiveClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository;
-import org.springframework.security.oauth2.client.web.reactive.function.client.ServerOAuth2AuthorizedClientExchangeFilterFunction;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -19,9 +16,6 @@ import static org.springframework.web.reactive.function.client.WebClient.builder
 @Getter
 @Configuration
 public class ClientSecurityConfig {
-
-    @Value("${data-service-base-url}")
-    private String dataServiceUrl;
 
     /**
      * Configure oauth2 providers.
@@ -56,26 +50,6 @@ public class ClientSecurityConfig {
     public WebClient defaultWebClient() {
         final var builder = builder();
         return builder.build();
-    }
-
-    /**
-     * Configure client for data service communication.
-     * This client handles authentication and token retrieval automatically.
-     *
-     * @param clientRegistrations Registrations from the manager.
-     * @return Configured WebClient.
-     */
-    @Bean(name = "dataServiceWebclient", value = "dataServiceWebclient")
-    public WebClient dataServiceWebclient(@NonNull final ReactiveClientRegistrationRepository clientRegistrations) {
-        final var builder = builder();
-        final var clientService = new InMemoryReactiveOAuth2AuthorizedClientService(clientRegistrations);
-        final var authorizedClientManager = new AuthorizedClientServiceReactiveOAuth2AuthorizedClientManager(clientRegistrations, clientService);
-        final var oauth = new ServerOAuth2AuthorizedClientExchangeFilterFunction(authorizedClientManager);
-        oauth.setDefaultClientRegistrationId("keycloak");
-        return builder
-                .baseUrl(this.dataServiceUrl)
-                .filter(oauth)
-                .build();
     }
 
 }

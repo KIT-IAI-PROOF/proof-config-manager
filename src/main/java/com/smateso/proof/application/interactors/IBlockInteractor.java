@@ -3,17 +3,21 @@ package com.smateso.proof.application.interactors;
 import com.smateso.proof.application.model.Request;
 import edu.kit.iai.webis.proofmodels.Block;
 import org.springframework.data.domain.Page;
+import org.springframework.lang.NonNull;
+
+import java.util.List;
 
 public interface IBlockInteractor {
 
-    Page<Block> getBlocks(final Request request);
+    Page<Block> searchBlocks(@NonNull final Request request);
 
-    Block getBlock(String id);
+    Block getBlock(@NonNull final String id);
 
-    Block createBlock(Block block);
+    Block createBlock(@NonNull final Block block, @NonNull final String sessionKey, @NonNull final String username);
 
-    Block updateBlock(String id, Block block);
+    Block updateBlock(@NonNull final String id, @NonNull final Block block, @NonNull final String sessionKey, @NonNull final String username);
 
-    void deleteBlock(String id);
+    void deleteBlock(@NonNull final String id, @NonNull final String sessionKey, @NonNull final String username);
 
+    List<Block> getBlocks();
 }

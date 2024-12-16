@@ -39,23 +39,32 @@ public class Beans {
 
 
     @Bean(value = "workflowInteractor", name = "workflowInteractor")
-    public IWorkflowInteractor workflowInteractor(@Qualifier("workflowRepository") final WorkflowRepository workflowRepository) {
-        return new WorkflowInteractor(workflowRepository);
+    public IWorkflowInteractor workflowInteractor(@Qualifier("workflowRepository") final WorkflowRepository workflowRepository,
+                                                  @Qualifier("messageInteractor") final MessageInteractor messageInteractor) {
+        return new WorkflowInteractor(workflowRepository, messageInteractor);
     }
 
     @Bean(value = "blockInteractor", name = "blockInteractor")
-    public IBlockInteractor blockInteractor(@Qualifier("blockRepository") final BlockRepository blockRepository) {
-        return new BlockInteractor(blockRepository);
+    public IBlockInteractor blockInteractor(@Qualifier("blockRepository") final BlockRepository blockRepository,
+                                            @Qualifier("messageInteractor") final MessageInteractor messageInteractor) {
+        return new BlockInteractor(blockRepository, messageInteractor);
     }
 
     @Bean(value = "templateInteractor", name = "templateInteractor")
-    public ITemplateInteractor templateInteractor(@Qualifier("templateRepository") final TemplateRepository templateRepository) {
-        return new TemplateInteractor(templateRepository);
+    public ITemplateInteractor templateInteractor(@Qualifier("templateRepository") final TemplateRepository templateRepository,
+                                                  @Qualifier("messageInteractor") final MessageInteractor messageInteractor) {
+        return new TemplateInteractor(templateRepository, messageInteractor);
     }
 
     @Bean(value = "executionInteractor", name = "executionInteractor")
-    public IExecutionInteractor executionInteractor(@Qualifier("executionRepository") final ExecutionRepository executionRepository) {
-        return new ExecutionInteractor(executionRepository);
+    public IExecutionInteractor executionInteractor(@Qualifier("executionRepository") final ExecutionRepository executionRepository,
+                                                    @Qualifier("messageInteractor") final MessageInteractor messageInteractor) {
+        return new ExecutionInteractor(executionRepository, messageInteractor);
+    }
+
+    @Bean(value = "messageInteractor", name = "messageInteractor")
+    public MessageInteractor messageInteractor() {
+        return new MessageInteractor();
     }
 
 }

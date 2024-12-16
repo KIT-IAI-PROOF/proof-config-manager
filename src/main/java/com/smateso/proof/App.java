@@ -11,9 +11,11 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.servers.Server;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.cache.annotation.EnableCaching;
 
 import static org.springframework.boot.SpringApplication.run;
 
+@EnableCaching
 @SpringBootApplication
 @EntityScan("edu.kit.iai.webis.proofmodels")
 @OpenAPIDefinition(
