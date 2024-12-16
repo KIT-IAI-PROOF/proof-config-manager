@@ -7,6 +7,8 @@ spring:
     redis:
       repositories:
         enabled: false
+      host: localhost
+      port: 6379
   sql:
     init:
       mode: always
@@ -23,14 +25,14 @@ spring:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/proof
   application:
-    name: Spring Boot Base
+    name: PROOF Config Manager
   devtools:
     livereload:
       port: 55555
       enabled: false
     add-properties: true
   main:
-    lazy-initialization: false
+    lazy-initialization: true
   security:
     oauth2:
       resourceserver:
