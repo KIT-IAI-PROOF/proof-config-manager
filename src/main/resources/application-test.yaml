@@ -20,19 +20,12 @@ spring:
     open-in-view: false
     show-sql: false
   datasource:
-    username: admin
-    password: admin
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/proof
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:test;DB_CLOSE_ON_EXIT=FALSE
   application:
     name: PROOF Config Manager
-  devtools:
-    livereload:
-      port: 55555
-      enabled: false
-    add-properties: true
   main:
-    lazy-initialization: true
+    lazy-initialization: false
     banner-mode: off
   security:
     oauth2:
@@ -51,6 +44,10 @@ spring:
             client-secret: TE8xwoZlEA3UvKc2CL6bWLOhVWpDvQSb
             client-name: proof
             authorization-grant-type: client_credentials
+
+  h2:
+    console:
+      enabled: true
 timezone: Europe/Berlin
 springdoc:
   show-actuator: false

@@ -6,6 +6,10 @@ import org.springframework.data.redis.cache.RedisCacheConfiguration;
 
 import java.time.Duration;
 
+/**
+ * Configuration class for Redis caching.
+ * This class is responsible for setting up configurations for Redis caching in the application.
+ */
 @Configuration
 public class RedisConfig {
 

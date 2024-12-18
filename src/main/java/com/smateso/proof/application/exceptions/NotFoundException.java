@@ -1,16 +1,17 @@
 package com.smateso.proof.application.exceptions;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "Entity not found")  // 404
+@ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "Entity not found")
 public class NotFoundException extends RuntimeException {
 
-    public NotFoundException(String message) {
+    public NotFoundException(@NonNull final String message) {
         super(message);
     }
 
-    public NotFoundException(String message, Throwable cause) {
+    public NotFoundException(@NonNull final String message, @NonNull final Throwable cause) {
         super(message, cause);
     }
 }

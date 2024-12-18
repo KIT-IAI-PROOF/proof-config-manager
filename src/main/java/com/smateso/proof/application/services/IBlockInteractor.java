@@ -1,4 +1,4 @@
-package com.smateso.proof.application.interactors;
+package com.smateso.proof.application.services;
 
 import com.smateso.proof.application.model.Request;
 import edu.kit.iai.webis.proofmodels.Block;

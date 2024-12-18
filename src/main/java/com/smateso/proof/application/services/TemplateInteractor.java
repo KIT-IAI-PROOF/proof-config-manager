@@ -1,4 +1,4 @@
-package com.smateso.proof.application.interactors;
+package com.smateso.proof.application.services;
 
 import com.smateso.proof.application.exceptions.NotFoundException;
 import com.smateso.proof.application.model.Request;
@@ -25,11 +25,11 @@ import static org.springframework.data.domain.Sort.by;
 public class TemplateInteractor implements ITemplateInteractor {
 
     private final TemplateRepository templateRepository;
-    private final MessageInteractor messageInteractor;
+    private final IMessageInteractor IMessageInteractor;
 
-    public TemplateInteractor(@NonNull final TemplateRepository templateRepository, @NonNull final MessageInteractor messageInteractor) {
+    public TemplateInteractor(@NonNull final TemplateRepository templateRepository, @NonNull final IMessageInteractor IMessageInteractor) {
         this.templateRepository = templateRepository;
-        this.messageInteractor = messageInteractor;
+        this.IMessageInteractor = IMessageInteractor;
     }
 
     @Override
@@ -57,7 +57,7 @@ public class TemplateInteractor implements ITemplateInteractor {
     }
 
     @Override
-    @Cacheable(value = "template", key = "#id", unless = "#result == null")
+    @Cacheable(value = "templates", key = "#id", unless = "#result == null")
     public Template getTemplate(@NonNull final String id) {
         final var result = this.templateRepository.findById(id);
         if (result.isPresent()) {
@@ -68,36 +68,28 @@ public class TemplateInteractor implements ITemplateInteractor {
     }
 
     @Override
-    @Caching(
-            put = {@CachePut(cacheNames = "template", key = "#template.id", unless = "#template.id == null")},
-            evict = {@CacheEvict(cacheNames = "templates", allEntries = true)}
-    )
+    @Caching(evict = {@CacheEvict(cacheNames = "templates", allEntries = true, beforeInvocation = true)})
     public Template createTemplate(@NonNull final Template template, @NonNull final String sessionKey, @NonNull final String username) {
         final var result = this.templateRepository.save(template);
-        this.messageInteractor.templateUpdate(result.getId(), CREATED, sessionKey, username);
+        this.IMessageInteractor.templateUpdate(result.getId(), CREATED, sessionKey, username);
         return result;
     }
 
     @Override
-    @Caching(
-            put = {@CachePut(cacheNames = "template", key = "#id")},
-            evict = {@CacheEvict(cacheNames = "templates", allEntries = true)}
-    )
+    @Caching(evict = {@CacheEvict(cacheNames = "templates", allEntries = true, beforeInvocation = true)})
     public Template updateTemplate(@NonNull final String id, @NonNull final Template template, @NonNull final String sessionKey, @NonNull final String username) {
         final var existingTemplate = this.templateRepository.findById(id).orElseThrow();
         template.setId(existingTemplate.getId());
         final var result = this.templateRepository.save(template);
-        this.messageInteractor.templateUpdate(result.getId(), UPDATED, sessionKey, username);
+        this.IMessageInteractor.templateUpdate(result.getId(), UPDATED, sessionKey, username);
         return result;
     }
 
     @Override
-    @Caching(
-            evict = {@CacheEvict(cacheNames = "template", key = "#id"), @CacheEvict(cacheNames = "templates", allEntries = true)}
-    )
+    @Caching(evict = {@CacheEvict(cacheNames = "templates", allEntries = true, beforeInvocation = true)})
     public void deleteTemplate(@NonNull final String id, @NonNull final String sessionKey, @NonNull final String username) {
         this.templateRepository.deleteById(id);
-        this.messageInteractor.templateUpdate(id, DELETED, sessionKey, username);
+        this.IMessageInteractor.templateUpdate(id, DELETED, sessionKey, username);
     }
 
     @Override

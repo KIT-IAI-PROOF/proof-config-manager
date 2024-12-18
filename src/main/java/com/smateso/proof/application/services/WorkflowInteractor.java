@@ -1,4 +1,4 @@
-package com.smateso.proof.application.interactors;
+package com.smateso.proof.application.services;
 
 import com.smateso.proof.application.exceptions.NotFoundException;
 import com.smateso.proof.application.model.Request;
@@ -25,11 +25,11 @@ import static org.springframework.data.domain.Sort.by;
 public class WorkflowInteractor implements IWorkflowInteractor {
 
     private final WorkflowRepository workflowRepository;
-    private final MessageInteractor messageInteractor;
+    private final IMessageInteractor IMessageInteractor;
 
-    public WorkflowInteractor(@NonNull final WorkflowRepository workflowRepository, @NonNull final MessageInteractor messageInteractor) {
+    public WorkflowInteractor(@NonNull final WorkflowRepository workflowRepository, @NonNull final IMessageInteractor IMessageInteractor) {
         this.workflowRepository = workflowRepository;
-        this.messageInteractor = messageInteractor;
+        this.IMessageInteractor = IMessageInteractor;
     }
 
     @Override
@@ -57,7 +57,7 @@ public class WorkflowInteractor implements IWorkflowInteractor {
     }
 
     @Override
-    @Cacheable(value = "workflow", key = "#id", unless = "#result == null")
+    @Cacheable(value = "workflows", key = "#id", unless = "#result == null")
     public Workflow getWorkflow(@NonNull final String id) {
         final var result = this.workflowRepository.findById(id);
         if (result.isPresent()) {
@@ -69,35 +69,40 @@ public class WorkflowInteractor implements IWorkflowInteractor {
 
     @Override
     @Caching(
-            put = {@CachePut(cacheNames = "workflow", key = "#workflow.id", unless = "#workflow.id == null")},
-            evict = {@CacheEvict(cacheNames = "workflows", allEntries = true)}
-    )
+            evict = {
+                    @CacheEvict(cacheNames = "workflows", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true)
+            })
     public Workflow createWorkflow(@NonNull final Workflow workflow, @NonNull final String sessionKey, @NonNull final String username) {
         final var result = this.workflowRepository.save(workflow);
-        this.messageInteractor.workflowUpdate(result.getId(), CREATED, sessionKey, username);
+        this.IMessageInteractor.workflowUpdate(result.getId(), CREATED, sessionKey, username);
         return result;
     }
 
     @Override
     @Caching(
-            put = {@CachePut(cacheNames = "workflow", key = "#id")},
-            evict = {@CacheEvict(cacheNames = "workflows", allEntries = true)}
-    )
+            evict = {
+                    @CacheEvict(cacheNames = "workflows", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true)
+            })
     public Workflow updateWorkflow(@NonNull final String id, @NonNull final Workflow workflow, @NonNull final String sessionKey, @NonNull final String username) {
         final var existingWorkflow = this.workflowRepository.findById(id).orElseThrow();
         workflow.setId(existingWorkflow.getId());
         final var result = this.workflowRepository.save(workflow);
-        this.messageInteractor.workflowUpdate(result.getId(), UPDATED, sessionKey, username);
+        this.IMessageInteractor.workflowUpdate(result.getId(), UPDATED, sessionKey, username);
         return result;
     }
 
     @Override
     @Caching(
-            evict = {@CacheEvict(cacheNames = "workflow", key = "#id"), @CacheEvict(cacheNames = "workflows", allEntries = true)}
+            evict = {
+                    @CacheEvict(cacheNames = "workflows", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true)
+            }
     )
     public void deleteWorkflow(@NonNull final String id, @NonNull final String sessionKey, @NonNull final String username) {
         this.workflowRepository.deleteById(id);
-        this.messageInteractor.workflowUpdate(id, DELETED, sessionKey, username);
+        this.IMessageInteractor.workflowUpdate(id, DELETED, sessionKey, username);
     }
 
     @Override

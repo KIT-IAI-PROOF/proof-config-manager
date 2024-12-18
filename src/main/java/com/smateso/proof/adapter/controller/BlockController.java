@@ -1,17 +1,18 @@
 package com.smateso.proof.adapter.controller;
 
-import com.smateso.proof.application.interactors.IBlockInteractor;
 import com.smateso.proof.application.model.Request;
+import com.smateso.proof.application.services.IBlockInteractor;
 import edu.kit.iai.webis.proofmodels.Block;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+
+import static com.smateso.proof.adapter.config.AuditorProvider.getUsername;
 
 @RestController
 @RequestMapping("/v1/block")
@@ -41,15 +42,13 @@ public class BlockController implements IBlockController {
 
     @Override
     public ResponseEntity<Block> createBlock(@NonNull final Block block, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
-        final Jwt jwt = (Jwt) authentication.getPrincipal();
-        final var username = jwt.getClaimAsString("preferred_username");
+        final var username = getUsername(authentication);
         return ResponseEntity.ok(this.blockInteractor.createBlock(block, sessionKey, username));
     }
 
     @Override
     public ResponseEntity<Block> updateBlock(@NonNull final String blockId, @NonNull final Block block, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
-        final Jwt jwt = (Jwt) authentication.getPrincipal();
-        final var username = jwt.getClaimAsString("preferred_username");
+        final var username = getUsername(authentication);
         return ResponseEntity.ok(this.blockInteractor.updateBlock(blockId, block, sessionKey, username));
     }
 

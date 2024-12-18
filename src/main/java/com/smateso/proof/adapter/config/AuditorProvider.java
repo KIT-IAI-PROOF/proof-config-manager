@@ -12,15 +12,23 @@ import java.util.Optional;
 @Component("auditorProvider")
 public class AuditorProvider implements AuditorAware<String> {
 
+    public static final String PREFERRED_USERNAME = "preferred_username";
+
+    public static String getUsername(@NonNull final Authentication authentication) {
+        try {
+            final var jwt = (Jwt) authentication.getPrincipal();
+            return jwt.getClaimAsString(PREFERRED_USERNAME);
+        } catch (final Exception e) {
+            throw new RuntimeException("Could not get username from authentication", e);
+        }
+    }
+
     @NonNull
     @Override
     public Optional<String> getCurrentAuditor() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return Optional.empty();
-        }
-        final Jwt jwt = (Jwt) authentication.getPrincipal();
-        final var username = jwt.getClaimAsString("preferred_username");
+        final var authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) return Optional.empty();
+        final var username = getUsername(authentication);
         return Optional.of(username);
     }
 

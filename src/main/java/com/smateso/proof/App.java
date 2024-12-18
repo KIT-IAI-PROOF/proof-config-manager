@@ -15,6 +15,23 @@ import org.springframework.cache.annotation.EnableCaching;
 
 import static org.springframework.boot.SpringApplication.run;
 
+/**
+ * The App class serves as the entry point for the PROOF Data Service app.
+ * <p>
+ * This class is annotated with several Spring annotations to enable key functionalities:
+ * - @SpringBootApplication: Marks this as a Spring Boot app.
+ * - @EnableCaching: Enables caching support within the app.
+ * - @EntityScan: Configures the base packages for scanning JPA entities.
+ * <p>
+ * Also, the class is annotated with OpenAPI definitions to give API documentation:
+ * - @OpenAPIDefinition: Specifies API metadata including title, description, version and contact information.
+ * - @Server: Defines the server URL and description for the API.
+ * <p>
+ * Security configurations are defined with:
+ * - @SecurityScheme: Configures OAuth2 with a client credentials flow and associated token URL.
+ * <p>
+ * The main method is the entry point of the application and is responsible for launching the Spring Boot application.
+ */
 @EnableCaching
 @SpringBootApplication
 @EntityScan("edu.kit.iai.webis.proofmodels")

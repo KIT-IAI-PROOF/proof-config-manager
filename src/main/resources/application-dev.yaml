@@ -26,13 +26,8 @@ spring:
     url: jdbc:postgresql://localhost:5432/proof
   application:
     name: PROOF Config Manager
-  devtools:
-    livereload:
-      port: 55555
-      enabled: false
-    add-properties: true
   main:
-    lazy-initialization: true
+    lazy-initialization: false
   security:
     oauth2:
       resourceserver:
@@ -53,8 +48,3 @@ spring:
 timezone: Europe/Berlin
 springdoc:
   show-actuator: false
-logging:
-  level:
-    org:
-      springframework:
-        cache: off

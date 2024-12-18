@@ -1,4 +1,4 @@
-package com.smateso.proof.application.interactors;
+package com.smateso.proof.application.services;
 
 import com.smateso.proof.application.exceptions.NotFoundException;
 import com.smateso.proof.application.model.Request;
@@ -25,11 +25,11 @@ import static org.springframework.data.domain.Sort.by;
 public class BlockInteractor implements IBlockInteractor {
 
     private final BlockRepository blockRepository;
-    private final MessageInteractor messageInteractor;
+    private final IMessageInteractor IMessageInteractor;
 
-    public BlockInteractor(@NonNull final BlockRepository blockRepository, @NonNull final MessageInteractor messageInteractor) {
+    public BlockInteractor(@NonNull final BlockRepository blockRepository, @NonNull final IMessageInteractor IMessageInteractor) {
         this.blockRepository = blockRepository;
-        this.messageInteractor = messageInteractor;
+        this.IMessageInteractor = IMessageInteractor;
     }
 
     @Override
@@ -57,7 +57,7 @@ public class BlockInteractor implements IBlockInteractor {
     }
 
     @Override
-    @Cacheable(value = "block", key = "#id", unless = "#result == null")
+    @Cacheable(value = "blocks", key = "#id", unless = "#result == null")
     public Block getBlock(@NonNull final String id) {
         final var result = this.blockRepository.findById(id);
         if (result.isPresent()) {
@@ -69,35 +69,43 @@ public class BlockInteractor implements IBlockInteractor {
 
     @Override
     @Caching(
-            put = {@CachePut(cacheNames = "block", key = "#block.id", unless = "#block.id == null")},
-            evict = {@CacheEvict(cacheNames = "blocks", allEntries = true)}
-    )
+            evict = {
+                    @CacheEvict(cacheNames = "blocks", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "workflows", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true)
+            })
     public Block createBlock(@NonNull final Block block, @NonNull final String sessionKey, @NonNull final String username) {
         final var result = this.blockRepository.save(block);
-        this.messageInteractor.blockUpdate(result.getId(), CREATED, sessionKey, username);
+        this.IMessageInteractor.blockUpdate(result.getId(), CREATED, sessionKey, username);
         return result;
     }
 
     @Override
     @Caching(
-            put = {@CachePut(cacheNames = "block", key = "#id")},
-            evict = {@CacheEvict(cacheNames = "blocks", allEntries = true)}
-    )
+            evict = {
+                    @CacheEvict(cacheNames = "blocks", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "workflows", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true)
+            })
     public Block updateBlock(@NonNull final String id, @NonNull final Block block, @NonNull final String sessionKey, @NonNull final String username) {
         final var existingBlock = this.blockRepository.findById(id).orElseThrow();
         block.setId(existingBlock.getId());
         final var result = this.blockRepository.save(block);
-        this.messageInteractor.blockUpdate(result.getId(), UPDATED, sessionKey, username);
+        this.IMessageInteractor.blockUpdate(result.getId(), UPDATED, sessionKey, username);
         return result;
     }
 
     @Override
     @Caching(
-            evict = {@CacheEvict(cacheNames = "block", key = "#id"), @CacheEvict(cacheNames = "blocks", allEntries = true)}
+            evict = {
+                    @CacheEvict(cacheNames = "blocks", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "workflows", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true)
+            }
     )
     public void deleteBlock(@NonNull final String id, @NonNull final String sessionKey, @NonNull final String username) {
         this.blockRepository.deleteById(id);
-        this.messageInteractor.blockUpdate(id, DELETED, sessionKey, username);
+        this.IMessageInteractor.blockUpdate(id, DELETED, sessionKey, username);
     }
 
     @Override

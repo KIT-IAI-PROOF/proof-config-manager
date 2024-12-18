@@ -1,17 +1,18 @@
 package com.smateso.proof.adapter.controller;
 
-import com.smateso.proof.application.interactors.IWorkflowInteractor;
 import com.smateso.proof.application.model.Request;
+import com.smateso.proof.application.services.IWorkflowInteractor;
 import edu.kit.iai.webis.proofmodels.Workflow;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+
+import static com.smateso.proof.adapter.config.AuditorProvider.getUsername;
 
 @RestController
 @RequestMapping("/v1/workflow")
@@ -41,15 +42,13 @@ public class WorkflowController implements IWorkflowController {
 
     @Override
     public ResponseEntity<Workflow> createWorkflow(@NonNull final Workflow workflow, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
-        final Jwt jwt = (Jwt) authentication.getPrincipal();
-        final var username = jwt.getClaimAsString("preferred_username");
+        final var username = getUsername(authentication);
         return ResponseEntity.ok(this.workflowInteractor.createWorkflow(workflow, sessionKey, username));
     }
 
     @Override
     public ResponseEntity<Workflow> updateWorkflow(@NonNull final String workflowId, @NonNull final Workflow workflow, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
-        final Jwt jwt = (Jwt) authentication.getPrincipal();
-        final var username = jwt.getClaimAsString("preferred_username");
+        final var username = getUsername(authentication);
         return ResponseEntity.ok(this.workflowInteractor.updateWorkflow(workflowId, workflow, sessionKey, username));
     }
 
