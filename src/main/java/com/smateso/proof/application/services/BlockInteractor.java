@@ -73,7 +73,11 @@ public class BlockInteractor implements IBlockInteractor {
                     @CacheEvict(cacheNames = "blocks", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "workflows", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true)
-            })
+            },
+            put = {
+                    @CachePut(cacheNames = "blocks", key = "#block.id", unless = "#block.id == null")
+            }
+    )
     public Block createBlock(@NonNull final Block block, @NonNull final String sessionKey, @NonNull final String username) {
         final var result = this.blockRepository.save(block);
         this.IMessageInteractor.blockUpdate(result.getId(), CREATED, sessionKey, username);
@@ -86,7 +90,11 @@ public class BlockInteractor implements IBlockInteractor {
                     @CacheEvict(cacheNames = "blocks", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "workflows", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true)
-            })
+            },
+            put = {
+                    @CachePut(cacheNames = "blocks", key = "#id")
+            }
+    )
     public Block updateBlock(@NonNull final String id, @NonNull final Block block, @NonNull final String sessionKey, @NonNull final String username) {
         final var existingBlock = this.blockRepository.findById(id).orElseThrow();
         block.setId(existingBlock.getId());

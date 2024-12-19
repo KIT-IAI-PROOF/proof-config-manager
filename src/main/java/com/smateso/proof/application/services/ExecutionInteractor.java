@@ -68,7 +68,14 @@ public class ExecutionInteractor implements IExecutionInteractor {
     }
 
     @Override
-    @Caching(evict = {@CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true)})
+    @Caching(
+            evict = {
+                    @CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true),
+            },
+            put = {
+                    @CachePut(cacheNames = "executions", key = "#execution.id", unless = "#execution.id == null")
+            }
+    )
     public Execution createExecution(@NonNull final Execution execution, @NonNull final String sessionKey, @NonNull final String username) {
         final var result = this.executionRepository.save(execution);
         this.IMessageInteractor.executionUpdate(result.getId(), CREATED, sessionKey, username);
@@ -76,7 +83,14 @@ public class ExecutionInteractor implements IExecutionInteractor {
     }
 
     @Override
-    @Caching(evict = {@CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true)})
+    @Caching(
+            evict = {
+                    @CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true),
+            },
+            put = {
+                    @CachePut(cacheNames = "executions", key = "#id")
+            }
+    )
     public Execution updateExecution(@NonNull final String id, @NonNull final Execution execution, @NonNull final String sessionKey, @NonNull final String username) {
         final var existingExecution = this.executionRepository.findById(id).orElseThrow();
         execution.setId(existingExecution.getId());
@@ -86,7 +100,11 @@ public class ExecutionInteractor implements IExecutionInteractor {
     }
 
     @Override
-    @Caching(evict = {@CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true)})
+    @Caching(
+            evict = {
+                    @CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true),
+            }
+    )
     public void deleteExecution(@NonNull final String id, @NonNull final String sessionKey, @NonNull final String username) {
         this.executionRepository.deleteById(id);
         this.IMessageInteractor.executionUpdate(id, DELETED, sessionKey, username);

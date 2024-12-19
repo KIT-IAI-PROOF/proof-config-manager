@@ -68,7 +68,14 @@ public class TemplateInteractor implements ITemplateInteractor {
     }
 
     @Override
-    @Caching(evict = {@CacheEvict(cacheNames = "templates", allEntries = true, beforeInvocation = true)})
+    @Caching(
+            evict = {
+                    @CacheEvict(cacheNames = "templates", allEntries = true, beforeInvocation = true),
+            },
+            put = {
+                    @CachePut(cacheNames = "templates", key = "#template.id", unless = "#template.id == null")
+            }
+    )
     public Template createTemplate(@NonNull final Template template, @NonNull final String sessionKey, @NonNull final String username) {
         final var result = this.templateRepository.save(template);
         this.IMessageInteractor.templateUpdate(result.getId(), CREATED, sessionKey, username);
@@ -76,7 +83,14 @@ public class TemplateInteractor implements ITemplateInteractor {
     }
 
     @Override
-    @Caching(evict = {@CacheEvict(cacheNames = "templates", allEntries = true, beforeInvocation = true)})
+    @Caching(
+            evict = {
+                    @CacheEvict(cacheNames = "templates", allEntries = true, beforeInvocation = true),
+            },
+            put = {
+                    @CachePut(cacheNames = "templates", key = "#id")
+            }
+    )
     public Template updateTemplate(@NonNull final String id, @NonNull final Template template, @NonNull final String sessionKey, @NonNull final String username) {
         final var existingTemplate = this.templateRepository.findById(id).orElseThrow();
         template.setId(existingTemplate.getId());
@@ -86,7 +100,11 @@ public class TemplateInteractor implements ITemplateInteractor {
     }
 
     @Override
-    @Caching(evict = {@CacheEvict(cacheNames = "templates", allEntries = true, beforeInvocation = true)})
+    @Caching(
+            evict = {
+                    @CacheEvict(cacheNames = "templates", allEntries = true, beforeInvocation = true),
+            }
+    )
     public void deleteTemplate(@NonNull final String id, @NonNull final String sessionKey, @NonNull final String username) {
         this.templateRepository.deleteById(id);
         this.IMessageInteractor.templateUpdate(id, DELETED, sessionKey, username);

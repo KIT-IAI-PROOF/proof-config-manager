@@ -12,4 +12,5 @@ public interface IMessageInteractor {
     void templateUpdate(@NonNull final String id, @NonNull final Action action, @NonNull final String sessionKey, @NonNull final String username);
 
     void blockUpdate(@NonNull final String id, @NonNull final Action action, @NonNull final String sessionKey, @NonNull final String username);
+
 }

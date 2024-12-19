@@ -48,3 +48,6 @@ spring:
 timezone: Europe/Berlin
 springdoc:
   show-actuator: false
+logging:
+  level:
+    root: info

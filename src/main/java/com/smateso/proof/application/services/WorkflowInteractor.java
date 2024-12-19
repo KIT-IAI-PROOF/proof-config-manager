@@ -72,7 +72,11 @@ public class WorkflowInteractor implements IWorkflowInteractor {
             evict = {
                     @CacheEvict(cacheNames = "workflows", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true)
-            })
+            },
+            put = {
+                    @CachePut(cacheNames = "workflows", key = "#workflow.id", unless = "#workflow.id == null")
+            }
+    )
     public Workflow createWorkflow(@NonNull final Workflow workflow, @NonNull final String sessionKey, @NonNull final String username) {
         final var result = this.workflowRepository.save(workflow);
         this.IMessageInteractor.workflowUpdate(result.getId(), CREATED, sessionKey, username);
@@ -84,7 +88,11 @@ public class WorkflowInteractor implements IWorkflowInteractor {
             evict = {
                     @CacheEvict(cacheNames = "workflows", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true)
-            })
+            },
+            put = {
+                    @CachePut(cacheNames = "workflows", key = "#id")
+            }
+    )
     public Workflow updateWorkflow(@NonNull final String id, @NonNull final Workflow workflow, @NonNull final String sessionKey, @NonNull final String username) {
         final var existingWorkflow = this.workflowRepository.findById(id).orElseThrow();
         workflow.setId(existingWorkflow.getId());
