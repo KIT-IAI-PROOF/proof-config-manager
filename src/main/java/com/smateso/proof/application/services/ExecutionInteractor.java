@@ -1,14 +1,15 @@
 package com.smateso.proof.application.services;
 
-import com.smateso.proof.application.exceptions.NotFoundException;
-import com.smateso.proof.application.model.Request;
-import com.smateso.proof.application.repositories.ExecutionRepository;
+import com.smateso.proof.adapter.boundaries.services.IExecutionInteractor;
+import com.smateso.proof.adapter.boundaries.services.IMessageInteractor;
+import com.smateso.proof.adapter.exceptions.NotFoundException;
+import com.smateso.proof.adapter.model.Request;
+import com.smateso.proof.adapter.repositories.ExecutionRepository;
 import edu.kit.iai.webis.proofmodels.Execution;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import org.springframework.cache.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -17,15 +18,14 @@ import org.springframework.lang.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.smateso.proof.application.model.Action.*;
+import static com.smateso.proof.adapter.model.Action.*;
 import static org.springframework.data.domain.PageRequest.of;
 import static org.springframework.data.domain.Sort.by;
 
-@CacheConfig(cacheNames = "executionCache")
 public class ExecutionInteractor implements IExecutionInteractor {
 
     private final ExecutionRepository executionRepository;
-    private final IMessageInteractor IMessageInteractor;
+    private final com.smateso.proof.adapter.boundaries.services.IMessageInteractor IMessageInteractor;
 
     public ExecutionInteractor(@NonNull final ExecutionRepository executionRepository, @NonNull final IMessageInteractor IMessageInteractor) {
         this.executionRepository = executionRepository;
@@ -57,7 +57,6 @@ public class ExecutionInteractor implements IExecutionInteractor {
     }
 
     @Override
-    @Cacheable(value = "executions", key = "#id", unless = "#result == null")
     public Execution getExecution(@NonNull final String id) {
         final var result = this.executionRepository.findById(id);
         if (result.isPresent()) {
@@ -68,14 +67,6 @@ public class ExecutionInteractor implements IExecutionInteractor {
     }
 
     @Override
-    @Caching(
-            evict = {
-                    @CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true),
-            },
-            put = {
-                    @CachePut(cacheNames = "executions", key = "#execution.id", unless = "#execution.id == null")
-            }
-    )
     public Execution createExecution(@NonNull final Execution execution, @NonNull final String sessionKey, @NonNull final String username) {
         final var result = this.executionRepository.save(execution);
         this.IMessageInteractor.executionUpdate(result.getId(), CREATED, sessionKey, username);
@@ -83,14 +74,6 @@ public class ExecutionInteractor implements IExecutionInteractor {
     }
 
     @Override
-    @Caching(
-            evict = {
-                    @CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true),
-            },
-            put = {
-                    @CachePut(cacheNames = "executions", key = "#id")
-            }
-    )
     public Execution updateExecution(@NonNull final String id, @NonNull final Execution execution, @NonNull final String sessionKey, @NonNull final String username) {
         final var existingExecution = this.executionRepository.findById(id).orElseThrow();
         execution.setId(existingExecution.getId());
@@ -100,18 +83,12 @@ public class ExecutionInteractor implements IExecutionInteractor {
     }
 
     @Override
-    @Caching(
-            evict = {
-                    @CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true),
-            }
-    )
     public void deleteExecution(@NonNull final String id, @NonNull final String sessionKey, @NonNull final String username) {
         this.executionRepository.deleteById(id);
         this.IMessageInteractor.executionUpdate(id, DELETED, sessionKey, username);
     }
 
     @Override
-    @Cacheable(value = "executions")
     public List<Execution> getExecutions() {
         return this.executionRepository.findAll();
     }

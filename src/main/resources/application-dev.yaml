@@ -51,3 +51,9 @@ springdoc:
 logging:
   level:
     root: info
+cors:
+  methods:
+    - GET
+    - POST
+  origins:
+    - "http://localhost:3000"

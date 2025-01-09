@@ -2,13 +2,13 @@ package com.smateso.proof.adapter.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.smateso.proof.adapter.boundaries.controller.*;
+import com.smateso.proof.adapter.boundaries.services.*;
 import com.smateso.proof.adapter.helper.LocalDateTimeTypeAdapter;
 import com.smateso.proof.adapter.helper.LocalDateTypeAdapter;
 import com.smateso.proof.adapter.helper.OffsetDateTimeTypeAdapter;
-import com.smateso.proof.application.repositories.BlockRepository;
-import com.smateso.proof.application.repositories.ExecutionRepository;
-import com.smateso.proof.application.repositories.TemplateRepository;
-import com.smateso.proof.application.repositories.WorkflowRepository;
+import com.smateso.proof.adapter.repositories.*;
+import com.smateso.proof.application.controller.*;
 import com.smateso.proof.application.services.*;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,8 +45,12 @@ public class Beans {
 
 
     @Bean(value = "workflowInteractor", name = "workflowInteractor")
-    public IWorkflowInteractor workflowInteractor(@Qualifier("workflowRepository") @NonNull final WorkflowRepository workflowRepository, @Qualifier("messageInteractor") @NonNull final IMessageInteractor IMessageInteractor) {
-        return new WorkflowInteractor(workflowRepository, IMessageInteractor);
+    public IWorkflowInteractor workflowInteractor(
+            @Qualifier("workflowRepository") @NonNull final WorkflowRepository workflowRepository,
+            @Qualifier("edgeRepository") @NonNull final EdgeRepository edgeRepository,
+            @Qualifier("blockRepository") @NonNull final BlockRepository blockRepository,
+            @Qualifier("messageInteractor") @NonNull final IMessageInteractor IMessageInteractor) {
+        return new WorkflowInteractor(workflowRepository, blockRepository, IMessageInteractor, edgeRepository);
     }
 
     @Bean(value = "blockInteractor", name = "blockInteractor")
@@ -67,6 +71,36 @@ public class Beans {
     @Bean(value = "messageInteractor", name = "messageInteractor")
     public IMessageInteractor messageInteractor(@NonNull final SimpMessagingTemplate simpMessagingTemplate) {
         return new MessageInteractor(simpMessagingTemplate);
+    }
+
+    @Bean(value = "workflowController", name = "workflowController")
+    public IWorkflowController workflowController(@Qualifier("workflowInteractor") IWorkflowInteractor workflowInteractor) {
+        return new WorkflowController(workflowInteractor);
+    }
+
+    @Bean(value = "blockController", name = "blockController")
+    public IBlockController blockController(@Qualifier("blockInteractor") IBlockInteractor blockInteractor) {
+        return new BlockController(blockInteractor);
+    }
+
+    @Bean(value = "executionController", name = "executionController")
+    public IExecutionController executionController(@Qualifier("executionInteractor") IExecutionInteractor executionInteractor) {
+        return new ExecutionController(executionInteractor);
+    }
+
+    @Bean(value = "templateController", name = "templateController")
+    public ITemplateController templateController(@Qualifier("templateInteractor") ITemplateInteractor templateInteractor) {
+        return new TemplateController(templateInteractor);
+    }
+
+    @Bean(value = "csrfController", name = "csrfController")
+    public ICsrfController csrfController() {
+        return new CsrfController();
+    }
+
+    @Bean(value = "messageController", name = "messageController")
+    public IMessageController messageController() {
+        return new MessageController();
     }
 
 }

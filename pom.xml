@@ -209,7 +209,7 @@
                             <cleanupOutput>true</cleanupOutput>
                             <enablePostProcessFile>true</enablePostProcessFile>
                             <inputSpec>${project.build.directory}/api.json</inputSpec>
-                            <output>${project.basedir}/generated/client</output>
+                            <output>${project.basedir}/generated/typescript</output>
                             <generatorName>typescript-axios</generatorName>
                             <gitHost>${gitHost}</gitHost>
                             <gitUserId>${gitUserId}</gitUserId>
@@ -236,7 +236,7 @@
                             <cleanupOutput>true</cleanupOutput>
                             <enablePostProcessFile>true</enablePostProcessFile>
                             <inputSpec>${project.build.directory}/api.json</inputSpec>
-                            <output>${project.basedir}/generated/server</output>
+                            <output>${project.basedir}/generated/java</output>
                             <library>webclient</library>
                             <generatorName>java</generatorName>
                             <gitHost>${gitHost}</gitHost>
@@ -252,6 +252,27 @@
                                 <additionalProperty>annotationLibrary=swagger2</additionalProperty>
                                 <additionalProperty>serializationLibrary=jackson</additionalProperty>
                             </additionalProperties>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>gen-python</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <generateApis>false</generateApis>
+                            <generateModels>true</generateModels>
+                            <verbose>false</verbose>
+                            <cleanupOutput>true</cleanupOutput>
+                            <enablePostProcessFile>true</enablePostProcessFile>
+                            <inputSpec>${project.build.directory}/api.json</inputSpec>
+                            <output>${project.basedir}/generated/python</output>
+                            <generatorName>python</generatorName>
+                            <gitHost>${gitHost}</gitHost>
+                            <gitUserId>${gitUserId}</gitUserId>
+                            <gitRepoId>${gitRepoId}</gitRepoId>
+                            <gitHost>gitlab.kit.edu</gitHost>
                         </configuration>
                     </execution>
                 </executions>

@@ -1,5 +1,7 @@
 package com.smateso.proof.adapter.config;
 
+import com.smateso.proof.adapter.model.CorsProperties;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -17,11 +19,17 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
  * - {@link #configureMessageBroker(MessageBrokerRegistry)}: Configures the message broker
  * with application destination prefixes, and a simple message broker.
  * - {@link #registerStompEndpoints(StompEndpointRegistry)}: Registers STOMP endpoints
- * for WebSocket communication, including SockJS fallback options.
+ * for WebSocket communication.
  */
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebsocketConfig implements WebSocketMessageBrokerConfigurer {
+
+    private final CorsProperties corsProperties;
+
+    public WebsocketConfig(@Qualifier("corsProperties") @NonNull final CorsProperties corsProperties) {
+        this.corsProperties = corsProperties;
+    }
 
     /**
      * Configures the message broker for WebSocket messaging. This method sets up the
@@ -46,9 +54,7 @@ public class WebsocketConfig implements WebSocketMessageBrokerConfigurer {
      */
     @Override
     public void registerStompEndpoints(@NonNull final StompEndpointRegistry registry) {
-        registry
-                .addEndpoint("/ws")
-                .setAllowedOriginPatterns("http://localhost:3000");
+        registry.addEndpoint("/ws").setAllowedOrigins(corsProperties.getOrigins().toArray(String[]::new));
     }
 
 }

@@ -1,14 +1,15 @@
 package com.smateso.proof.application.services;
 
-import com.smateso.proof.application.exceptions.NotFoundException;
-import com.smateso.proof.application.model.Request;
-import com.smateso.proof.application.repositories.TemplateRepository;
+import com.smateso.proof.adapter.boundaries.services.IMessageInteractor;
+import com.smateso.proof.adapter.boundaries.services.ITemplateInteractor;
+import com.smateso.proof.adapter.exceptions.NotFoundException;
+import com.smateso.proof.adapter.model.Request;
+import com.smateso.proof.adapter.repositories.TemplateRepository;
 import edu.kit.iai.webis.proofmodels.Template;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import org.springframework.cache.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -17,15 +18,14 @@ import org.springframework.lang.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.smateso.proof.application.model.Action.*;
+import static com.smateso.proof.adapter.model.Action.*;
 import static org.springframework.data.domain.PageRequest.of;
 import static org.springframework.data.domain.Sort.by;
 
-@CacheConfig(cacheNames = "templateCache")
 public class TemplateInteractor implements ITemplateInteractor {
 
     private final TemplateRepository templateRepository;
-    private final IMessageInteractor IMessageInteractor;
+    private final com.smateso.proof.adapter.boundaries.services.IMessageInteractor IMessageInteractor;
 
     public TemplateInteractor(@NonNull final TemplateRepository templateRepository, @NonNull final IMessageInteractor IMessageInteractor) {
         this.templateRepository = templateRepository;
@@ -57,7 +57,6 @@ public class TemplateInteractor implements ITemplateInteractor {
     }
 
     @Override
-    @Cacheable(value = "templates", key = "#id", unless = "#result == null")
     public Template getTemplate(@NonNull final String id) {
         final var result = this.templateRepository.findById(id);
         if (result.isPresent()) {
@@ -68,14 +67,6 @@ public class TemplateInteractor implements ITemplateInteractor {
     }
 
     @Override
-    @Caching(
-            evict = {
-                    @CacheEvict(cacheNames = "templates", allEntries = true, beforeInvocation = true),
-            },
-            put = {
-                    @CachePut(cacheNames = "templates", key = "#template.id", unless = "#template.id == null")
-            }
-    )
     public Template createTemplate(@NonNull final Template template, @NonNull final String sessionKey, @NonNull final String username) {
         final var result = this.templateRepository.save(template);
         this.IMessageInteractor.templateUpdate(result.getId(), CREATED, sessionKey, username);
@@ -83,14 +74,6 @@ public class TemplateInteractor implements ITemplateInteractor {
     }
 
     @Override
-    @Caching(
-            evict = {
-                    @CacheEvict(cacheNames = "templates", allEntries = true, beforeInvocation = true),
-            },
-            put = {
-                    @CachePut(cacheNames = "templates", key = "#id")
-            }
-    )
     public Template updateTemplate(@NonNull final String id, @NonNull final Template template, @NonNull final String sessionKey, @NonNull final String username) {
         final var existingTemplate = this.templateRepository.findById(id).orElseThrow();
         template.setId(existingTemplate.getId());
@@ -100,18 +83,12 @@ public class TemplateInteractor implements ITemplateInteractor {
     }
 
     @Override
-    @Caching(
-            evict = {
-                    @CacheEvict(cacheNames = "templates", allEntries = true, beforeInvocation = true),
-            }
-    )
     public void deleteTemplate(@NonNull final String id, @NonNull final String sessionKey, @NonNull final String username) {
         this.templateRepository.deleteById(id);
         this.IMessageInteractor.templateUpdate(id, DELETED, sessionKey, username);
     }
 
     @Override
-    @Cacheable(value = "templates")
     public List<Template> getTemplates() {
         return this.templateRepository.findAll();
     }

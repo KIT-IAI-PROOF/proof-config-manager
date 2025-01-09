@@ -2,6 +2,7 @@ package com.smateso.proof.adapter.config;
 
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -14,10 +15,13 @@ public class AuditorProvider implements AuditorAware<String> {
 
     public static final String PREFERRED_USERNAME = "preferred_username";
 
-    public static String getUsername(@NonNull final Authentication authentication) {
+    public static String getUsername(@Nullable final Authentication authentication) {
         try {
-            final var jwt = (Jwt) authentication.getPrincipal();
-            return jwt.getClaimAsString(PREFERRED_USERNAME);
+            if (authentication != null && authentication.getPrincipal() instanceof Jwt jwt) {
+                return jwt.getClaimAsString(PREFERRED_USERNAME);
+            } else {
+                return "anonymous";
+            }
         } catch (final Exception e) {
             throw new RuntimeException("Could not get username from authentication", e);
         }
@@ -27,7 +31,6 @@ public class AuditorProvider implements AuditorAware<String> {
     @Override
     public Optional<String> getCurrentAuditor() {
         final var authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) return Optional.empty();
         final var username = getUsername(authentication);
         return Optional.of(username);
     }

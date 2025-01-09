@@ -1,31 +1,35 @@
 package com.smateso.proof.application.services;
 
-import com.smateso.proof.application.exceptions.NotFoundException;
-import com.smateso.proof.application.model.Request;
-import com.smateso.proof.application.repositories.BlockRepository;
+import com.smateso.proof.adapter.boundaries.services.IBlockInteractor;
+import com.smateso.proof.adapter.boundaries.services.IMessageInteractor;
+import com.smateso.proof.adapter.exceptions.NotFoundException;
+import com.smateso.proof.adapter.model.Request;
+import com.smateso.proof.adapter.repositories.BlockRepository;
 import edu.kit.iai.webis.proofmodels.Block;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import org.springframework.cache.annotation.*;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import static com.smateso.proof.application.model.Action.*;
+import static com.smateso.proof.adapter.model.Action.*;
+import static com.smateso.proof.adapter.utils.NullAwareUtil.getNullPropertyNames;
+import static org.springframework.beans.BeanUtils.copyProperties;
 import static org.springframework.data.domain.PageRequest.of;
 import static org.springframework.data.domain.Sort.by;
 
-@CacheConfig(cacheNames = "blockCache")
 public class BlockInteractor implements IBlockInteractor {
 
     private final BlockRepository blockRepository;
-    private final IMessageInteractor IMessageInteractor;
+    private final com.smateso.proof.adapter.boundaries.services.IMessageInteractor IMessageInteractor;
 
     public BlockInteractor(@NonNull final BlockRepository blockRepository, @NonNull final IMessageInteractor IMessageInteractor) {
         this.blockRepository = blockRepository;
@@ -57,7 +61,6 @@ public class BlockInteractor implements IBlockInteractor {
     }
 
     @Override
-    @Cacheable(value = "blocks", key = "#id", unless = "#result == null")
     public Block getBlock(@NonNull final String id) {
         final var result = this.blockRepository.findById(id);
         if (result.isPresent()) {
@@ -68,16 +71,6 @@ public class BlockInteractor implements IBlockInteractor {
     }
 
     @Override
-    @Caching(
-            evict = {
-                    @CacheEvict(cacheNames = "blocks", allEntries = true, beforeInvocation = true),
-                    @CacheEvict(cacheNames = "workflows", allEntries = true, beforeInvocation = true),
-                    @CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true)
-            },
-            put = {
-                    @CachePut(cacheNames = "blocks", key = "#block.id", unless = "#block.id == null")
-            }
-    )
     public Block createBlock(@NonNull final Block block, @NonNull final String sessionKey, @NonNull final String username) {
         final var result = this.blockRepository.save(block);
         this.IMessageInteractor.blockUpdate(result.getId(), CREATED, sessionKey, username);
@@ -85,39 +78,21 @@ public class BlockInteractor implements IBlockInteractor {
     }
 
     @Override
-    @Caching(
-            evict = {
-                    @CacheEvict(cacheNames = "blocks", allEntries = true, beforeInvocation = true),
-                    @CacheEvict(cacheNames = "workflows", allEntries = true, beforeInvocation = true),
-                    @CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true)
-            },
-            put = {
-                    @CachePut(cacheNames = "blocks", key = "#id")
-            }
-    )
     public Block updateBlock(@NonNull final String id, @NonNull final Block block, @NonNull final String sessionKey, @NonNull final String username) {
-        final var existingBlock = this.blockRepository.findById(id).orElseThrow();
-        block.setId(existingBlock.getId());
-        final var result = this.blockRepository.save(block);
+        final var existingBlock = this.getBlock(id);
+        copyProperties(block, existingBlock, getNullPropertyNames(block));
+        final var result = this.blockRepository.save(existingBlock);
         this.IMessageInteractor.blockUpdate(result.getId(), UPDATED, sessionKey, username);
         return result;
     }
 
     @Override
-    @Caching(
-            evict = {
-                    @CacheEvict(cacheNames = "blocks", allEntries = true, beforeInvocation = true),
-                    @CacheEvict(cacheNames = "workflows", allEntries = true, beforeInvocation = true),
-                    @CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true)
-            }
-    )
     public void deleteBlock(@NonNull final String id, @NonNull final String sessionKey, @NonNull final String username) {
         this.blockRepository.deleteById(id);
         this.IMessageInteractor.blockUpdate(id, DELETED, sessionKey, username);
     }
 
     @Override
-    @Cacheable(value = "blocks")
     public List<Block> getBlocks() {
         return this.blockRepository.findAll();
     }

@@ -1,8 +1,8 @@
 package com.smateso.proof.application.services;
 
-import com.smateso.proof.application.model.Action;
-import com.smateso.proof.application.model.Message;
-import lombok.extern.slf4j.Slf4j;
+import com.smateso.proof.adapter.boundaries.services.IMessageInteractor;
+import com.smateso.proof.adapter.model.Action;
+import com.smateso.proof.adapter.model.Message;
 import org.springframework.lang.NonNull;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
@@ -15,7 +15,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
  * This class encapsulates methods to publish update messages specific to various entities and a common
  * functionality for handling the generation and delivery of these messages.
  */
-@Slf4j
 public class MessageInteractor implements IMessageInteractor {
 
     private static final String ENTITY_WORKFLOW = "workflows";

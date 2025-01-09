@@ -1,0 +1,60 @@
+package com.smateso.proof.adapter.repositories;
+
+import edu.kit.iai.webis.proofmodels.Workflow;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface WorkflowRepository extends JpaRepository<Workflow, String>, JpaSpecificationExecutor<Workflow> {
+
+    @NonNull
+    @Override
+    @Caching(
+            evict = {
+                    @CacheEvict(cacheNames = "workflows", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true)
+            },
+            put = {
+                    @CachePut(cacheNames = "workflows", key = "#workflow.id", unless = "#workflow.id == null")
+            }
+    )
+    <S extends Workflow> S save(@NonNull S workflow);
+
+    @NonNull
+    @Override
+    @Cacheable(value = "workflows")
+    List<Workflow> findAll();
+
+    @NonNull
+    @Override
+    @Cacheable(value = "workflows", key = "#workflowId", unless = "#result == null")
+    Optional<Workflow> findById(@NonNull final String workflowId);
+
+    @NonNull
+    @Override
+    @Caching(
+            evict = {
+                    @CacheEvict(cacheNames = "workflows", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true)
+            }
+    )
+    void deleteById(@NonNull final String workflowId);
+
+    @NonNull
+    @Override
+    Page<Workflow> findAll(@Nullable final Specification<Workflow> spec, @NonNull final Pageable pageable);
+
+}

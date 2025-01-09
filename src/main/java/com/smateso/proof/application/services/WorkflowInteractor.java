@@ -1,14 +1,19 @@
 package com.smateso.proof.application.services;
 
-import com.smateso.proof.application.exceptions.NotFoundException;
-import com.smateso.proof.application.model.Request;
-import com.smateso.proof.application.repositories.WorkflowRepository;
+import com.smateso.proof.adapter.boundaries.services.IMessageInteractor;
+import com.smateso.proof.adapter.boundaries.services.IWorkflowInteractor;
+import com.smateso.proof.adapter.exceptions.NotFoundException;
+import com.smateso.proof.adapter.model.Request;
+import com.smateso.proof.adapter.repositories.BlockRepository;
+import com.smateso.proof.adapter.repositories.EdgeRepository;
+import com.smateso.proof.adapter.repositories.WorkflowRepository;
+import edu.kit.iai.webis.proofmodels.Block;
+import edu.kit.iai.webis.proofmodels.Edge;
 import edu.kit.iai.webis.proofmodels.Workflow;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import org.springframework.cache.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -17,19 +22,22 @@ import org.springframework.lang.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.smateso.proof.application.model.Action.*;
+import static com.smateso.proof.adapter.model.Action.*;
 import static org.springframework.data.domain.PageRequest.of;
 import static org.springframework.data.domain.Sort.by;
 
-@CacheConfig(cacheNames = "workflowCache")
 public class WorkflowInteractor implements IWorkflowInteractor {
 
     private final WorkflowRepository workflowRepository;
-    private final IMessageInteractor IMessageInteractor;
+    private final com.smateso.proof.adapter.boundaries.services.IMessageInteractor IMessageInteractor;
+    private final EdgeRepository edgeRepository;
+    private final BlockRepository blockRepository;
 
-    public WorkflowInteractor(@NonNull final WorkflowRepository workflowRepository, @NonNull final IMessageInteractor IMessageInteractor) {
+    public WorkflowInteractor(@NonNull final WorkflowRepository workflowRepository, @NonNull final BlockRepository blockRepository, @NonNull final IMessageInteractor IMessageInteractor, @NonNull final EdgeRepository edgeRepository) {
         this.workflowRepository = workflowRepository;
         this.IMessageInteractor = IMessageInteractor;
+        this.blockRepository = blockRepository;
+        this.edgeRepository = edgeRepository;
     }
 
     @Override
@@ -57,7 +65,6 @@ public class WorkflowInteractor implements IWorkflowInteractor {
     }
 
     @Override
-    @Cacheable(value = "workflows", key = "#id", unless = "#result == null")
     public Workflow getWorkflow(@NonNull final String id) {
         final var result = this.workflowRepository.findById(id);
         if (result.isPresent()) {
@@ -68,15 +75,6 @@ public class WorkflowInteractor implements IWorkflowInteractor {
     }
 
     @Override
-    @Caching(
-            evict = {
-                    @CacheEvict(cacheNames = "workflows", allEntries = true, beforeInvocation = true),
-                    @CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true)
-            },
-            put = {
-                    @CachePut(cacheNames = "workflows", key = "#workflow.id", unless = "#workflow.id == null")
-            }
-    )
     public Workflow createWorkflow(@NonNull final Workflow workflow, @NonNull final String sessionKey, @NonNull final String username) {
         final var result = this.workflowRepository.save(workflow);
         this.IMessageInteractor.workflowUpdate(result.getId(), CREATED, sessionKey, username);
@@ -84,39 +82,33 @@ public class WorkflowInteractor implements IWorkflowInteractor {
     }
 
     @Override
-    @Caching(
-            evict = {
-                    @CacheEvict(cacheNames = "workflows", allEntries = true, beforeInvocation = true),
-                    @CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true)
-            },
-            put = {
-                    @CachePut(cacheNames = "workflows", key = "#id")
-            }
-    )
     public Workflow updateWorkflow(@NonNull final String id, @NonNull final Workflow workflow, @NonNull final String sessionKey, @NonNull final String username) {
-        final var existingWorkflow = this.workflowRepository.findById(id).orElseThrow();
-        workflow.setId(existingWorkflow.getId());
+        workflow.setId(id);
+        workflow.setBlocks(workflow.getBlocks());
         final var result = this.workflowRepository.save(workflow);
         this.IMessageInteractor.workflowUpdate(result.getId(), UPDATED, sessionKey, username);
         return result;
     }
 
     @Override
-    @Caching(
-            evict = {
-                    @CacheEvict(cacheNames = "workflows", allEntries = true, beforeInvocation = true),
-                    @CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true)
-            }
-    )
     public void deleteWorkflow(@NonNull final String id, @NonNull final String sessionKey, @NonNull final String username) {
         this.workflowRepository.deleteById(id);
         this.IMessageInteractor.workflowUpdate(id, DELETED, sessionKey, username);
     }
 
     @Override
-    @Cacheable(value = "workflows")
     public List<Workflow> getWorkflows() {
         return this.workflowRepository.findAll();
+    }
+
+    @Override
+    public List<Block> getBlocks(@NonNull final String id) {
+        return this.blockRepository.findBlocksByWorkflowId(id);
+    }
+
+    @Override
+    public List<Edge> getEdges(@NonNull final String id) {
+        return this.edgeRepository.findEdgesByWorkflowId(id);
     }
 
 }
