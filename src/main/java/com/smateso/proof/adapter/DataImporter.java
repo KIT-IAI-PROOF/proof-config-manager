@@ -1,6 +1,8 @@
 package com.smateso.proof.adapter;
 
 import com.smateso.proof.adapter.repositories.TemplateRepository;
+import edu.kit.iai.webis.proofmodels.SourceHandle;
+import edu.kit.iai.webis.proofmodels.TargetHandle;
 import edu.kit.iai.webis.proofmodels.Template;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.cache.annotation.CacheEvict;
@@ -8,6 +10,7 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -43,14 +46,43 @@ public class DataImporter implements CommandLineRunner {
             }
     )
     public void run(final String... args) {
-        this.templateRepository.save(Template
+        final var template = Template
                 .builder()
                 .id(UUID.randomUUID().toString())
                 .color("#000000")
                 .type("block")
                 .description("Test")
                 .label("Test")
-                .build());
+                .build();
+        template.setSourceHandles(List.of(
+                SourceHandle
+                        .builder()
+                        .id(UUID.randomUUID().toString())
+                        .label("i1")
+                        .template(template)
+                        .build(),
+                SourceHandle
+                        .builder()
+                        .id(UUID.randomUUID().toString())
+                        .label("i2")
+                        .template(template)
+                        .build()
+        ));
+        template.setTargetHandles(List.of(
+                TargetHandle
+                        .builder()
+                        .id(UUID.randomUUID().toString())
+                        .label("o1")
+                        .template(template)
+                        .build(),
+                TargetHandle
+                        .builder()
+                        .id(UUID.randomUUID().toString())
+                        .label("o2")
+                        .template(template)
+                        .build()
+        ));
+        this.templateRepository.save(template);
     }
 
 }
