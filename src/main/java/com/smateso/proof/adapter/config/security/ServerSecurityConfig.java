@@ -101,7 +101,7 @@ public class ServerSecurityConfig {
 
     @Bean
     AuthorizationManager<Message<?>> messageAuthorizationManager(final Builder messages) {
-        messages.anyMessage().hasRole(ROLE_SOCKET_ACCESS).build();
+        messages.anyMessage().authenticated().build();
         return messages.build();
     }
 
