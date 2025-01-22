@@ -5,35 +5,42 @@ import com.smateso.proof.adapter.boundaries.services.IMessageInteractor;
 import com.smateso.proof.adapter.exceptions.NotFoundException;
 import com.smateso.proof.adapter.model.Request;
 import com.smateso.proof.adapter.repositories.BlockRepository;
+import com.smateso.proof.adapter.repositories.SourceHandleRepository;
+import com.smateso.proof.adapter.repositories.TargetHandleRepository;
 import edu.kit.iai.webis.proofmodels.Block;
+import edu.kit.iai.webis.proofmodels.SourceHandle;
+import edu.kit.iai.webis.proofmodels.TargetHandle;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static com.smateso.proof.adapter.model.Action.*;
 import static com.smateso.proof.adapter.utils.NullAwareUtil.getNullPropertyNames;
+import static java.util.Objects.requireNonNull;
 import static org.springframework.beans.BeanUtils.copyProperties;
 import static org.springframework.data.domain.PageRequest.of;
 import static org.springframework.data.domain.Sort.by;
 
 public class BlockInteractor implements IBlockInteractor {
 
+    private final TargetHandleRepository targetHandleRepository;
+    private final SourceHandleRepository sourceHandleRepository;
     private final BlockRepository blockRepository;
-    private final com.smateso.proof.adapter.boundaries.services.IMessageInteractor IMessageInteractor;
+    private final IMessageInteractor messageInteractor;
 
-    public BlockInteractor(@NonNull final BlockRepository blockRepository, @NonNull final IMessageInteractor IMessageInteractor) {
+    public BlockInteractor(@NonNull final TargetHandleRepository targetHandleRepository, @NonNull final SourceHandleRepository sourceHandleRepository, @NonNull final BlockRepository blockRepository, @NonNull final IMessageInteractor messageInteractor) {
+        this.targetHandleRepository = targetHandleRepository;
+        this.sourceHandleRepository = sourceHandleRepository;
         this.blockRepository = blockRepository;
-        this.IMessageInteractor = IMessageInteractor;
+        this.messageInteractor = messageInteractor;
     }
 
     @Override
@@ -73,7 +80,7 @@ public class BlockInteractor implements IBlockInteractor {
     @Override
     public Block createBlock(@NonNull final Block block, @NonNull final String sessionKey, @NonNull final String username) {
         final var result = this.blockRepository.save(block);
-        this.IMessageInteractor.blockUpdate(result.getId(), CREATED, sessionKey, username);
+        this.messageInteractor.blockUpdate(requireNonNull(result.getId()), CREATED, sessionKey, username);
         return result;
     }
 
@@ -81,20 +88,33 @@ public class BlockInteractor implements IBlockInteractor {
     public Block updateBlock(@NonNull final String id, @NonNull final Block block, @NonNull final String sessionKey, @NonNull final String username) {
         final var existingBlock = this.getBlock(id);
         copyProperties(block, existingBlock, getNullPropertyNames(block));
+        existingBlock.setWorkflow(existingBlock.getWorkflow());
+        existingBlock.setTargetHandles(existingBlock.getTargetHandles());
+        existingBlock.setSourceHandles(existingBlock.getSourceHandles());
         final var result = this.blockRepository.save(existingBlock);
-        this.IMessageInteractor.blockUpdate(result.getId(), UPDATED, sessionKey, username);
+        this.messageInteractor.blockUpdate(requireNonNull(result.getId()), UPDATED, sessionKey, username);
         return result;
     }
 
     @Override
     public void deleteBlock(@NonNull final String id, @NonNull final String sessionKey, @NonNull final String username) {
         this.blockRepository.deleteById(id);
-        this.IMessageInteractor.blockUpdate(id, DELETED, sessionKey, username);
+        this.messageInteractor.blockUpdate(id, DELETED, sessionKey, username);
     }
 
     @Override
     public List<Block> getBlocks() {
         return this.blockRepository.findAll();
+    }
+
+    @Override
+    public List<SourceHandle> getSourceHandles(@NonNull final String id) {
+        return this.sourceHandleRepository.findSourceHandlesByBlockId(id);
+    }
+
+    @Override
+    public List<TargetHandle> getTargetHandles(@NonNull final String id) {
+        return this.targetHandleRepository.findTargetHandlesByBlockId(id);
     }
 
 }

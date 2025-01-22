@@ -2,6 +2,9 @@ package com.smateso.proof.adapter.boundaries.controller;
 
 import com.smateso.proof.adapter.model.Request;
 import edu.kit.iai.webis.proofmodels.Block;
+import edu.kit.iai.webis.proofmodels.SourceHandle;
+import edu.kit.iai.webis.proofmodels.TargetHandle;
+import edu.kit.iai.webis.proofmodels.dto.BlockDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -9,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -76,5 +80,23 @@ public interface IBlockController {
             })
     @PostMapping(value = "{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     ResponseEntity<Block> updateBlock(@PathVariable(value = "id") final String id, @RequestBody final Block block, @RequestParam final String sessionKey, final Authentication authentication);
+
+    @Operation(
+            summary = "Delete block",
+            description = "Delete block",
+            security = @SecurityRequirement(name = "oauth2"),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Delete successful", useReturnTypeSchema = true),
+                    @ApiResponse(responseCode = "500", description = "Delete incomplete", content = @Content(schema = @Schema(hidden = true))),
+            })
+    @DeleteMapping(value = "{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    ResponseEntity<Void> deleteBlock(@PathVariable(value = "id") final String id, @RequestParam final String sessionKey, final Authentication authentication);
+
+    @GetMapping(value = "{id}/source_handles", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
+    ResponseEntity<List<SourceHandle>> getSourceHandlesByBlock(@PathVariable(value = "id") @NonNull final String id);
+
+    @GetMapping(value = "{id}/target_handles", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
+    ResponseEntity<List<TargetHandle>> getTargetHandlesByBlock(@PathVariable(value = "id") @NonNull final String id);
+
 
 }

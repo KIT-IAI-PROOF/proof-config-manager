@@ -18,7 +18,10 @@ import org.springframework.lang.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.smateso.proof.adapter.model.Action.*;
+import static com.smateso.proof.adapter.model.Action.CREATED;
+import static com.smateso.proof.adapter.model.Action.DELETED;
+import static com.smateso.proof.adapter.utils.NullAwareUtil.getNullPropertyNames;
+import static org.springframework.beans.BeanUtils.copyProperties;
 import static org.springframework.data.domain.PageRequest.of;
 import static org.springframework.data.domain.Sort.by;
 
@@ -75,11 +78,11 @@ public class TemplateInteractor implements ITemplateInteractor {
 
     @Override
     public Template updateTemplate(@NonNull final String id, @NonNull final Template template, @NonNull final String sessionKey, @NonNull final String username) {
-        final var existingTemplate = this.templateRepository.findById(id).orElseThrow();
-        template.setId(existingTemplate.getId());
-        final var result = this.templateRepository.save(template);
-        this.IMessageInteractor.templateUpdate(result.getId(), UPDATED, sessionKey, username);
-        return result;
+        final var existingTemplate = this.getTemplate(id);
+        copyProperties(template, existingTemplate, getNullPropertyNames(template));
+        existingTemplate.setTargetHandles(existingTemplate.getTargetHandles());
+        existingTemplate.setSourceHandles(existingTemplate.getSourceHandles());
+        return this.templateRepository.save(existingTemplate);
     }
 
     @Override

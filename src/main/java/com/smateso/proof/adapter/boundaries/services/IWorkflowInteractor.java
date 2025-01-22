@@ -3,6 +3,7 @@ package com.smateso.proof.adapter.boundaries.services;
 import com.smateso.proof.adapter.model.Request;
 import edu.kit.iai.webis.proofmodels.Block;
 import edu.kit.iai.webis.proofmodels.Edge;
+import edu.kit.iai.webis.proofmodels.Execution;
 import edu.kit.iai.webis.proofmodels.Workflow;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
@@ -26,4 +27,7 @@ public interface IWorkflowInteractor {
     List<Block> getBlocks(@NonNull final String id);
 
     List<Edge> getEdges(@NonNull final String id);
+
+    List<Execution> getExecutions(@NonNull final String id);
+
 }

@@ -5,6 +5,7 @@ import com.smateso.proof.adapter.boundaries.services.IWorkflowInteractor;
 import com.smateso.proof.adapter.model.Request;
 import edu.kit.iai.webis.proofmodels.Block;
 import edu.kit.iai.webis.proofmodels.Edge;
+import edu.kit.iai.webis.proofmodels.Execution;
 import edu.kit.iai.webis.proofmodels.Workflow;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
@@ -65,6 +66,11 @@ public class WorkflowController implements IWorkflowController {
     @Override
     public ResponseEntity<List<Edge>> getEdgesByWorkflow(@NonNull final String id) {
         return ResponseEntity.ok(this.workflowInteractor.getEdges(id));
+    }
+
+    @Override
+    public ResponseEntity<List<Execution>> getExecutionsByWorkflow(@NonNull final String id) {
+        return ResponseEntity.ok(this.workflowInteractor.getExecutions(id));
     }
 
 }

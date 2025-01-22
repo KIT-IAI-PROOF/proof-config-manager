@@ -19,17 +19,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.smateso.proof.adapter.model.Action.*;
+import static com.smateso.proof.adapter.utils.NullAwareUtil.getNullPropertyNames;
+import static java.util.Objects.requireNonNull;
+import static org.springframework.beans.BeanUtils.copyProperties;
 import static org.springframework.data.domain.PageRequest.of;
 import static org.springframework.data.domain.Sort.by;
 
 public class ExecutionInteractor implements IExecutionInteractor {
 
     private final ExecutionRepository executionRepository;
-    private final com.smateso.proof.adapter.boundaries.services.IMessageInteractor IMessageInteractor;
+    private final IMessageInteractor messageInteractor;
 
-    public ExecutionInteractor(@NonNull final ExecutionRepository executionRepository, @NonNull final IMessageInteractor IMessageInteractor) {
+    public ExecutionInteractor(@NonNull final ExecutionRepository executionRepository, @NonNull final IMessageInteractor messageInteractor) {
         this.executionRepository = executionRepository;
-        this.IMessageInteractor = IMessageInteractor;
+        this.messageInteractor = messageInteractor;
     }
 
     @Override
@@ -69,23 +72,24 @@ public class ExecutionInteractor implements IExecutionInteractor {
     @Override
     public Execution createExecution(@NonNull final Execution execution, @NonNull final String sessionKey, @NonNull final String username) {
         final var result = this.executionRepository.save(execution);
-        this.IMessageInteractor.executionUpdate(result.getId(), CREATED, sessionKey, username);
+        this.messageInteractor.executionUpdate(result.getId(), CREATED, sessionKey, username);
         return result;
     }
 
     @Override
     public Execution updateExecution(@NonNull final String id, @NonNull final Execution execution, @NonNull final String sessionKey, @NonNull final String username) {
-        final var existingExecution = this.executionRepository.findById(id).orElseThrow();
-        execution.setId(existingExecution.getId());
-        final var result = this.executionRepository.save(execution);
-        this.IMessageInteractor.executionUpdate(result.getId(), UPDATED, sessionKey, username);
+        final var existingExecution = this.getExecution(id);
+        copyProperties(execution, existingExecution, getNullPropertyNames(existingExecution));
+        existingExecution.setWorkflow(existingExecution.getWorkflow());
+        final var result = this.executionRepository.save(existingExecution);
+        this.messageInteractor.blockUpdate(requireNonNull(result.getId()), UPDATED, sessionKey, username);
         return result;
     }
 
     @Override
     public void deleteExecution(@NonNull final String id, @NonNull final String sessionKey, @NonNull final String username) {
         this.executionRepository.deleteById(id);
-        this.IMessageInteractor.executionUpdate(id, DELETED, sessionKey, username);
+        this.messageInteractor.executionUpdate(id, DELETED, sessionKey, username);
     }
 
     @Override

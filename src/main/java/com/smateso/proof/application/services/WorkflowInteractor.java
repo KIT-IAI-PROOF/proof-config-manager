@@ -6,9 +6,11 @@ import com.smateso.proof.adapter.exceptions.NotFoundException;
 import com.smateso.proof.adapter.model.Request;
 import com.smateso.proof.adapter.repositories.BlockRepository;
 import com.smateso.proof.adapter.repositories.EdgeRepository;
+import com.smateso.proof.adapter.repositories.ExecutionRepository;
 import com.smateso.proof.adapter.repositories.WorkflowRepository;
 import edu.kit.iai.webis.proofmodels.Block;
 import edu.kit.iai.webis.proofmodels.Edge;
+import edu.kit.iai.webis.proofmodels.Execution;
 import edu.kit.iai.webis.proofmodels.Workflow;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -23,21 +25,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.smateso.proof.adapter.model.Action.*;
+import static com.smateso.proof.adapter.utils.NullAwareUtil.getNullPropertyNames;
+import static java.util.Objects.requireNonNull;
+import static org.springframework.beans.BeanUtils.copyProperties;
 import static org.springframework.data.domain.PageRequest.of;
 import static org.springframework.data.domain.Sort.by;
 
 public class WorkflowInteractor implements IWorkflowInteractor {
 
+    private final IMessageInteractor messageInteractor;
     private final WorkflowRepository workflowRepository;
-    private final com.smateso.proof.adapter.boundaries.services.IMessageInteractor IMessageInteractor;
     private final EdgeRepository edgeRepository;
     private final BlockRepository blockRepository;
+    private final ExecutionRepository executionRepository;
 
-    public WorkflowInteractor(@NonNull final WorkflowRepository workflowRepository, @NonNull final BlockRepository blockRepository, @NonNull final IMessageInteractor IMessageInteractor, @NonNull final EdgeRepository edgeRepository) {
+    public WorkflowInteractor(@NonNull final WorkflowRepository workflowRepository, @NonNull final BlockRepository blockRepository, @NonNull final EdgeRepository edgeRepository, @NonNull final ExecutionRepository executionRepository, @NonNull final IMessageInteractor messageInteractor) {
         this.workflowRepository = workflowRepository;
-        this.IMessageInteractor = IMessageInteractor;
         this.blockRepository = blockRepository;
         this.edgeRepository = edgeRepository;
+        this.executionRepository = executionRepository;
+        this.messageInteractor = messageInteractor;
     }
 
     @Override
@@ -77,23 +84,26 @@ public class WorkflowInteractor implements IWorkflowInteractor {
     @Override
     public Workflow createWorkflow(@NonNull final Workflow workflow, @NonNull final String sessionKey, @NonNull final String username) {
         final var result = this.workflowRepository.save(workflow);
-        this.IMessageInteractor.workflowUpdate(result.getId(), CREATED, sessionKey, username);
+        this.messageInteractor.workflowUpdate(requireNonNull(result.getId()), CREATED, sessionKey, username);
         return result;
     }
 
     @Override
     public Workflow updateWorkflow(@NonNull final String id, @NonNull final Workflow workflow, @NonNull final String sessionKey, @NonNull final String username) {
-        workflow.setId(id);
-        workflow.setBlocks(workflow.getBlocks());
+        final var existingWorkflow = this.getWorkflow(id);
+        copyProperties(workflow, existingWorkflow, getNullPropertyNames(workflow));
+        existingWorkflow.setBlocks(existingWorkflow.getBlocks());
+        existingWorkflow.setEdges(existingWorkflow.getEdges());
+        existingWorkflow.setExecutions(existingWorkflow.getExecutions());
         final var result = this.workflowRepository.save(workflow);
-        this.IMessageInteractor.workflowUpdate(result.getId(), UPDATED, sessionKey, username);
+        this.messageInteractor.workflowUpdate(requireNonNull(result.getId()), UPDATED, sessionKey, username);
         return result;
     }
 
     @Override
     public void deleteWorkflow(@NonNull final String id, @NonNull final String sessionKey, @NonNull final String username) {
         this.workflowRepository.deleteById(id);
-        this.IMessageInteractor.workflowUpdate(id, DELETED, sessionKey, username);
+        this.messageInteractor.workflowUpdate(id, DELETED, sessionKey, username);
     }
 
     @Override
@@ -109,6 +119,11 @@ public class WorkflowInteractor implements IWorkflowInteractor {
     @Override
     public List<Edge> getEdges(@NonNull final String id) {
         return this.edgeRepository.findEdgesByWorkflowId(id);
+    }
+
+    @Override
+    public List<Execution> getExecutions(@NonNull final String id) {
+        return this.executionRepository.findExecutionsByWorkflowId(id);
     }
 
 }

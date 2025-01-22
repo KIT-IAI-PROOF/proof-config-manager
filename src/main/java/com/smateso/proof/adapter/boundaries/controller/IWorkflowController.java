@@ -3,6 +3,7 @@ package com.smateso.proof.adapter.boundaries.controller;
 import com.smateso.proof.adapter.model.Request;
 import edu.kit.iai.webis.proofmodels.Block;
 import edu.kit.iai.webis.proofmodels.Edge;
+import edu.kit.iai.webis.proofmodels.Execution;
 import edu.kit.iai.webis.proofmodels.Workflow;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -96,5 +97,8 @@ public interface IWorkflowController {
 
     @GetMapping(value = "{id}/edges", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
     ResponseEntity<List<Edge>> getEdgesByWorkflow(@PathVariable(value = "id") @NonNull final String id);
+
+    @GetMapping(value = "{id}/executions", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
+    ResponseEntity<List<Execution>> getExecutionsByWorkflow(@PathVariable(value = "id") @NonNull final String id);
 
 }
