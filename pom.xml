@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -284,23 +285,19 @@
             <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
-                <version>3.4.1</version>
+                <version>3.4.4</version>
                 <configuration>
                     <from>
-                        <image>azul/zulu-openjdk-alpine:21.0.2-jre@sha256:89b5c9245c76e25d98983480d09c08299d3876756921c4047f088af5e3fcc951</image>
-                        <platforms>
-                            <platform>
-                                <architecture>amd64</architecture>
-                                <os>linux</os>
-                            </platform>
-                            <platform>
-                                <architecture>arm64</architecture>
-                                <os>linux</os>
-                            </platform>
-                        </platforms>
+                        <image>
+                            azul/zulu-openjdk-alpine:23-jre-headless-latest@sha256:6966ccee5eefa2970842067f31c591aefe4b8651d04e047b65913bef8f737f06
+                        </image>
                     </from>
                     <to>
-                        <image>{artifactId}:${project.version}</image>
+                        <image>${project.artifactId}</image>
+                        <tags>
+                            <tag>latest</tag>
+                            <tag>${project.version}</tag>
+                        </tags>
                     </to>
                     <container>
                         <mainClass>com.smateso.proof.App</mainClass>
