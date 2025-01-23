@@ -1,5 +1,6 @@
 package com.smateso.proof.adapter.boundaries.controller;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.smateso.proof.adapter.model.Request;
 import edu.kit.iai.webis.proofmodels.dto.TemplateDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static edu.kit.iai.webis.proofmodels.utils.Views.Detail;
+import static edu.kit.iai.webis.proofmodels.utils.Views.Listing;
 import static org.springframework.http.MediaType.ALL_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -22,6 +25,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping("/v1/template")
 public interface ITemplateController {
 
+    @JsonView(Listing.class)
     @Operation(
             summary = "Retrieve templates",
             description = "Retrieve templates",
@@ -33,6 +37,7 @@ public interface ITemplateController {
     @PostMapping(value = "search", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
     ResponseEntity<List<TemplateDto>> searchTemplates(@RequestBody final Request request);
 
+    @JsonView(Listing.class)
     @Operation(
             summary = "Retrieve templates",
             description = "Retrieve templates",
@@ -44,6 +49,7 @@ public interface ITemplateController {
     @GetMapping(consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
     ResponseEntity<List<TemplateDto>> getTemplates();
 
+    @JsonView(Detail.class)
     @Operation(
             summary = "Retrieve template",
             description = "Retrieve template",
@@ -55,6 +61,7 @@ public interface ITemplateController {
     @GetMapping(value = "{id}", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
     ResponseEntity<TemplateDto> getTemplate(@PathVariable(value = "id") final String id);
 
+    @JsonView(Detail.class)
     @Operation(
             summary = "Create template",
             description = "Create template",
@@ -66,6 +73,7 @@ public interface ITemplateController {
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     ResponseEntity<TemplateDto> createTemplate(@RequestBody final TemplateDto template, @RequestParam final String sessionKey, final Authentication authentication);
 
+    @JsonView(Detail.class)
     @Operation(
             summary = "Update template",
             description = "Update template",
@@ -77,6 +85,7 @@ public interface ITemplateController {
     @PostMapping(value = "{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     ResponseEntity<TemplateDto> updateTemplate(@PathVariable(value = "id") final String id, @RequestBody final TemplateDto template, @RequestParam final String sessionKey, final Authentication authentication);
 
+    @JsonView(Detail.class)
     @Operation(
             summary = "Delete template",
             description = "Delete template",

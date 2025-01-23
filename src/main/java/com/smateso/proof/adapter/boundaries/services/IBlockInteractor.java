@@ -2,8 +2,6 @@ package com.smateso.proof.adapter.boundaries.services;
 
 import com.smateso.proof.adapter.model.Request;
 import edu.kit.iai.webis.proofmodels.dao.BlockDao;
-import edu.kit.iai.webis.proofmodels.dao.SourceHandleDao;
-import edu.kit.iai.webis.proofmodels.dao.TargetHandleDao;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 
@@ -23,7 +21,4 @@ public interface IBlockInteractor {
 
     List<BlockDao> getBlocks();
 
-    List<SourceHandleDao> getSourceHandles(@NonNull final String id);
-
-    List<TargetHandleDao> getTargetHandles(@NonNull final String id);
 }

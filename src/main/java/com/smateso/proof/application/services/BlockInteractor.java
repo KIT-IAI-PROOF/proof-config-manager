@@ -8,8 +8,6 @@ import com.smateso.proof.adapter.repositories.BlockRepository;
 import com.smateso.proof.adapter.repositories.SourceHandleRepository;
 import com.smateso.proof.adapter.repositories.TargetHandleRepository;
 import edu.kit.iai.webis.proofmodels.dao.BlockDao;
-import edu.kit.iai.webis.proofmodels.dao.SourceHandleDao;
-import edu.kit.iai.webis.proofmodels.dao.TargetHandleDao;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
@@ -106,16 +104,6 @@ public class BlockInteractor implements IBlockInteractor {
     @Override
     public List<BlockDao> getBlocks() {
         return this.blockRepository.findAll();
-    }
-
-    @Override
-    public List<SourceHandleDao> getSourceHandles(@NonNull final String id) {
-        return this.sourceHandleRepository.findSourceHandlesByBlockId(id);
-    }
-
-    @Override
-    public List<TargetHandleDao> getTargetHandles(@NonNull final String id) {
-        return this.targetHandleRepository.findTargetHandlesByBlockId(id);
     }
 
 }

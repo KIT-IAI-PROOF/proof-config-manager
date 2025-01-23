@@ -60,7 +60,6 @@ public class PropertyCopyHelper {
         copyProperties(source, target);
         target.setEdges(source.getEdges().stream().map(PropertyCopyHelper::copyEdgeProperties).toList());
         target.setBlocks(source.getBlocks().stream().map(PropertyCopyHelper::copyBlockProperties).toList());
-        target.setExecutions(source.getExecutions().stream().map(PropertyCopyHelper::copyExecutionProperties).toList());
         return target;
     }
 
@@ -69,19 +68,20 @@ public class PropertyCopyHelper {
         copyProperties(source, target);
         target.setEdges(source.getEdges() != null ? source.getEdges().stream().map(PropertyCopyHelper::copyEdgeProperties).toList() : null);
         target.setBlocks(source.getBlocks() != null ? source.getBlocks().stream().map(PropertyCopyHelper::copyBlockProperties).toList() : null);
-        target.setExecutions(source.getExecutions() != null ? source.getExecutions().stream().map(PropertyCopyHelper::copyExecutionProperties).toList() : null);
         return target;
     }
 
     public static ExecutionDao copyExecutionProperties(final ExecutionDto source) {
         final var target = new ExecutionDao();
         copyProperties(source, target);
+        target.setWorkflow(copyWorkflowProperties(source.getWorkflow()));
         return target;
     }
 
     public static ExecutionDto copyExecutionProperties(final ExecutionDao source) {
         final var target = new ExecutionDto();
         copyProperties(source, target);
+        target.setWorkflow(copyWorkflowProperties(source.getWorkflow()));
         return target;
     }
 

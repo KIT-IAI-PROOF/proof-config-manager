@@ -4,9 +4,6 @@ import com.smateso.proof.adapter.boundaries.controller.IWorkflowController;
 import com.smateso.proof.adapter.boundaries.services.IWorkflowInteractor;
 import com.smateso.proof.adapter.model.Request;
 import com.smateso.proof.application.utils.PropertyCopyHelper;
-import edu.kit.iai.webis.proofmodels.dto.BlockDto;
-import edu.kit.iai.webis.proofmodels.dto.EdgeDto;
-import edu.kit.iai.webis.proofmodels.dto.ExecutionDto;
 import edu.kit.iai.webis.proofmodels.dto.WorkflowDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
@@ -61,21 +58,6 @@ public class WorkflowController implements IWorkflowController {
         final var username = getUsername(authentication);
         this.workflowInteractor.deleteWorkflow(id, sessionKey, username);
         return ResponseEntity.ok().build();
-    }
-
-    @Override
-    public ResponseEntity<List<BlockDto>> getBlocksByWorkflow(@NonNull final String id) {
-        return ResponseEntity.ok(this.workflowInteractor.getBlocks(id).stream().map(PropertyCopyHelper::copyBlockProperties).toList());
-    }
-
-    @Override
-    public ResponseEntity<List<EdgeDto>> getEdgesByWorkflow(@NonNull final String id) {
-        return ResponseEntity.ok(this.workflowInteractor.getEdges(id).stream().map(PropertyCopyHelper::copyEdgeProperties).toList());
-    }
-
-    @Override
-    public ResponseEntity<List<ExecutionDto>> getExecutionsByWorkflow(@NonNull final String id) {
-        return ResponseEntity.ok(this.workflowInteractor.getExecutions(id).stream().map(PropertyCopyHelper::copyExecutionProperties).toList());
     }
 
 }

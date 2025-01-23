@@ -8,9 +8,6 @@ import com.smateso.proof.adapter.repositories.BlockRepository;
 import com.smateso.proof.adapter.repositories.EdgeRepository;
 import com.smateso.proof.adapter.repositories.ExecutionRepository;
 import com.smateso.proof.adapter.repositories.WorkflowRepository;
-import edu.kit.iai.webis.proofmodels.dao.BlockDao;
-import edu.kit.iai.webis.proofmodels.dao.EdgeDao;
-import edu.kit.iai.webis.proofmodels.dao.ExecutionDao;
 import edu.kit.iai.webis.proofmodels.dao.WorkflowDao;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -110,21 +107,6 @@ public class WorkflowInteractor implements IWorkflowInteractor {
     @Override
     public List<WorkflowDao> getWorkflows() {
         return this.workflowRepository.findAll();
-    }
-
-    @Override
-    public List<BlockDao> getBlocks(@NonNull final String id) {
-        return this.blockRepository.findBlocksByWorkflowId(id);
-    }
-
-    @Override
-    public List<EdgeDao> getEdges(@NonNull final String id) {
-        return this.edgeRepository.findEdgesByWorkflowId(id);
-    }
-
-    @Override
-    public List<ExecutionDao> getExecutions(@NonNull final String id) {
-        return this.executionRepository.findExecutionsByWorkflowId(id);
     }
 
 }

@@ -1,9 +1,8 @@
 package com.smateso.proof.adapter.boundaries.controller;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.smateso.proof.adapter.model.Request;
 import edu.kit.iai.webis.proofmodels.dto.BlockDto;
-import edu.kit.iai.webis.proofmodels.dto.SourceHandleDto;
-import edu.kit.iai.webis.proofmodels.dto.TargetHandleDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -11,12 +10,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static edu.kit.iai.webis.proofmodels.utils.Views.Detail;
+import static edu.kit.iai.webis.proofmodels.utils.Views.Listing;
 import static org.springframework.http.MediaType.ALL_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -25,6 +25,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping("/v1/block")
 public interface IBlockController {
 
+    @JsonView(Listing.class)
     @Operation(
             summary = "Retrieve blocks",
             description = "Retrieve blocks",
@@ -36,6 +37,7 @@ public interface IBlockController {
     @PostMapping(value = "search", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
     ResponseEntity<List<BlockDto>> searchBlocks(@RequestBody final Request request);
 
+    @JsonView(Listing.class)
     @Operation(
             summary = "Retrieve blocks",
             description = "Retrieve blocks",
@@ -47,6 +49,7 @@ public interface IBlockController {
     @GetMapping(consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
     ResponseEntity<List<BlockDto>> getBlocks();
 
+    @JsonView(Detail.class)
     @Operation(
             summary = "Retrieve block",
             description = "Retrieve block",
@@ -58,6 +61,7 @@ public interface IBlockController {
     @GetMapping(value = "{id}", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
     ResponseEntity<BlockDto> getBlock(@PathVariable(value = "id") final String id);
 
+    @JsonView(Detail.class)
     @Operation(
             summary = "Create block",
             description = "Create block",
@@ -69,6 +73,7 @@ public interface IBlockController {
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     ResponseEntity<BlockDto> createBlock(@RequestBody final BlockDto block, @RequestParam final String sessionKey, final Authentication authentication);
 
+    @JsonView(Detail.class)
     @Operation(
             summary = "Update block",
             description = "Update block",
@@ -80,6 +85,7 @@ public interface IBlockController {
     @PostMapping(value = "{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     ResponseEntity<BlockDto> updateBlock(@PathVariable(value = "id") final String id, @RequestBody final BlockDto block, @RequestParam final String sessionKey, final Authentication authentication);
 
+    @JsonView(Detail.class)
     @Operation(
             summary = "Delete block",
             description = "Delete block",
@@ -90,12 +96,5 @@ public interface IBlockController {
             })
     @DeleteMapping(value = "{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     ResponseEntity<Void> deleteBlock(@PathVariable(value = "id") final String id, @RequestParam final String sessionKey, final Authentication authentication);
-
-    @GetMapping(value = "{id}/source_handles", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<List<SourceHandleDto>> getSourceHandlesByBlock(@PathVariable(value = "id") @NonNull final String id);
-
-    @GetMapping(value = "{id}/target_handles", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<List<TargetHandleDto>> getTargetHandlesByBlock(@PathVariable(value = "id") @NonNull final String id);
-
 
 }

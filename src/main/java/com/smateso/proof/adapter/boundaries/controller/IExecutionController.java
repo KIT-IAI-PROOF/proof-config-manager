@@ -1,7 +1,10 @@
 package com.smateso.proof.adapter.boundaries.controller;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.smateso.proof.adapter.model.Request;
 import edu.kit.iai.webis.proofmodels.dto.ExecutionDto;
+import edu.kit.iai.webis.proofmodels.utils.Views.Detail;
+import edu.kit.iai.webis.proofmodels.utils.Views.Listing;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -22,6 +25,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping("/v1/execution")
 public interface IExecutionController {
 
+    @JsonView(Listing.class)
     @Operation(
             summary = "Retrieve executions",
             description = "Retrieve executions",
@@ -33,6 +37,7 @@ public interface IExecutionController {
     @PostMapping(value = "search", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
     ResponseEntity<List<ExecutionDto>> searchExecutions(@RequestBody final Request request);
 
+    @JsonView(Listing.class)
     @Operation(
             summary = "Retrieve executions",
             description = "Retrieve executions",
@@ -44,6 +49,7 @@ public interface IExecutionController {
     @GetMapping(consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
     ResponseEntity<List<ExecutionDto>> getExecutions();
 
+    @JsonView(Detail.class)
     @Operation(
             summary = "Retrieve execution",
             description = "Retrieve execution",
@@ -55,6 +61,7 @@ public interface IExecutionController {
     @GetMapping(value = "{id}", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
     ResponseEntity<ExecutionDto> getExecution(@PathVariable(value = "id") final String id);
 
+    @JsonView(Detail.class)
     @Operation(
             summary = "Create execution",
             description = "Create execution",
@@ -66,6 +73,7 @@ public interface IExecutionController {
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     ResponseEntity<ExecutionDto> createExecution(@RequestBody final ExecutionDto execution, @RequestParam final String sessionKey, final Authentication authentication);
 
+    @JsonView(Detail.class)
     @Operation(
             summary = "Update execution",
             description = "Update execution",
@@ -77,6 +85,7 @@ public interface IExecutionController {
     @PostMapping(value = "{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     ResponseEntity<ExecutionDto> updateExecution(@PathVariable(value = "id") final String id, @RequestBody final ExecutionDto execution, @RequestParam final String sessionKey, final Authentication authentication);
 
+    @JsonView(Detail.class)
     @Operation(
             summary = "Delete execution",
             description = "Delete execution",

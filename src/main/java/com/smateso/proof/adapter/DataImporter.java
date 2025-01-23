@@ -46,43 +46,56 @@ public class DataImporter implements CommandLineRunner {
             }
     )
     public void run(final String... args) {
-        final var template = TemplateDao
+        final var template1 = TemplateDao
                 .builder()
                 .id(UUID.randomUUID().toString())
-                .color("#000000")
+                .color("#0C63E7")
                 .type("block")
-                .description("Test")
-                .label("Test")
+                .description("Reader")
+                .label("Reader")
                 .build();
-        template.setSourceHandles(List.of(
-                SourceHandleDao
-                        .builder()
-                        .id(UUID.randomUUID().toString())
-                        .label("i1")
-                        .template(template)
-                        .build(),
-                SourceHandleDao
-                        .builder()
-                        .id(UUID.randomUUID().toString())
-                        .label("i2")
-                        .template(template)
-                        .build()
+        template1.setSourceHandles(List.of(
         ));
-        template.setTargetHandles(List.of(
+        template1.setTargetHandles(List.of(
                 TargetHandleDao
                         .builder()
                         .id(UUID.randomUUID().toString())
                         .label("o1")
-                        .template(template)
+                        .template(template1)
                         .build(),
                 TargetHandleDao
                         .builder()
                         .id(UUID.randomUUID().toString())
                         .label("o2")
-                        .template(template)
+                        .template(template1)
                         .build()
         ));
-        this.templateRepository.save(template);
+        final var template2 = TemplateDao
+                .builder()
+                .id(UUID.randomUUID().toString())
+                .color("#09A6F3")
+                .type("block")
+                .description("Writer")
+                .label("Writer")
+                .build();
+        template2.setSourceHandles(List.of(
+                SourceHandleDao
+                        .builder()
+                        .id(UUID.randomUUID().toString())
+                        .label("i1")
+                        .template(template1)
+                        .build(),
+                SourceHandleDao
+                        .builder()
+                        .id(UUID.randomUUID().toString())
+                        .label("i2")
+                        .template(template1)
+                        .build()
+        ));
+        template2.setTargetHandles(List.of(
+        ));
+        this.templateRepository.save(template1);
+        this.templateRepository.save(template2);
     }
 
 }

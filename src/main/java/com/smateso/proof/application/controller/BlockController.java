@@ -5,8 +5,6 @@ import com.smateso.proof.adapter.boundaries.services.IBlockInteractor;
 import com.smateso.proof.adapter.model.Request;
 import com.smateso.proof.application.utils.PropertyCopyHelper;
 import edu.kit.iai.webis.proofmodels.dto.BlockDto;
-import edu.kit.iai.webis.proofmodels.dto.SourceHandleDto;
-import edu.kit.iai.webis.proofmodels.dto.TargetHandleDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
@@ -59,17 +57,6 @@ public class BlockController implements IBlockController {
         final var username = getUsername(authentication);
         this.blockInteractor.deleteBlock(id, sessionKey, username);
         return ResponseEntity.ok().build();
-    }
-
-    @Override
-    public ResponseEntity<List<SourceHandleDto>> getSourceHandlesByBlock(@NonNull final String id) {
-        return ResponseEntity.ok(this.blockInteractor.getSourceHandles(id).stream().map(PropertyCopyHelper::copySourceHandleProperties).toList());
-    }
-
-    @Override
-    public ResponseEntity<List<TargetHandleDto>> getTargetHandlesByBlock(@NonNull final String id) {
-        return ResponseEntity.ok(this.blockInteractor.getTargetHandles(id).stream().map(PropertyCopyHelper::copyTargetHandleProperties).toList());
-
     }
 
 }

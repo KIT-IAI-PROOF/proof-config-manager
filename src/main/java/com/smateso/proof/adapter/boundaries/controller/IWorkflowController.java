@@ -1,9 +1,7 @@
 package com.smateso.proof.adapter.boundaries.controller;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.smateso.proof.adapter.model.Request;
-import edu.kit.iai.webis.proofmodels.dto.BlockDto;
-import edu.kit.iai.webis.proofmodels.dto.EdgeDto;
-import edu.kit.iai.webis.proofmodels.dto.ExecutionDto;
 import edu.kit.iai.webis.proofmodels.dto.WorkflowDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -12,12 +10,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static edu.kit.iai.webis.proofmodels.utils.Views.Detail;
+import static edu.kit.iai.webis.proofmodels.utils.Views.Listing;
 import static org.springframework.http.MediaType.ALL_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -26,6 +25,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping("/v1/workflow")
 public interface IWorkflowController {
 
+    @JsonView(Listing.class)
     @Operation(
             summary = "Retrieve workflows",
             description = "Retrieve workflows",
@@ -37,6 +37,7 @@ public interface IWorkflowController {
     @PostMapping(value = "search", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
     ResponseEntity<List<WorkflowDto>> searchWorkflows(@RequestBody final Request request);
 
+    @JsonView(Listing.class)
     @Operation(
             summary = "Retrieve workflows",
             description = "Retrieve workflows",
@@ -48,6 +49,7 @@ public interface IWorkflowController {
     @GetMapping(consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
     ResponseEntity<List<WorkflowDto>> getWorkflows();
 
+    @JsonView(Detail.class)
     @Operation(
             summary = "Retrieve workflow",
             description = "Retrieve workflow",
@@ -59,6 +61,7 @@ public interface IWorkflowController {
     @GetMapping(value = "{id}", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
     ResponseEntity<WorkflowDto> getWorkflow(@PathVariable(value = "id") final String id);
 
+    @JsonView(Detail.class)
     @Operation(
             summary = "Create workflow",
             description = "Create workflow",
@@ -70,6 +73,7 @@ public interface IWorkflowController {
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     ResponseEntity<WorkflowDto> createWorkflow(@RequestBody final WorkflowDto workflow, @RequestParam final String sessionKey, final Authentication authentication);
 
+    @JsonView(Detail.class)
     @Operation(
             summary = "Update workflow",
             description = "Update workflow",
@@ -81,6 +85,7 @@ public interface IWorkflowController {
     @PostMapping(value = "{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     ResponseEntity<WorkflowDto> updateWorkflow(@PathVariable(value = "id") final String id, @RequestBody final WorkflowDto workflow, @RequestParam final String sessionKey, final Authentication authentication);
 
+    @JsonView(Detail.class)
     @Operation(
             summary = "Delete workflow",
             description = "Delete workflow",
@@ -91,14 +96,5 @@ public interface IWorkflowController {
             })
     @DeleteMapping(value = "{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     ResponseEntity<Void> deleteWorkflow(@PathVariable(value = "id") final String id, @RequestParam final String sessionKey, final Authentication authentication);
-
-    @GetMapping(value = "{id}/blocks", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<List<BlockDto>> getBlocksByWorkflow(@PathVariable(value = "id") @NonNull final String id);
-
-    @GetMapping(value = "{id}/edges", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<List<EdgeDto>> getEdgesByWorkflow(@PathVariable(value = "id") @NonNull final String id);
-
-    @GetMapping(value = "{id}/executions", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<List<ExecutionDto>> getExecutionsByWorkflow(@PathVariable(value = "id") @NonNull final String id);
 
 }
