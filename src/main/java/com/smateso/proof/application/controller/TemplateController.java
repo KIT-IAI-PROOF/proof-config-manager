@@ -3,7 +3,8 @@ package com.smateso.proof.application.controller;
 import com.smateso.proof.adapter.boundaries.controller.ITemplateController;
 import com.smateso.proof.adapter.boundaries.services.ITemplateInteractor;
 import com.smateso.proof.adapter.model.Request;
-import edu.kit.iai.webis.proofmodels.Template;
+import com.smateso.proof.application.utils.PropertyCopyHelper;
+import edu.kit.iai.webis.proofmodels.dto.TemplateDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
@@ -11,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import java.util.List;
 
 import static com.smateso.proof.adapter.config.AuditorProvider.getUsername;
+import static com.smateso.proof.application.utils.PropertyCopyHelper.copyTemplateProperties;
 
 public class TemplateController implements ITemplateController {
 
@@ -21,31 +23,40 @@ public class TemplateController implements ITemplateController {
     }
 
     @Override
-    public ResponseEntity<List<Template>> searchTemplates(@NonNull final Request request) {
-        final var result = this.templateInteractor.searchTemplates(request);
-        return ResponseEntity.ok(result.stream().toList());
+    public ResponseEntity<List<TemplateDto>> searchTemplates(@NonNull final Request request) {
+        final var result = this.templateInteractor.searchTemplates(request).stream().map(PropertyCopyHelper::copyTemplateProperties);
+        return ResponseEntity.ok(result.toList());
     }
 
     @Override
-    public ResponseEntity<List<Template>> getTemplates() {
-        return ResponseEntity.ok(this.templateInteractor.getTemplates());
+    public ResponseEntity<List<TemplateDto>> getTemplates() {
+        final var blocks = this.templateInteractor.getTemplates();
+        final var result = blocks.stream().map(PropertyCopyHelper::copyTemplateProperties).toList();
+        return ResponseEntity.ok(result);
     }
 
     @Override
-    public ResponseEntity<Template> getTemplate(@NonNull final String id) {
-        return ResponseEntity.ok(this.templateInteractor.getTemplate(id));
+    public ResponseEntity<TemplateDto> getTemplate(final String id) {
+        return ResponseEntity.ok(copyTemplateProperties(this.templateInteractor.getTemplate(id)));
     }
 
     @Override
-    public ResponseEntity<Template> createTemplate(@NonNull final Template template, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
+    public ResponseEntity<TemplateDto> createTemplate(@NonNull final TemplateDto template, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
         final var username = getUsername(authentication);
-        return ResponseEntity.ok(this.templateInteractor.createTemplate(template, sessionKey, username));
+        return ResponseEntity.ok(copyTemplateProperties(this.templateInteractor.createTemplate(copyTemplateProperties(template), sessionKey, username)));
     }
 
     @Override
-    public ResponseEntity<Template> updateTemplate(@NonNull final String templateId, @NonNull final Template template, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
+    public ResponseEntity<TemplateDto> updateTemplate(@NonNull final String templateId, @NonNull final TemplateDto template, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
         final var username = getUsername(authentication);
-        return ResponseEntity.ok(this.templateInteractor.updateTemplate(templateId, template, sessionKey, username));
+        return ResponseEntity.ok(copyTemplateProperties(this.templateInteractor.updateTemplate(templateId, copyTemplateProperties(template), sessionKey, username)));
+    }
+
+    @Override
+    public ResponseEntity<Void> deleteTemplate(@NonNull final String id, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
+        final var username = getUsername(authentication);
+        this.templateInteractor.deleteTemplate(id, sessionKey, username);
+        return ResponseEntity.ok().build();
     }
 
 }

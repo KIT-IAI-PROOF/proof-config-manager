@@ -5,7 +5,7 @@ import com.smateso.proof.adapter.boundaries.services.ITemplateInteractor;
 import com.smateso.proof.adapter.exceptions.NotFoundException;
 import com.smateso.proof.adapter.model.Request;
 import com.smateso.proof.adapter.repositories.TemplateRepository;
-import edu.kit.iai.webis.proofmodels.Template;
+import edu.kit.iai.webis.proofmodels.dao.TemplateDao;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
@@ -21,6 +21,8 @@ import java.util.List;
 import static com.smateso.proof.adapter.model.Action.CREATED;
 import static com.smateso.proof.adapter.model.Action.DELETED;
 import static com.smateso.proof.adapter.utils.NullAwareUtil.getNullPropertyNames;
+import static com.smateso.proof.application.utils.CriteriaBuilderHelper.getPath;
+import static java.util.Objects.requireNonNull;
 import static org.springframework.beans.BeanUtils.copyProperties;
 import static org.springframework.data.domain.PageRequest.of;
 import static org.springframework.data.domain.Sort.by;
@@ -36,7 +38,7 @@ public class TemplateInteractor implements ITemplateInteractor {
     }
 
     @Override
-    public Page<Template> searchTemplates(@NonNull final Request request) {
+    public Page<TemplateDao> searchTemplates(@NonNull final Request request) {
         final Pageable pageable;
         if (request.getPagination() != null) {
             if (request.getSort() != null) {
@@ -48,38 +50,38 @@ public class TemplateInteractor implements ITemplateInteractor {
         } else {
             pageable = Pageable.unpaged();
         }
-        return this.templateRepository.findAll((final Root<Template> root, final CriteriaQuery<?> query, final CriteriaBuilder builder) -> {
+        return this.templateRepository.findAll((final Root<TemplateDao> root, final CriteriaQuery<?> query, final CriteriaBuilder builder) -> {
             List<Predicate> predicates = new ArrayList<>();
             final var filter = request.getFilter();
             if (filter != null) {
                 final var items = filter.getItems();
-                items.forEach((final Request.FilterItem item) -> predicates.add(builder.equal(root.get(item.getField()), item.getValue())));
+                items.forEach((final Request.FilterItem item) -> predicates.add(builder.equal(getPath(root, item.getField()), item.getValue())));
             }
             return builder.and(predicates.toArray(new Predicate[]{}));
         }, pageable);
     }
 
     @Override
-    public Template getTemplate(@NonNull final String id) {
+    public TemplateDao getTemplate(@NonNull final String id) {
         final var result = this.templateRepository.findById(id);
         if (result.isPresent()) {
             return result.get();
         } else {
-            throw new NotFoundException("Template with id %s not found".formatted(id));
+            throw new NotFoundException("TemplateDao with id %s not found".formatted(id));
         }
     }
 
     @Override
-    public Template createTemplate(@NonNull final Template template, @NonNull final String sessionKey, @NonNull final String username) {
-        final var result = this.templateRepository.save(template);
-        this.IMessageInteractor.templateUpdate(result.getId(), CREATED, sessionKey, username);
+    public TemplateDao createTemplate(@NonNull final TemplateDao templateDao, @NonNull final String sessionKey, @NonNull final String username) {
+        final var result = this.templateRepository.save(templateDao);
+        this.IMessageInteractor.templateUpdate(requireNonNull(result.getId()), CREATED, sessionKey, username);
         return result;
     }
 
     @Override
-    public Template updateTemplate(@NonNull final String id, @NonNull final Template template, @NonNull final String sessionKey, @NonNull final String username) {
+    public TemplateDao updateTemplate(@NonNull final String id, @NonNull final TemplateDao templateDao, @NonNull final String sessionKey, @NonNull final String username) {
         final var existingTemplate = this.getTemplate(id);
-        copyProperties(template, existingTemplate, getNullPropertyNames(template));
+        copyProperties(templateDao, existingTemplate, getNullPropertyNames(templateDao));
         existingTemplate.setTargetHandles(existingTemplate.getTargetHandles());
         existingTemplate.setSourceHandles(existingTemplate.getSourceHandles());
         return this.templateRepository.save(existingTemplate);
@@ -92,7 +94,7 @@ public class TemplateInteractor implements ITemplateInteractor {
     }
 
     @Override
-    public List<Template> getTemplates() {
+    public List<TemplateDao> getTemplates() {
         return this.templateRepository.findAll();
     }
 

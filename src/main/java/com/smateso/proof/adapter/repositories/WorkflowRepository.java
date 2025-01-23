@@ -1,6 +1,6 @@
 package com.smateso.proof.adapter.repositories;
 
-import edu.kit.iai.webis.proofmodels.Workflow;
+import edu.kit.iai.webis.proofmodels.dao.WorkflowDao;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface WorkflowRepository extends JpaRepository<Workflow, String>, JpaSpecificationExecutor<Workflow> {
+public interface WorkflowRepository extends JpaRepository<WorkflowDao, String>, JpaSpecificationExecutor<WorkflowDao> {
 
     @NonNull
     @Override
@@ -31,17 +31,17 @@ public interface WorkflowRepository extends JpaRepository<Workflow, String>, Jpa
                     @CachePut(cacheNames = "workflows", key = "#workflow.id", unless = "#workflow.id == null")
             }
     )
-    <S extends Workflow> S save(@NonNull S workflow);
+    <S extends WorkflowDao> S save(@NonNull S workflow);
 
     @NonNull
     @Override
     @Cacheable(value = "workflows")
-    List<Workflow> findAll();
+    List<WorkflowDao> findAll();
 
     @NonNull
     @Override
     @Cacheable(value = "workflows", key = "#workflowId", unless = "#result == null")
-    Optional<Workflow> findById(@NonNull final String workflowId);
+    Optional<WorkflowDao> findById(@NonNull final String workflowId);
 
     @NonNull
     @Override
@@ -55,6 +55,6 @@ public interface WorkflowRepository extends JpaRepository<Workflow, String>, Jpa
 
     @NonNull
     @Override
-    Page<Workflow> findAll(@Nullable final Specification<Workflow> spec, @NonNull final Pageable pageable);
+    Page<WorkflowDao> findAll(@Nullable final Specification<WorkflowDao> spec, @NonNull final Pageable pageable);
 
 }

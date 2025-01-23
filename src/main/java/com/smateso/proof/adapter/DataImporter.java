@@ -1,9 +1,9 @@
 package com.smateso.proof.adapter;
 
 import com.smateso.proof.adapter.repositories.TemplateRepository;
-import edu.kit.iai.webis.proofmodels.SourceHandle;
-import edu.kit.iai.webis.proofmodels.TargetHandle;
-import edu.kit.iai.webis.proofmodels.Template;
+import edu.kit.iai.webis.proofmodels.dao.SourceHandleDao;
+import edu.kit.iai.webis.proofmodels.dao.TargetHandleDao;
+import edu.kit.iai.webis.proofmodels.dao.TemplateDao;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
@@ -46,7 +46,7 @@ public class DataImporter implements CommandLineRunner {
             }
     )
     public void run(final String... args) {
-        final var template = Template
+        final var template = TemplateDao
                 .builder()
                 .id(UUID.randomUUID().toString())
                 .color("#000000")
@@ -55,13 +55,13 @@ public class DataImporter implements CommandLineRunner {
                 .label("Test")
                 .build();
         template.setSourceHandles(List.of(
-                SourceHandle
+                SourceHandleDao
                         .builder()
                         .id(UUID.randomUUID().toString())
                         .label("i1")
                         .template(template)
                         .build(),
-                SourceHandle
+                SourceHandleDao
                         .builder()
                         .id(UUID.randomUUID().toString())
                         .label("i2")
@@ -69,13 +69,13 @@ public class DataImporter implements CommandLineRunner {
                         .build()
         ));
         template.setTargetHandles(List.of(
-                TargetHandle
+                TargetHandleDao
                         .builder()
                         .id(UUID.randomUUID().toString())
                         .label("o1")
                         .template(template)
                         .build(),
-                TargetHandle
+                TargetHandleDao
                         .builder()
                         .id(UUID.randomUUID().toString())
                         .label("o2")

@@ -1,10 +1,10 @@
 package com.smateso.proof.adapter.boundaries.controller;
 
 import com.smateso.proof.adapter.model.Request;
-import edu.kit.iai.webis.proofmodels.Block;
-import edu.kit.iai.webis.proofmodels.Edge;
-import edu.kit.iai.webis.proofmodels.Execution;
-import edu.kit.iai.webis.proofmodels.Workflow;
+import edu.kit.iai.webis.proofmodels.dto.BlockDto;
+import edu.kit.iai.webis.proofmodels.dto.EdgeDto;
+import edu.kit.iai.webis.proofmodels.dto.ExecutionDto;
+import edu.kit.iai.webis.proofmodels.dto.WorkflowDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -35,7 +35,7 @@ public interface IWorkflowController {
                     @ApiResponse(responseCode = "500", description = "Retrieval incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @PostMapping(value = "search", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<List<Workflow>> searchWorkflows(@RequestBody final Request request);
+    ResponseEntity<List<WorkflowDto>> searchWorkflows(@RequestBody final Request request);
 
     @Operation(
             summary = "Retrieve workflows",
@@ -46,7 +46,7 @@ public interface IWorkflowController {
                     @ApiResponse(responseCode = "500", description = "Retrieval incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @GetMapping(consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<List<Workflow>> getWorkflows();
+    ResponseEntity<List<WorkflowDto>> getWorkflows();
 
     @Operation(
             summary = "Retrieve workflow",
@@ -57,7 +57,7 @@ public interface IWorkflowController {
                     @ApiResponse(responseCode = "500", description = "Retrieval incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @GetMapping(value = "{id}", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<Workflow> getWorkflow(@PathVariable(value = "id") final String id);
+    ResponseEntity<WorkflowDto> getWorkflow(@PathVariable(value = "id") final String id);
 
     @Operation(
             summary = "Create workflow",
@@ -68,7 +68,7 @@ public interface IWorkflowController {
                     @ApiResponse(responseCode = "500", description = "Create incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<Workflow> createWorkflow(@RequestBody final Workflow workflow, @RequestParam final String sessionKey, final Authentication authentication);
+    ResponseEntity<WorkflowDto> createWorkflow(@RequestBody final WorkflowDto workflow, @RequestParam final String sessionKey, final Authentication authentication);
 
     @Operation(
             summary = "Update workflow",
@@ -79,7 +79,7 @@ public interface IWorkflowController {
                     @ApiResponse(responseCode = "500", description = "Update incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @PostMapping(value = "{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<Workflow> updateWorkflow(@PathVariable(value = "id") final String id, @RequestBody final Workflow workflow, @RequestParam final String sessionKey, final Authentication authentication);
+    ResponseEntity<WorkflowDto> updateWorkflow(@PathVariable(value = "id") final String id, @RequestBody final WorkflowDto workflow, @RequestParam final String sessionKey, final Authentication authentication);
 
     @Operation(
             summary = "Delete workflow",
@@ -93,12 +93,12 @@ public interface IWorkflowController {
     ResponseEntity<Void> deleteWorkflow(@PathVariable(value = "id") final String id, @RequestParam final String sessionKey, final Authentication authentication);
 
     @GetMapping(value = "{id}/blocks", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<List<Block>> getBlocksByWorkflow(@PathVariable(value = "id") @NonNull final String id);
+    ResponseEntity<List<BlockDto>> getBlocksByWorkflow(@PathVariable(value = "id") @NonNull final String id);
 
     @GetMapping(value = "{id}/edges", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<List<Edge>> getEdgesByWorkflow(@PathVariable(value = "id") @NonNull final String id);
+    ResponseEntity<List<EdgeDto>> getEdgesByWorkflow(@PathVariable(value = "id") @NonNull final String id);
 
     @GetMapping(value = "{id}/executions", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<List<Execution>> getExecutionsByWorkflow(@PathVariable(value = "id") @NonNull final String id);
+    ResponseEntity<List<ExecutionDto>> getExecutionsByWorkflow(@PathVariable(value = "id") @NonNull final String id);
 
 }

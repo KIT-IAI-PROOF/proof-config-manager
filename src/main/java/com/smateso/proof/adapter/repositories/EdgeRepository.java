@@ -1,6 +1,6 @@
 package com.smateso.proof.adapter.repositories;
 
-import edu.kit.iai.webis.proofmodels.Edge;
+import edu.kit.iai.webis.proofmodels.dao.EdgeDao;
 import org.springframework.cache.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,7 +16,7 @@ import java.util.Optional;
 
 @Repository
 @CacheConfig(cacheNames = "edges")
-public interface EdgeRepository extends JpaRepository<Edge, String>, JpaSpecificationExecutor<Edge> {
+public interface EdgeRepository extends JpaRepository<EdgeDao, String>, JpaSpecificationExecutor<EdgeDao> {
 
     @NonNull
     @Override
@@ -30,17 +30,17 @@ public interface EdgeRepository extends JpaRepository<Edge, String>, JpaSpecific
                     @CachePut(cacheNames = "edges", key = "#edge.id", unless = "#edge.id == null")
             }
     )
-    <S extends Edge> S save(@NonNull S edge);
+    <S extends EdgeDao> S save(@NonNull S edge);
 
     @NonNull
     @Override
     @Cacheable(value = "edges")
-    List<Edge> findAll();
+    List<EdgeDao> findAll();
 
     @NonNull
     @Override
     @Cacheable(value = "edges", key = "#edgeId", unless = "#result == null")
-    Optional<Edge> findById(@NonNull final String edgeId);
+    Optional<EdgeDao> findById(@NonNull final String edgeId);
 
     @NonNull
     @Override
@@ -55,8 +55,8 @@ public interface EdgeRepository extends JpaRepository<Edge, String>, JpaSpecific
 
     @NonNull
     @Override
-    Page<Edge> findAll(@Nullable final Specification<Edge> spec, @NonNull final Pageable pageable);
+    Page<EdgeDao> findAll(@Nullable final Specification<EdgeDao> spec, @NonNull final Pageable pageable);
 
-    List<Edge> findEdgesByWorkflowId(@NonNull final String workflowId);
+    List<EdgeDao> findEdgesByWorkflowId(@NonNull final String workflowId);
 
 }

@@ -1,6 +1,6 @@
 package com.smateso.proof.adapter.repositories;
 
-import edu.kit.iai.webis.proofmodels.Template;
+import edu.kit.iai.webis.proofmodels.dao.TemplateDao;
 import org.springframework.cache.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,7 +16,7 @@ import java.util.Optional;
 
 @Repository
 @CacheConfig(cacheNames = "templates")
-public interface TemplateRepository extends JpaRepository<Template, String>, JpaSpecificationExecutor<Template> {
+public interface TemplateRepository extends JpaRepository<TemplateDao, String>, JpaSpecificationExecutor<TemplateDao> {
 
     @NonNull
     @Override
@@ -28,17 +28,17 @@ public interface TemplateRepository extends JpaRepository<Template, String>, Jpa
                     @CachePut(cacheNames = "templates", key = "#template.id", unless = "#template.id == null")
             }
     )
-    <S extends Template> S save(@NonNull S template);
+    <S extends TemplateDao> S save(@NonNull S template);
 
     @NonNull
     @Override
     @Cacheable(value = "templates")
-    List<Template> findAll();
+    List<TemplateDao> findAll();
 
     @NonNull
     @Override
     @Cacheable(value = "templates", key = "#templateId", unless = "#result == null")
-    Optional<Template> findById(@NonNull final String templateId);
+    Optional<TemplateDao> findById(@NonNull final String templateId);
 
     @NonNull
     @Override
@@ -51,6 +51,6 @@ public interface TemplateRepository extends JpaRepository<Template, String>, Jpa
 
     @NonNull
     @Override
-    Page<Template> findAll(@Nullable final Specification<Template> spec, @NonNull final Pageable pageable);
+    Page<TemplateDao> findAll(@Nullable final Specification<TemplateDao> spec, @NonNull final Pageable pageable);
 
 }

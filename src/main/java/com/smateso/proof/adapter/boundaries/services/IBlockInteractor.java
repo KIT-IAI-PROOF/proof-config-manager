@@ -1,9 +1,9 @@
 package com.smateso.proof.adapter.boundaries.services;
 
 import com.smateso.proof.adapter.model.Request;
-import edu.kit.iai.webis.proofmodels.Block;
-import edu.kit.iai.webis.proofmodels.SourceHandle;
-import edu.kit.iai.webis.proofmodels.TargetHandle;
+import edu.kit.iai.webis.proofmodels.dao.BlockDao;
+import edu.kit.iai.webis.proofmodels.dao.SourceHandleDao;
+import edu.kit.iai.webis.proofmodels.dao.TargetHandleDao;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 
@@ -11,19 +11,19 @@ import java.util.List;
 
 public interface IBlockInteractor {
 
-    Page<Block> searchBlocks(@NonNull final Request request);
+    Page<BlockDao> searchBlocks(@NonNull final Request request);
 
-    Block getBlock(@NonNull final String id);
+    BlockDao getBlock(@NonNull final String id);
 
-    Block createBlock(@NonNull final Block block, @NonNull final String sessionKey, @NonNull final String username);
+    BlockDao createBlock(@NonNull final BlockDao blockDao, @NonNull final String sessionKey, @NonNull final String username);
 
-    Block updateBlock(@NonNull final String id, @NonNull final Block block, @NonNull final String sessionKey, @NonNull final String username);
+    BlockDao updateBlock(@NonNull final String id, @NonNull final BlockDao blockDao, @NonNull final String sessionKey, @NonNull final String username);
 
     void deleteBlock(@NonNull final String id, @NonNull final String sessionKey, @NonNull final String username);
 
-    List<Block> getBlocks();
+    List<BlockDao> getBlocks();
 
-    List<SourceHandle> getSourceHandles(@NonNull final String id);
+    List<SourceHandleDao> getSourceHandles(@NonNull final String id);
 
-    List<TargetHandle> getTargetHandles(@NonNull final String id);
+    List<TargetHandleDao> getTargetHandles(@NonNull final String id);
 }

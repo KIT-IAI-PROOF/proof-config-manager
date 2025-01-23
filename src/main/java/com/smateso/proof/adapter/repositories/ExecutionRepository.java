@@ -1,6 +1,6 @@
 package com.smateso.proof.adapter.repositories;
 
-import edu.kit.iai.webis.proofmodels.Execution;
+import edu.kit.iai.webis.proofmodels.dao.ExecutionDao;
 import org.springframework.cache.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,7 +16,7 @@ import java.util.Optional;
 
 @Repository
 @CacheConfig(cacheNames = "executions")
-public interface ExecutionRepository extends JpaRepository<Execution, String>, JpaSpecificationExecutor<Execution> {
+public interface ExecutionRepository extends JpaRepository<ExecutionDao, String>, JpaSpecificationExecutor<ExecutionDao> {
 
     @NonNull
     @Override
@@ -28,17 +28,17 @@ public interface ExecutionRepository extends JpaRepository<Execution, String>, J
                     @CachePut(cacheNames = "executions", key = "#execution.id", unless = "#execution.id == null")
             }
     )
-    <S extends Execution> S save(@NonNull S execution);
+    <S extends ExecutionDao> S save(@NonNull S execution);
 
     @NonNull
     @Override
     @Cacheable(value = "executions")
-    List<Execution> findAll();
+    List<ExecutionDao> findAll();
 
     @NonNull
     @Override
     @Cacheable(value = "executions", key = "#executionId", unless = "#result == null")
-    Optional<Execution> findById(@NonNull final String executionId);
+    Optional<ExecutionDao> findById(@NonNull final String executionId);
 
     @NonNull
     @Override
@@ -51,8 +51,8 @@ public interface ExecutionRepository extends JpaRepository<Execution, String>, J
 
     @NonNull
     @Override
-    Page<Execution> findAll(@Nullable final Specification<Execution> spec, @NonNull final Pageable pageable);
+    Page<ExecutionDao> findAll(@Nullable final Specification<ExecutionDao> spec, @NonNull final Pageable pageable);
 
-    List<Execution> findExecutionsByWorkflowId(@NonNull final String workflowId);
+    List<ExecutionDao> findExecutionsByWorkflowId(@NonNull final String workflowId);
 
 }

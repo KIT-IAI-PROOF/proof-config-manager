@@ -3,10 +3,11 @@ package com.smateso.proof.application.controller;
 import com.smateso.proof.adapter.boundaries.controller.IWorkflowController;
 import com.smateso.proof.adapter.boundaries.services.IWorkflowInteractor;
 import com.smateso.proof.adapter.model.Request;
-import edu.kit.iai.webis.proofmodels.Block;
-import edu.kit.iai.webis.proofmodels.Edge;
-import edu.kit.iai.webis.proofmodels.Execution;
-import edu.kit.iai.webis.proofmodels.Workflow;
+import com.smateso.proof.application.utils.PropertyCopyHelper;
+import edu.kit.iai.webis.proofmodels.dto.BlockDto;
+import edu.kit.iai.webis.proofmodels.dto.EdgeDto;
+import edu.kit.iai.webis.proofmodels.dto.ExecutionDto;
+import edu.kit.iai.webis.proofmodels.dto.WorkflowDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
@@ -14,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import java.util.List;
 
 import static com.smateso.proof.adapter.config.AuditorProvider.getUsername;
+import static com.smateso.proof.application.utils.PropertyCopyHelper.copyWorkflowProperties;
 
 public class WorkflowController implements IWorkflowController {
 
@@ -23,32 +25,35 @@ public class WorkflowController implements IWorkflowController {
         this.workflowInteractor = workflowInteractor;
     }
 
+
     @Override
-    public ResponseEntity<List<Workflow>> searchWorkflows(@NonNull final Request request) {
-        final var result = this.workflowInteractor.searchWorkflows(request);
-        return ResponseEntity.ok(result.stream().toList());
+    public ResponseEntity<List<WorkflowDto>> searchWorkflows(@NonNull final Request request) {
+        final var result = this.workflowInteractor.searchWorkflows(request).stream().map(PropertyCopyHelper::copyWorkflowProperties);
+        return ResponseEntity.ok(result.toList());
     }
 
     @Override
-    public ResponseEntity<List<Workflow>> getWorkflows() {
-        return ResponseEntity.ok(this.workflowInteractor.getWorkflows());
+    public ResponseEntity<List<WorkflowDto>> getWorkflows() {
+        final var workflows = this.workflowInteractor.getWorkflows();
+        final var result = workflows.stream().map(PropertyCopyHelper::copyWorkflowProperties).toList();
+        return ResponseEntity.ok(result);
     }
 
     @Override
-    public ResponseEntity<Workflow> getWorkflow(@NonNull final String id) {
-        return ResponseEntity.ok(this.workflowInteractor.getWorkflow(id));
+    public ResponseEntity<WorkflowDto> getWorkflow(@NonNull final String id) {
+        return ResponseEntity.ok(copyWorkflowProperties(this.workflowInteractor.getWorkflow(id)));
     }
 
     @Override
-    public ResponseEntity<Workflow> createWorkflow(@NonNull final Workflow workflow, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
+    public ResponseEntity<WorkflowDto> createWorkflow(@NonNull final WorkflowDto workflow, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
         final var username = getUsername(authentication);
-        return ResponseEntity.ok(this.workflowInteractor.createWorkflow(workflow, sessionKey, username));
+        return ResponseEntity.ok(copyWorkflowProperties(this.workflowInteractor.createWorkflow(copyWorkflowProperties(workflow), sessionKey, username)));
     }
 
     @Override
-    public ResponseEntity<Workflow> updateWorkflow(@NonNull final String workflowId, @NonNull final Workflow workflow, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
+    public ResponseEntity<WorkflowDto> updateWorkflow(@NonNull final String workflowId, @NonNull final WorkflowDto workflow, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
         final var username = getUsername(authentication);
-        return ResponseEntity.ok(this.workflowInteractor.updateWorkflow(workflowId, workflow, sessionKey, username));
+        return ResponseEntity.ok(copyWorkflowProperties(this.workflowInteractor.updateWorkflow(workflowId, copyWorkflowProperties(workflow), sessionKey, username)));
     }
 
     @Override
@@ -59,18 +64,18 @@ public class WorkflowController implements IWorkflowController {
     }
 
     @Override
-    public ResponseEntity<List<Block>> getBlocksByWorkflow(@NonNull final String id) {
-        return ResponseEntity.ok(this.workflowInteractor.getBlocks(id));
+    public ResponseEntity<List<BlockDto>> getBlocksByWorkflow(@NonNull final String id) {
+        return ResponseEntity.ok(this.workflowInteractor.getBlocks(id).stream().map(PropertyCopyHelper::copyBlockProperties).toList());
     }
 
     @Override
-    public ResponseEntity<List<Edge>> getEdgesByWorkflow(@NonNull final String id) {
-        return ResponseEntity.ok(this.workflowInteractor.getEdges(id));
+    public ResponseEntity<List<EdgeDto>> getEdgesByWorkflow(@NonNull final String id) {
+        return ResponseEntity.ok(this.workflowInteractor.getEdges(id).stream().map(PropertyCopyHelper::copyEdgeProperties).toList());
     }
 
     @Override
-    public ResponseEntity<List<Execution>> getExecutionsByWorkflow(@NonNull final String id) {
-        return ResponseEntity.ok(this.workflowInteractor.getExecutions(id));
+    public ResponseEntity<List<ExecutionDto>> getExecutionsByWorkflow(@NonNull final String id) {
+        return ResponseEntity.ok(this.workflowInteractor.getExecutions(id).stream().map(PropertyCopyHelper::copyExecutionProperties).toList());
     }
 
 }

@@ -8,10 +8,10 @@ import com.smateso.proof.adapter.repositories.BlockRepository;
 import com.smateso.proof.adapter.repositories.EdgeRepository;
 import com.smateso.proof.adapter.repositories.ExecutionRepository;
 import com.smateso.proof.adapter.repositories.WorkflowRepository;
-import edu.kit.iai.webis.proofmodels.Block;
-import edu.kit.iai.webis.proofmodels.Edge;
-import edu.kit.iai.webis.proofmodels.Execution;
-import edu.kit.iai.webis.proofmodels.Workflow;
+import edu.kit.iai.webis.proofmodels.dao.BlockDao;
+import edu.kit.iai.webis.proofmodels.dao.EdgeDao;
+import edu.kit.iai.webis.proofmodels.dao.ExecutionDao;
+import edu.kit.iai.webis.proofmodels.dao.WorkflowDao;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
@@ -26,6 +26,7 @@ import java.util.List;
 
 import static com.smateso.proof.adapter.model.Action.*;
 import static com.smateso.proof.adapter.utils.NullAwareUtil.getNullPropertyNames;
+import static com.smateso.proof.application.utils.CriteriaBuilderHelper.getPath;
 import static java.util.Objects.requireNonNull;
 import static org.springframework.beans.BeanUtils.copyProperties;
 import static org.springframework.data.domain.PageRequest.of;
@@ -48,7 +49,7 @@ public class WorkflowInteractor implements IWorkflowInteractor {
     }
 
     @Override
-    public Page<Workflow> searchWorkflows(@NonNull final Request request) {
+    public Page<WorkflowDao> searchWorkflows(@NonNull final Request request) {
         final Pageable pageable;
         if (request.getPagination() != null) {
             if (request.getSort() != null) {
@@ -60,42 +61,42 @@ public class WorkflowInteractor implements IWorkflowInteractor {
         } else {
             pageable = Pageable.unpaged();
         }
-        return this.workflowRepository.findAll((final Root<Workflow> root, final CriteriaQuery<?> query, final CriteriaBuilder builder) -> {
+        return this.workflowRepository.findAll((final Root<WorkflowDao> root, final CriteriaQuery<?> query, final CriteriaBuilder builder) -> {
             List<Predicate> predicates = new ArrayList<>();
             final var filter = request.getFilter();
             if (filter != null) {
                 final var items = filter.getItems();
-                items.forEach((final Request.FilterItem item) -> predicates.add(builder.equal(root.get(item.getField()), item.getValue())));
+                items.forEach((final Request.FilterItem item) -> predicates.add(builder.equal(getPath(root, item.getField()), item.getValue())));
             }
             return builder.and(predicates.toArray(new Predicate[]{}));
         }, pageable);
     }
 
     @Override
-    public Workflow getWorkflow(@NonNull final String id) {
+    public WorkflowDao getWorkflow(@NonNull final String id) {
         final var result = this.workflowRepository.findById(id);
         if (result.isPresent()) {
             return result.get();
         } else {
-            throw new NotFoundException("Workflow with id %s not found".formatted(id));
+            throw new NotFoundException("WorkflowDao with id %s not found".formatted(id));
         }
     }
 
     @Override
-    public Workflow createWorkflow(@NonNull final Workflow workflow, @NonNull final String sessionKey, @NonNull final String username) {
-        final var result = this.workflowRepository.save(workflow);
+    public WorkflowDao createWorkflow(@NonNull final WorkflowDao workflowDao, @NonNull final String sessionKey, @NonNull final String username) {
+        final var result = this.workflowRepository.save(workflowDao);
         this.messageInteractor.workflowUpdate(requireNonNull(result.getId()), CREATED, sessionKey, username);
         return result;
     }
 
     @Override
-    public Workflow updateWorkflow(@NonNull final String id, @NonNull final Workflow workflow, @NonNull final String sessionKey, @NonNull final String username) {
+    public WorkflowDao updateWorkflow(@NonNull final String id, @NonNull final WorkflowDao workflowDao, @NonNull final String sessionKey, @NonNull final String username) {
         final var existingWorkflow = this.getWorkflow(id);
-        copyProperties(workflow, existingWorkflow, getNullPropertyNames(workflow));
+        copyProperties(workflowDao, existingWorkflow, getNullPropertyNames(workflowDao));
         existingWorkflow.setBlocks(existingWorkflow.getBlocks());
         existingWorkflow.setEdges(existingWorkflow.getEdges());
         existingWorkflow.setExecutions(existingWorkflow.getExecutions());
-        final var result = this.workflowRepository.save(workflow);
+        final var result = this.workflowRepository.save(workflowDao);
         this.messageInteractor.workflowUpdate(requireNonNull(result.getId()), UPDATED, sessionKey, username);
         return result;
     }
@@ -107,22 +108,22 @@ public class WorkflowInteractor implements IWorkflowInteractor {
     }
 
     @Override
-    public List<Workflow> getWorkflows() {
+    public List<WorkflowDao> getWorkflows() {
         return this.workflowRepository.findAll();
     }
 
     @Override
-    public List<Block> getBlocks(@NonNull final String id) {
+    public List<BlockDao> getBlocks(@NonNull final String id) {
         return this.blockRepository.findBlocksByWorkflowId(id);
     }
 
     @Override
-    public List<Edge> getEdges(@NonNull final String id) {
+    public List<EdgeDao> getEdges(@NonNull final String id) {
         return this.edgeRepository.findEdgesByWorkflowId(id);
     }
 
     @Override
-    public List<Execution> getExecutions(@NonNull final String id) {
+    public List<ExecutionDao> getExecutions(@NonNull final String id) {
         return this.executionRepository.findExecutionsByWorkflowId(id);
     }
 
