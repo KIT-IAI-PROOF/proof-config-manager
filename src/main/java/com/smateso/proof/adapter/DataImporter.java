@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.UUID;
 
+import static java.util.stream.IntStream.range;
+
 /**
  * The DataImporter class is a Spring Component that implements the CommandLineRunner interface.
  * It serves as an entry point for executing custom logic immediately after application startup.
@@ -46,56 +48,50 @@ public class DataImporter implements CommandLineRunner {
             }
     )
     public void run(final String... args) {
-        final var template1 = TemplateDao
+        final var templates = List.of(
+                createTemplate("Reader", "#0D41E1", 2, 4),
+                createTemplate("Transformer", "#0C63E7", 5, 6),
+                createTemplate("Writer", "#0A85ED", 4, 2)
+        );
+        this.templateRepository.saveAll(templates);
+    }
+
+    private TemplateDao createTemplate(final String label, final String color, final int numberOfSourceHandles, final int numberOfTargetHandles) {
+        final var template = TemplateDao
                 .builder()
                 .id(UUID.randomUUID().toString())
-                .color("#0C63E7")
+                .color(color)
                 .type("block")
-                .description("Reader")
-                .label("Reader")
+                .description(label)
+                .label(label)
                 .build();
-        template1.setSourceHandles(List.of(
-        ));
-        template1.setTargetHandles(List.of(
-                TargetHandleDao
+        template.setTargetHandles(createTargetHandles(numberOfTargetHandles, template));
+        template.setSourceHandles(createSourceHandles(numberOfSourceHandles, template));
+        return template;
+    }
+
+    private List<SourceHandleDao> createSourceHandles(final int numberOfHandles, final TemplateDao template) {
+        return range(0, numberOfHandles)
+                .mapToObj(i -> SourceHandleDao
                         .builder()
                         .id(UUID.randomUUID().toString())
-                        .label("o1")
-                        .template(template1)
-                        .build(),
-                TargetHandleDao
-                        .builder()
-                        .id(UUID.randomUUID().toString())
-                        .label("o2")
-                        .template(template1)
+                        .label("i" + (i + 1))
+                        .template(template)
                         .build()
-        ));
-        final var template2 = TemplateDao
-                .builder()
-                .id(UUID.randomUUID().toString())
-                .color("#09A6F3")
-                .type("block")
-                .description("Writer")
-                .label("Writer")
-                .build();
-        template2.setSourceHandles(List.of(
-                SourceHandleDao
+                )
+                .toList();
+    }
+
+    private List<TargetHandleDao> createTargetHandles(final int numberOfHandles, final TemplateDao template) {
+        return range(0, numberOfHandles)
+                .mapToObj(i -> TargetHandleDao
                         .builder()
                         .id(UUID.randomUUID().toString())
-                        .label("i1")
-                        .template(template1)
-                        .build(),
-                SourceHandleDao
-                        .builder()
-                        .id(UUID.randomUUID().toString())
-                        .label("i2")
-                        .template(template1)
+                        .label("o" + (i + 1))
+                        .template(template)
                         .build()
-        ));
-        template2.setTargetHandles(List.of(
-        ));
-        this.templateRepository.save(template1);
-        this.templateRepository.save(template2);
+                )
+                .toList();
     }
 
 }
