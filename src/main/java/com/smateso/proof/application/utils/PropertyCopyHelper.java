@@ -3,6 +3,8 @@ package com.smateso.proof.application.utils;
 import edu.kit.iai.webis.proofmodels.dao.*;
 import edu.kit.iai.webis.proofmodels.dto.*;
 
+import java.util.List;
+
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 public class PropertyCopyHelper {
@@ -58,8 +60,9 @@ public class PropertyCopyHelper {
     public static WorkflowDao copyWorkflowProperties(final WorkflowDto source) {
         final var target = new WorkflowDao();
         copyProperties(source, target);
-        target.setEdges(source.getEdges().stream().map(PropertyCopyHelper::copyEdgeProperties).toList());
-        target.setBlocks(source.getBlocks().stream().map(PropertyCopyHelper::copyBlockProperties).toList());
+        target.setEdges(source.getEdges() != null ? source.getEdges().stream().map(PropertyCopyHelper::copyEdgeProperties).toList() : null);
+        target.setBlocks(source.getBlocks() != null ? source.getBlocks().stream().map(PropertyCopyHelper::copyBlockProperties).toList() : null);
+        target.setExecutions(source.getExecutions() != null ? source.getExecutions().stream().map(PropertyCopyHelper::copyExecutionProperties).toList() : null);
         return target;
     }
 
@@ -68,20 +71,29 @@ public class PropertyCopyHelper {
         copyProperties(source, target);
         target.setEdges(source.getEdges() != null ? source.getEdges().stream().map(PropertyCopyHelper::copyEdgeProperties).toList() : null);
         target.setBlocks(source.getBlocks() != null ? source.getBlocks().stream().map(PropertyCopyHelper::copyBlockProperties).toList() : null);
+        target.setExecutions(source.getExecutions() != null ? source.getExecutions().stream().map(PropertyCopyHelper::copyExecutionProperties).toList() : null);
         return target;
     }
 
     public static ExecutionDao copyExecutionProperties(final ExecutionDto source) {
         final var target = new ExecutionDao();
+        if(source.getWorkflow() != null){
+            final var workflow = source.getWorkflow();
+            workflow.setExecutions(null);
+            target.setWorkflow(copyWorkflowProperties(workflow));
+        }
         copyProperties(source, target);
-        target.setWorkflow(copyWorkflowProperties(source.getWorkflow()));
         return target;
     }
 
     public static ExecutionDto copyExecutionProperties(final ExecutionDao source) {
         final var target = new ExecutionDto();
+        if(source.getWorkflow() != null){
+            final var workflow = source.getWorkflow();
+            workflow.setExecutions(null);
+            target.setWorkflow(copyWorkflowProperties(workflow));
+        }
         copyProperties(source, target);
-        target.setWorkflow(copyWorkflowProperties(source.getWorkflow()));
         return target;
     }
 
