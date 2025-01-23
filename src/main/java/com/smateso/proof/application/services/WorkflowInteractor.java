@@ -59,8 +59,7 @@ public class WorkflowInteractor implements IWorkflowInteractor {
         copyProperties(workflowDao, existingWorkflow, getNullPropertyNames(workflowDao));
         existingWorkflow.setBlocks(existingWorkflow.getBlocks());
         existingWorkflow.setEdges(existingWorkflow.getEdges());
-        if(existingWorkflow.getExecutions() != null) existingWorkflow.setExecutions(existingWorkflow.getExecutions());
-        final var result = this.workflowRepository.save(workflowDao);
+        final var result = this.workflowRepository.save(existingWorkflow);
         this.messageInteractor.workflowUpdate(requireNonNull(result.getId()), UPDATED, sessionKey, username);
         return result;
     }
