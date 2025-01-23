@@ -63,6 +63,11 @@ public class Beans {
         return new BlockInteractor(targetHandleRepository, sourceHandleRepository, blockRepository, IMessageInteractor);
     }
 
+    @Bean(value = "edgeInteractor", name = "edgeInteractor")
+    public IEdgeInteractor edgeInteractor(@Qualifier("edgeRepository") @NonNull final EdgeRepository edgeRepository) {
+        return new EdgeInteractor(edgeRepository);
+    }
+
     @Bean(value = "templateInteractor", name = "templateInteractor")
     public ITemplateInteractor templateInteractor(@Qualifier("templateRepository") @NonNull final TemplateRepository templateRepository, @Qualifier("messageInteractor") @NonNull final IMessageInteractor IMessageInteractor) {
         return new TemplateInteractor(templateRepository, IMessageInteractor);
@@ -86,6 +91,11 @@ public class Beans {
     @Bean(value = "blockController", name = "blockController")
     public IBlockController blockController(@Qualifier("blockInteractor") IBlockInteractor blockInteractor) {
         return new BlockController(blockInteractor);
+    }
+
+    @Bean(value = "edgeController", name = "edgeController")
+    public IEdgeController edgeController(@Qualifier("edgeInteractor") IEdgeInteractor edgeInteractor) {
+        return new EdgeController(edgeInteractor);
     }
 
     @Bean(value = "executionController", name = "executionController")
