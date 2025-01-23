@@ -47,20 +47,15 @@ public class Beans {
     @Bean(value = "workflowInteractor", name = "workflowInteractor")
     public IWorkflowInteractor workflowInteractor(
             @Qualifier("workflowRepository") @NonNull final WorkflowRepository workflowRepository,
-            @Qualifier("edgeRepository") @NonNull final EdgeRepository edgeRepository,
-            @Qualifier("executionRepository") @NonNull final ExecutionRepository executionRepository,
-            @Qualifier("blockRepository") @NonNull final BlockRepository blockRepository,
             @Qualifier("messageInteractor") @NonNull final IMessageInteractor messageInteractor) {
-        return new WorkflowInteractor(workflowRepository, blockRepository, edgeRepository, executionRepository, messageInteractor);
+        return new WorkflowInteractor(workflowRepository, messageInteractor);
     }
 
     @Bean(value = "blockInteractor", name = "blockInteractor")
     public IBlockInteractor blockInteractor(
             @Qualifier("blockRepository") @NonNull final BlockRepository blockRepository,
-            @Qualifier("sourceHandleRepository") @NonNull final SourceHandleRepository sourceHandleRepository,
-            @Qualifier("targetHandleRepository") @NonNull final TargetHandleRepository targetHandleRepository,
             @Qualifier("messageInteractor") @NonNull final IMessageInteractor IMessageInteractor) {
-        return new BlockInteractor(targetHandleRepository, sourceHandleRepository, blockRepository, IMessageInteractor);
+        return new BlockInteractor(blockRepository, IMessageInteractor);
     }
 
     @Bean(value = "edgeInteractor", name = "edgeInteractor")

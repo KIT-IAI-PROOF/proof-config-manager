@@ -19,7 +19,6 @@ import java.util.List;
 
 import static com.smateso.proof.adapter.utils.NullAwareUtil.getNullPropertyNames;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.getPath;
-import static java.util.Objects.requireNonNull;
 import static org.springframework.beans.BeanUtils.copyProperties;
 import static org.springframework.data.domain.PageRequest.of;
 import static org.springframework.data.domain.Sort.by;
@@ -75,7 +74,7 @@ public class EdgeInteractor implements IEdgeInteractor {
     public EdgeDao updateEdge(@NonNull final String id, @NonNull final EdgeDao edgeDao, @NonNull final String sessionKey, @NonNull final String username) {
         final var existingEdge = this.getEdge(id);
         copyProperties(edgeDao, existingEdge, getNullPropertyNames(edgeDao));
-        existingEdge.setWorkflow(existingEdge.getWorkflow());
+        existingEdge.setPoints(existingEdge.getPoints());
         return this.edgeRepository.save(existingEdge);
     }
 

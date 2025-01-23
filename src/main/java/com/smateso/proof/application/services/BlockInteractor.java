@@ -5,8 +5,6 @@ import com.smateso.proof.adapter.boundaries.services.IMessageInteractor;
 import com.smateso.proof.adapter.exceptions.NotFoundException;
 import com.smateso.proof.adapter.model.Request;
 import com.smateso.proof.adapter.repositories.BlockRepository;
-import com.smateso.proof.adapter.repositories.SourceHandleRepository;
-import com.smateso.proof.adapter.repositories.TargetHandleRepository;
 import edu.kit.iai.webis.proofmodels.dao.BlockDao;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -30,14 +28,10 @@ import static org.springframework.data.domain.Sort.by;
 
 public class BlockInteractor implements IBlockInteractor {
 
-    private final TargetHandleRepository targetHandleRepository;
-    private final SourceHandleRepository sourceHandleRepository;
     private final BlockRepository blockRepository;
     private final IMessageInteractor messageInteractor;
 
-    public BlockInteractor(@NonNull final TargetHandleRepository targetHandleRepository, @NonNull final SourceHandleRepository sourceHandleRepository, @NonNull final BlockRepository blockRepository, @NonNull final IMessageInteractor messageInteractor) {
-        this.targetHandleRepository = targetHandleRepository;
-        this.sourceHandleRepository = sourceHandleRepository;
+    public BlockInteractor(@NonNull final BlockRepository blockRepository, @NonNull final IMessageInteractor messageInteractor) {
         this.blockRepository = blockRepository;
         this.messageInteractor = messageInteractor;
     }
