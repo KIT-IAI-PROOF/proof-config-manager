@@ -3,7 +3,10 @@ package com.smateso.proof.application.controller;
 import com.smateso.proof.adapter.boundaries.controller.IEdgeController;
 import com.smateso.proof.adapter.boundaries.services.IEdgeInteractor;
 import com.smateso.proof.adapter.model.Request;
+import edu.kit.iai.webis.proofmodels.dao.EdgeDao;
 import edu.kit.iai.webis.proofmodels.dto.EdgeDto;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
@@ -11,45 +14,49 @@ import org.springframework.security.core.Authentication;
 import java.util.List;
 
 import static com.smateso.proof.adapter.config.AuditorProvider.getUsername;
-import static com.smateso.proof.application.utils.PropertyCopyHelper.EdgePropertyCopyHelper;
-import static com.smateso.proof.application.utils.PropertyCopyHelper.EdgePropertyCopyHelper.copyEdgeProperties;
+import static com.smateso.proof.application.utils.PropertyCopyHelper.copyEntityProperties;
 
+@Builder
+@AllArgsConstructor
 public class EdgeController implements IEdgeController {
 
     private final IEdgeInteractor edgeInteractor;
 
-    public EdgeController(@NonNull final IEdgeInteractor edgeInteractor) {
-        this.edgeInteractor = edgeInteractor;
-    }
-
     @Override
     public ResponseEntity<List<EdgeDto>> searchEdges(@NonNull final Request request) {
-        final var result = this.edgeInteractor.searchEdges(request).stream().map(EdgePropertyCopyHelper::copyEdgeProperties);
-        return ResponseEntity.ok(result.toList());
+        final var edges = this.edgeInteractor.searchEdges(request);
+        final var result = edges.stream().map((final var edge) -> copyEntityProperties(edge, new EdgeDto(), false)).toList();
+        return ResponseEntity.ok(result);
     }
 
     @Override
     public ResponseEntity<List<EdgeDto>> getEdges() {
         final var edges = this.edgeInteractor.getEdges();
-        final var result = edges.stream().map(EdgePropertyCopyHelper::copyEdgeProperties).toList();
+        final var result = edges.stream().map((final var edge) -> copyEntityProperties(edge, new EdgeDto(), false)).toList();
         return ResponseEntity.ok(result);
     }
 
     @Override
     public ResponseEntity<EdgeDto> getEdge(final String id) {
-        return ResponseEntity.ok(copyEdgeProperties(this.edgeInteractor.getEdge(id)));
+        final var edge = this.edgeInteractor.getEdge(id);
+        final var result = copyEntityProperties(edge, new EdgeDto(), false);
+        return ResponseEntity.ok(result);
     }
 
     @Override
-    public ResponseEntity<EdgeDto> createEdge(@NonNull final EdgeDto edge, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
+    public ResponseEntity<EdgeDto> createEdge(@NonNull final EdgeDto update, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
         final var username = getUsername(authentication);
-        return ResponseEntity.ok(copyEdgeProperties(this.edgeInteractor.createEdge(copyEdgeProperties(edge), sessionKey, username)));
+        final var edge = this.edgeInteractor.createEdge(copyEntityProperties(update, new EdgeDao(), false), sessionKey, username);
+        final var result = copyEntityProperties(edge, new EdgeDto(), false);
+        return ResponseEntity.ok(result);
     }
 
     @Override
-    public ResponseEntity<EdgeDto> updateEdge(@NonNull final String edgeId, @NonNull final EdgeDto edge, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
+    public ResponseEntity<EdgeDto> updateEdge(@NonNull final String edgeId, @NonNull final EdgeDto update, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
         final var username = getUsername(authentication);
-        return ResponseEntity.ok(copyEdgeProperties(this.edgeInteractor.updateEdge(edgeId, copyEdgeProperties(edge), sessionKey, username)));
+        final var edge = this.edgeInteractor.updateEdge(edgeId, copyEntityProperties(update, new EdgeDao(), false), sessionKey, username);
+        final var result = copyEntityProperties(edge, new EdgeDto(), false);
+        return ResponseEntity.ok(result);
     }
 
     @Override

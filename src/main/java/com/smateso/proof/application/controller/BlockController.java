@@ -3,7 +3,10 @@ package com.smateso.proof.application.controller;
 import com.smateso.proof.adapter.boundaries.controller.IBlockController;
 import com.smateso.proof.adapter.boundaries.services.IBlockInteractor;
 import com.smateso.proof.adapter.model.Request;
+import edu.kit.iai.webis.proofmodels.dao.BlockDao;
 import edu.kit.iai.webis.proofmodels.dto.BlockDto;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
@@ -11,45 +14,49 @@ import org.springframework.security.core.Authentication;
 import java.util.List;
 
 import static com.smateso.proof.adapter.config.AuditorProvider.getUsername;
-import static com.smateso.proof.application.utils.PropertyCopyHelper.BlockPropertyCopyHelper;
-import static com.smateso.proof.application.utils.PropertyCopyHelper.BlockPropertyCopyHelper.copyBlockProperties;
+import static com.smateso.proof.application.utils.PropertyCopyHelper.copyEntityProperties;
 
+@Builder
+@AllArgsConstructor
 public class BlockController implements IBlockController {
 
     private final IBlockInteractor blockInteractor;
 
-    public BlockController(@NonNull final IBlockInteractor blockInteractor) {
-        this.blockInteractor = blockInteractor;
-    }
-
     @Override
     public ResponseEntity<List<BlockDto>> searchBlocks(@NonNull final Request request) {
-        final var result = this.blockInteractor.searchBlocks(request).stream().map(BlockPropertyCopyHelper::copyBlockProperties);
-        return ResponseEntity.ok(result.toList());
+        final var blocks = this.blockInteractor.searchBlocks(request);
+        final var result = blocks.stream().map((final var block) -> copyEntityProperties(block, new BlockDto(), false)).toList();
+        return ResponseEntity.ok(result);
     }
 
     @Override
     public ResponseEntity<List<BlockDto>> getBlocks() {
         final var blocks = this.blockInteractor.getBlocks();
-        final var result = blocks.stream().map(BlockPropertyCopyHelper::copyBlockProperties).toList();
+        final var result = blocks.stream().map((final var block) -> copyEntityProperties(block, new BlockDto(), false)).toList();
         return ResponseEntity.ok(result);
     }
 
     @Override
     public ResponseEntity<BlockDto> getBlock(final String id) {
-        return ResponseEntity.ok(copyBlockProperties(this.blockInteractor.getBlock(id)));
+        final var block = this.blockInteractor.getBlock(id);
+        final var result = copyEntityProperties(block, new BlockDto(), false);
+        return ResponseEntity.ok(result);
     }
 
     @Override
-    public ResponseEntity<BlockDto> createBlock(@NonNull final BlockDto block, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
+    public ResponseEntity<BlockDto> createBlock(@NonNull final BlockDto update, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
         final var username = getUsername(authentication);
-        return ResponseEntity.ok(copyBlockProperties(this.blockInteractor.createBlock(copyBlockProperties(block), sessionKey, username)));
+        final var block = this.blockInteractor.createBlock(copyEntityProperties(update, new BlockDao(), false), sessionKey, username);
+        final var result = copyEntityProperties(block, new BlockDto(), false);
+        return ResponseEntity.ok(result);
     }
 
     @Override
-    public ResponseEntity<BlockDto> updateBlock(@NonNull final String blockId, @NonNull final BlockDto block, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
+    public ResponseEntity<BlockDto> updateBlock(@NonNull final String blockId, @NonNull final BlockDto update, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
         final var username = getUsername(authentication);
-        return ResponseEntity.ok(copyBlockProperties(this.blockInteractor.updateBlock(blockId, copyBlockProperties(block), sessionKey, username)));
+        final var block = this.blockInteractor.updateBlock(blockId, copyEntityProperties(update, new BlockDao(), false), sessionKey, username);
+        final var result = copyEntityProperties(block, new BlockDto(), false);
+        return ResponseEntity.ok(result);
     }
 
     @Override

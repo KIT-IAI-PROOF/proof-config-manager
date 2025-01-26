@@ -1,225 +1,107 @@
 package com.smateso.proof.application.utils;
 
-import edu.kit.iai.webis.proofmodels.dao.*;
-import edu.kit.iai.webis.proofmodels.dto.*;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.NonNull;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import static com.smateso.proof.adapter.utils.NullAwareUtil.getNullPropertyNames;
+import static com.smateso.proof.application.utils.LogMessages.*;
+import static java.lang.Class.forName;
+import static java.util.Arrays.stream;
 import static org.springframework.beans.BeanUtils.copyProperties;
+import static org.springframework.util.StringUtils.capitalize;
 
 @Slf4j
+@Builder
+@AllArgsConstructor
 public class PropertyCopyHelper {
 
-    public static class WorkflowPropertyCopyHelper {
+    public static final String SET = "set";
+    public static final String GET = "get";
+    public static final String LIST = "java.util.List";
 
-        public static WorkflowDao copyWorkflowProperties(final WorkflowRequestDto source) {
-            final var target = new WorkflowDao();
-            copyProperties(source, target);
-            target.setEdges(source.getEdges().stream().map(EdgePropertyCopyHelper::copyEdgeProperties).toList());
-            target.setBlocks(source.getBlocks().stream().map(BlockPropertyCopyHelper::copyBlockProperties).toList());
-            final var message = "Copied properties of %s to DTO".formatted(source.toString());
-            log.debug(message);
-            return target;
-        }
-
-        public static WorkflowResponseDto copyWorkflowProperties(final WorkflowDao source) {
-            final var target = new WorkflowResponseDto();
-            copyProperties(source, target);
-            target.setEdges(source.getEdges().stream().map(EdgePropertyCopyHelper::copyEdgeProperties).toList());
-            target.setBlocks(source.getBlocks().stream().map(BlockPropertyCopyHelper::copyBlockProperties).toList());
-            final var message = "Copied properties of %s to DTO".formatted(source.toString());
-            log.debug(message);
-            return target;
-        }
-
-        public static WorkflowDao copyNonNullWorkflowProperties(final WorkflowDao source, final WorkflowDao target) {
-            copyProperties(source, target, getNullPropertyNames(source));
-            target.setEdges(target.getEdges());
-            target.setBlocks(target.getBlocks());
-            target.setExecutions(target.getExecutions());
-            final var message = "Copied properties of %s to %s".formatted(source.toString(), target.toString());
-            log.debug(message);
-            return target;
-        }
-
+    private static HashSet<String> getRelationalFields(@NonNull final Class<?> targetClass, @NonNull final Class<?> sourceClass) {
+        final var result = new HashSet<String>();
+        Stream
+                .concat(stream(sourceClass.getDeclaredFields()), stream(targetClass.getDeclaredFields()))
+                .forEach((final var field) -> {
+                    final var annotations = field.getDeclaredAnnotations();
+                    if (stream(annotations).anyMatch((final var annotation) -> annotation.annotationType().equals(OneToOne.class) || annotation.annotationType().equals(OneToMany.class))) {
+                        result.add(field.getName());
+                    }
+                });
+        return result;
     }
 
-    public static class BlockPropertyCopyHelper {
-
-        public static BlockDao copyBlockProperties(final BlockDto source) {
-            final var target = new BlockDao();
-            copyProperties(source, target);
-            target.setTargetHandles(source.getTargetHandles().stream().map(HandlePropertyCopyHelper::copyTargetHandleProperties).toList());
-            target.setSourceHandles(source.getSourceHandles().stream().map(HandlePropertyCopyHelper::copySourceHandleProperties).toList());
-            final var message = "Copied properties of %s to DTO".formatted(source.toString());
-            log.debug(message);
-            return target;
+    private static Optional<Method> getSourceClassGetter(@NonNull final Class<?> sourceClass, @NonNull final Field relationalField) {
+        try {
+            final var sourceClassMethods = sourceClass.getDeclaredMethods();
+            return stream(sourceClassMethods).filter(method -> method.getName().equals(GET + capitalize(relationalField.getName()))).findFirst();
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
         }
-
-        public static BlockDto copyBlockProperties(final BlockDao source) {
-            final var target = new BlockDto();
-            copyProperties(source, target);
-            target.setTargetHandles(source.getTargetHandles().stream().map(HandlePropertyCopyHelper::copyTargetHandleProperties).toList());
-            target.setSourceHandles(source.getSourceHandles().stream().map(HandlePropertyCopyHelper::copySourceHandleProperties).toList());
-            final var message = "Copied properties of %s to DTO".formatted(source.toString());
-            log.debug(message);
-            return target;
-        }
-
-        public static BlockDao copyNonNullBlockProperties(final BlockDao source, final BlockDao target) {
-            copyProperties(source, target, getNullPropertyNames(source));
-            target.setSourceHandles(target.getSourceHandles());
-            target.setTargetHandles(target.getTargetHandles());
-            final var message = "Copied properties of %s to %s".formatted(source.toString(), target.toString());
-            log.debug(message);
-            return target;
-        }
-
     }
 
-    public static class TemplatePropertyCopyHelper {
-
-        public static TemplateDao copyTemplateProperties(final TemplateDto source) {
-            final var target = new TemplateDao();
-            copyProperties(source, target);
-            target.setTargetHandles(source.getTargetHandles().stream().map(HandlePropertyCopyHelper::copyTargetHandleProperties).toList());
-            target.setSourceHandles(source.getSourceHandles().stream().map(HandlePropertyCopyHelper::copySourceHandleProperties).toList());
-            final var message = "Copied properties of %s to DTO".formatted(source.toString());
-            log.debug(message);
-            return target;
-        }
-
-        public static TemplateDto copyTemplateProperties(final TemplateDao source) {
-            final var target = new TemplateDto();
-            copyProperties(source, target);
-            target.setTargetHandles(source.getTargetHandles().stream().map(HandlePropertyCopyHelper::copyTargetHandleProperties).toList());
-            target.setSourceHandles(source.getSourceHandles().stream().map(HandlePropertyCopyHelper::copySourceHandleProperties).toList());
-            final var message = "Copied properties of %s to DTO".formatted(source.toString());
-            log.debug(message);
-            return target;
-        }
-
-        public static TemplateDao copyNonNullTemplateProperties(final TemplateDao source, final TemplateDao target) {
-            copyProperties(source, target, getNullPropertyNames(source));
-            target.setSourceHandles(target.getSourceHandles());
-            target.setTargetHandles(target.getTargetHandles());
-            final var message = "Copied properties of %s to %s".formatted(source.toString(), target.toString());
-            log.debug(message);
-            return target;
-        }
-
+    private static Object getTargetSubClassInstanceForList(@NonNull final Field relationalField) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ClassNotFoundException {
+        final var targetClassType = ((ParameterizedType) relationalField.getGenericType()).getActualTypeArguments()[0];
+        return forName(targetClassType.getTypeName()).getDeclaredConstructor().newInstance();
     }
 
-    public static class EdgePropertyCopyHelper {
-
-        public static EdgeDao copyEdgeProperties(final EdgeDto source) {
-            final var target = new EdgeDao();
-            copyProperties(source, target);
-            target.setPoints(source.getPoints().stream().map(PointPropertyCopyHelper::copyPointProperties).toList());
-            final var message = "Copied properties of %s to DTO".formatted(source.toString());
-            log.debug(message);
-            return target;
-        }
-
-        public static EdgeDto copyEdgeProperties(final EdgeDao source) {
-            final var target = new EdgeDto();
-            copyProperties(source, target);
-            target.setPoints(source.getPoints().stream().map(PointPropertyCopyHelper::copyPointProperties).toList());
-            final var message = "Copied properties of %s to DTO".formatted(source.toString());
-            log.debug(message);
-            return target;
-        }
-
-        public static EdgeDao copyNonNullEdgeProperties(final EdgeDao source, final EdgeDao target) {
-            copyProperties(source, target, getNullPropertyNames(source));
-            target.setPoints(target.getPoints());
-            final var message = "Copied properties of %s to %s".formatted(source.toString(), target.toString());
-            log.debug(message);
-            return target;
-        }
-
+    private static Object getTargetSubClassInstance(@NonNull final Field relationalField) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ClassNotFoundException {
+        final var targetClassType = relationalField.getType();
+        return forName(targetClassType.getTypeName()).getDeclaredConstructor().newInstance();
     }
 
-    public static class PointPropertyCopyHelper {
-
-        public static PointDao copyPointProperties(final PointDto source) {
-            final var target = new PointDao();
-            copyProperties(source, target);
-            final var message = "Copied properties of %s to DTO".formatted(source.toString());
-            log.debug(message);
-            return target;
-        }
-
-        public static PointDto copyPointProperties(final PointDao source) {
-            final var target = new PointDto();
-            copyProperties(source, target);
-            final var message = "Copied properties of %s to DTO".formatted(source.toString());
-            log.debug(message);
-            return target;
-        }
-
-        public static PointDao copyNonNullPointProperties(final PointDao source, final PointDao target) {
-            copyProperties(source, target, getNullPropertyNames(source));
-            final var message = "Copied properties of %s to %s".formatted(source.toString(), target.toString());
-            log.debug(message);
-            return target;
-        }
-
-    }
-
-    public static class ExecutionPropertyCopyHelper {
-
-        public static ExecutionDao copyExecutionProperties(final ExecutionDto source) {
-            final var target = new ExecutionDao();
-            copyProperties(source, target);
-            final var message = "Copied properties of %s to DTO".formatted(source.toString());
-            log.debug(message);
-            return target;
-        }
-
-        public static ExecutionDto copyExecutionProperties(final ExecutionDao source) {
-            final var target = new ExecutionDto();
-            copyProperties(source, target);
-            final var message = "Copied properties of %s to DTO".formatted(source.toString());
-            log.debug(message);
-            return target;
-        }
-
-        public static ExecutionDao copyNonNullExecutionProperties(final ExecutionDao source, final ExecutionDao target) {
-            copyProperties(source, target, getNullPropertyNames(source));
-            final var message = "Copied properties of %s to %s".formatted(source.toString(), target.toString());
-            log.debug(message);
-            return target;
-        }
-
-    }
-
-    public static class HandlePropertyCopyHelper {
-
-        public static SourceHandleDto copySourceHandleProperties(final SourceHandleDao source) {
-            final var target = new SourceHandleDto();
-            copyProperties(source, target);
-            return target;
-        }
-
-        public static SourceHandleDao copySourceHandleProperties(final SourceHandleDto source) {
-            final var target = new SourceHandleDao();
-            copyProperties(source, target);
-            return target;
-        }
-
-        public static TargetHandleDto copyTargetHandleProperties(final TargetHandleDao source) {
-            final var target = new TargetHandleDto();
-            copyProperties(source, target);
-            return target;
-        }
-
-        public static TargetHandleDao copyTargetHandleProperties(final TargetHandleDto source) {
-            final var target = new TargetHandleDao();
-            copyProperties(source, target);
-            return target;
-        }
-
+    @NonNull
+    public static <S, T> T copyEntityProperties(@NonNull final S source, @NonNull final T target, @NonNull final Boolean ignoreNullProperties) {
+        log.debug(COPY_BASIC_PROPERTIES.formatted(source.toString(), target.toString()));
+        copyProperties(source, target, ignoreNullProperties ? getNullPropertyNames(source) : new String[0]);
+        final var targetClass = target.getClass();
+        final var sourceClass = source.getClass();
+        final var relationalFieldNames = getRelationalFields(targetClass, sourceClass);
+        log.debug(COPY_RELATIONAL_PROPERTIES.formatted(relationalFieldNames.toString(), target.toString()));
+        relationalFieldNames.forEach((final var relationalFieldName) -> {
+            try {
+                final var optionalRelationalField = stream(targetClass.getDeclaredFields()).filter((final Field field) -> field.getName().equals(relationalFieldName)).findFirst();
+                if (optionalRelationalField.isPresent()) {
+                    final var relationalField = optionalRelationalField.get();
+                    if (relationalField.getType().getTypeName().equals(LIST)) {
+                        final var targetSubClassInstance = getTargetSubClassInstanceForList(relationalField);
+                        final var sourceClassGetter = getSourceClassGetter(sourceClass, relationalField);
+                        if (sourceClassGetter.isPresent()) {
+                            final var sourceValue = (List<?>) sourceClassGetter.get().invoke(source);
+                            final var result = sourceValue.stream().map((final var sourceInstance) -> copyEntityProperties(sourceInstance, targetSubClassInstance, ignoreNullProperties)).toList();
+                            targetClass.getDeclaredMethod(SET + capitalize(relationalField.getName()), List.class).invoke(target, result);
+                            log.debug(SET_PROPERTY.formatted(relationalFieldName, target.toString(), result.toString()));
+                        }
+                    } else {
+                        final var targetSubClassInstance = getTargetSubClassInstance(relationalField);
+                        final var sourceClassGetter = getSourceClassGetter(sourceClass, relationalField);
+                        if (sourceClassGetter.isPresent()) {
+                            final var sourceValue = sourceClassGetter.get().invoke(source);
+                            final var result = copyEntityProperties(sourceValue, targetSubClassInstance, ignoreNullProperties);
+                            targetClass.getDeclaredMethod(SET + capitalize(relationalField.getName()), relationalField.getType()).invoke(target, result);
+                            log.debug(SET_PROPERTY.formatted(relationalFieldName, target.toString(), result.toString()));
+                        }
+                    }
+                }
+            } catch (final Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+        return target;
     }
 
 }

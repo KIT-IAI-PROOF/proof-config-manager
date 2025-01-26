@@ -19,7 +19,7 @@ import static com.smateso.proof.adapter.model.Action.*;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createPageable;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createSpecification;
 import static com.smateso.proof.application.utils.LogMessages.TEMPLATE_DAO_NOT_FOUND_MESSAGE;
-import static com.smateso.proof.application.utils.PropertyCopyHelper.TemplatePropertyCopyHelper.copyNonNullTemplateProperties;
+import static com.smateso.proof.application.utils.PropertyCopyHelper.copyEntityProperties;
 import static java.util.Objects.requireNonNull;
 
 @Slf4j
@@ -59,7 +59,7 @@ public class TemplateInteractor implements ITemplateInteractor {
     @Override
     public TemplateDao updateTemplate(@NonNull final String id, @NonNull final TemplateDao updatingTemplate, @NonNull final String sessionKey, @NonNull final String username) {
         final var existingTemplate = this.getTemplate(id);
-        final var result = this.templateRepository.save(copyNonNullTemplateProperties(updatingTemplate, existingTemplate));
+        final var result = this.templateRepository.save(copyEntityProperties(updatingTemplate, existingTemplate, true));
         this.messageInteractor.templateUpdate(requireNonNull(result.getId()), UPDATED, sessionKey, username);
         return result;
     }
