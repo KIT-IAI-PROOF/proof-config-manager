@@ -50,7 +50,7 @@ springdoc:
   show-actuator: false
 logging:
   level:
-    root: debug
+    root: info
 cors:
   methods:
     - GET

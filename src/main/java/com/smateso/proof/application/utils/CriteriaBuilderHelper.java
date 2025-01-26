@@ -28,7 +28,24 @@ public class CriteriaBuilderHelper {
         return (final Root<T> root, final CriteriaQuery<?> query, final CriteriaBuilder builder) -> {
             final var filter = request.getFilter();
             if (filter != null && !filter.getItems().isEmpty()) {
-                return builder.and(filter.getItems().stream().map((final var item) -> builder.equal(getPath(root, item.getField()), item.getValue())).toArray(Predicate[]::new));
+                return builder
+                        .and(filter
+                                .getItems()
+                                .stream()
+                                .map((final var item) -> {
+                                    return switch (item.getOperator()) {
+                                        case "like" ->
+                                                builder.like(getPath(root, item.getField()).as(String.class), "%" + item.getValue() + "%");
+                                        case "notLike" ->
+                                                builder.notLike(getPath(root, item.getField()).as(String.class), "%" + item.getValue() + "%");
+                                        case "gt" ->
+                                                builder.greaterThan(getPath(root, item.getField()).as(String.class), item.getValue());
+                                        case "gte" ->
+                                                builder.greaterThanOrEqualTo(getPath(root, item.getField()).as(String.class), item.getValue());
+                                        default -> builder.equal(getPath(root, item.getField()), item.getValue());
+                                    };
+                                })
+                                .toArray(Predicate[]::new));
             }
             return null;
         };

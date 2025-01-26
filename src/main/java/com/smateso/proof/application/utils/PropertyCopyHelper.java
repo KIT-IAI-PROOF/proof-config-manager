@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -17,7 +18,8 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import static com.smateso.proof.adapter.utils.NullAwareUtil.getNullPropertyNames;
-import static com.smateso.proof.application.utils.LogMessages.*;
+import static com.smateso.proof.application.utils.LogMessages.COPY_BASIC_PROPERTIES;
+import static com.smateso.proof.application.utils.LogMessages.COPY_RELATIONAL_PROPERTIES;
 import static java.lang.Class.forName;
 import static java.util.Arrays.stream;
 import static org.springframework.beans.BeanUtils.copyProperties;
@@ -64,43 +66,46 @@ public class PropertyCopyHelper {
         return forName(targetClassType.getTypeName()).getDeclaredConstructor().newInstance();
     }
 
-    @NonNull
-    public static <S, T> T copyEntityProperties(@NonNull final S source, @NonNull final T target, @NonNull final Boolean ignoreNullProperties) {
-        log.debug(COPY_BASIC_PROPERTIES.formatted(source.toString(), target.toString()));
-        copyProperties(source, target, ignoreNullProperties ? getNullPropertyNames(source) : new String[0]);
-        final var targetClass = target.getClass();
-        final var sourceClass = source.getClass();
-        final var relationalFieldNames = getRelationalFields(targetClass, sourceClass);
-        log.debug(COPY_RELATIONAL_PROPERTIES.formatted(relationalFieldNames.toString(), target.toString()));
-        relationalFieldNames.forEach((final var relationalFieldName) -> {
-            try {
-                final var optionalRelationalField = stream(targetClass.getDeclaredFields()).filter((final Field field) -> field.getName().equals(relationalFieldName)).findFirst();
-                if (optionalRelationalField.isPresent()) {
-                    final var relationalField = optionalRelationalField.get();
-                    final var sourceClassGetter = getSourceClassGetter(sourceClass, relationalField);
-                    if (relationalField.getType().getTypeName().equals(LIST)) {
-                        final var targetSubClassInstance = getTargetSubClassInstanceForList(relationalField);
-                        if (sourceClassGetter.isPresent()) {
-                            final var sourceValue = (List<?>) sourceClassGetter.get().invoke(source);
-                            final var result = sourceValue.stream().map((final var sourceInstance) -> copyEntityProperties(sourceInstance, targetSubClassInstance, ignoreNullProperties)).toList();
-                            targetClass.getDeclaredMethod(SET + capitalize(relationalField.getName()), List.class).invoke(target, result);
-                            log.debug(SET_PROPERTY.formatted(relationalFieldName, target.toString(), result.toString()));
+    @Nullable
+    public static <S, T> T copyEntityProperties(@Nullable final S source, @Nullable final T target, @NonNull final Boolean ignoreNullProperties) {
+        if (source != null) {
+            if (target != null) {
+                log.debug(COPY_BASIC_PROPERTIES.formatted(source.toString(), target.toString()));
+                copyProperties(source, target, ignoreNullProperties ? getNullPropertyNames(source) : new String[0]);
+                final var targetClass = target.getClass();
+                final var sourceClass = source.getClass();
+                final var relationalFieldNames = getRelationalFields(targetClass, sourceClass);
+                log.debug(COPY_RELATIONAL_PROPERTIES.formatted(relationalFieldNames.toString(), target.toString()));
+                relationalFieldNames.forEach((final var relationalFieldName) -> {
+                    try {
+                        final var optionalRelationalField = stream(targetClass.getDeclaredFields()).filter((final Field field) -> field.getName().equals(relationalFieldName)).findFirst();
+                        if (optionalRelationalField.isPresent()) {
+                            final var relationalField = optionalRelationalField.get();
+                            final var sourceClassGetter = getSourceClassGetter(sourceClass, relationalField);
+                            if (relationalField.getType().getTypeName().equals(LIST)) {
+                                final var targetSubClassInstance = getTargetSubClassInstanceForList(relationalField);
+                                if (sourceClassGetter.isPresent()) {
+                                    final var sourceValue = (List<?>) sourceClassGetter.get().invoke(source);
+                                    final var result = sourceValue.stream().map((final var sourceInstance) -> copyEntityProperties(sourceInstance, targetSubClassInstance, ignoreNullProperties)).toList();
+                                    targetClass.getDeclaredMethod(SET + capitalize(relationalField.getName()), List.class).invoke(target, result);
+                                }
+                            } else {
+                                final var targetSubClassInstance = getTargetSubClassInstance(relationalField);
+                                if (sourceClassGetter.isPresent()) {
+                                    final var sourceValue = sourceClassGetter.get().invoke(source);
+                                    final var result = copyEntityProperties(sourceValue, targetSubClassInstance, ignoreNullProperties);
+                                    targetClass.getDeclaredMethod(SET + capitalize(relationalField.getName()), relationalField.getType()).invoke(target, result);
+                                }
+                            }
                         }
-                    } else {
-                        final var targetSubClassInstance = getTargetSubClassInstance(relationalField);
-                        if (sourceClassGetter.isPresent()) {
-                            final var sourceValue = sourceClassGetter.get().invoke(source);
-                            final var result = copyEntityProperties(sourceValue, targetSubClassInstance, ignoreNullProperties);
-                            targetClass.getDeclaredMethod(SET + capitalize(relationalField.getName()), relationalField.getType()).invoke(target, result);
-                            log.debug(SET_PROPERTY.formatted(relationalFieldName, target.toString(), result.toString()));
-                        }
+                    } catch (final Exception e) {
+                        throw new RuntimeException(e);
                     }
-                }
-            } catch (final Exception e) {
-                throw new RuntimeException(e);
+                });
+                return target;
             }
-        });
-        return target;
+        }
+        return null;
     }
 
 }

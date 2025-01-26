@@ -32,6 +32,7 @@ public class Request {
     public static class FilterItem {
         private String field;
         private String value;
+        private String operator;
     }
 
 }
