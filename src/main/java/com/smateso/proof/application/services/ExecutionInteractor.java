@@ -59,7 +59,7 @@ public class ExecutionInteractor implements IExecutionInteractor {
     @Override
     public ExecutionDao updateExecution(@NonNull final String id, @NonNull final ExecutionDao updatingExecution, @NonNull final String sessionKey, @NonNull final String username) {
         final var existingExecution = this.getExecution(id);
-        final var result = this.executionRepository.save(copyEntityProperties(updatingExecution, existingExecution, true));
+        final var result = this.executionRepository.save(copyEntityProperties(updatingExecution, existingExecution, true, List.of()));
         this.messageInteractor.executionUpdate(requireNonNull(result.getId()), UPDATED, sessionKey, username);
         return result;
     }

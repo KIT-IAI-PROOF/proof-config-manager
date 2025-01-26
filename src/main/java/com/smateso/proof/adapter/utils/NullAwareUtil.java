@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 
 public class NullAwareUtil {
 
-    public static String[] getNullPropertyNames(@NonNull final Object source) {
+    public static Stream<String> getNullPropertyNames(@NonNull final Object source) {
         final BeanWrapper wrappedSource = new BeanWrapperImpl(source);
         return Stream.of(wrappedSource.getPropertyDescriptors())
                 .map(FeatureDescriptor::getName)
@@ -21,8 +21,7 @@ public class NullAwareUtil {
                     } else {
                         return value == null;
                     }
-                })
-                .toArray(String[]::new);
+                });
     }
 
 }

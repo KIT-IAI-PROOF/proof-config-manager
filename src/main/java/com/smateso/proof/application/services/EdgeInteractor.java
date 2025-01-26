@@ -55,7 +55,7 @@ public class EdgeInteractor implements IEdgeInteractor {
     @Override
     public EdgeDao updateEdge(@NonNull final String id, @NonNull final EdgeDao updatingEdge, @NonNull final String sessionKey, @NonNull final String username) {
         final var existingEdge = this.getEdge(id);
-        return this.edgeRepository.save(copyEntityProperties(updatingEdge, existingEdge, true));
+        return this.edgeRepository.save(copyEntityProperties(updatingEdge, existingEdge, true, List.of()));
     }
 
     @Override

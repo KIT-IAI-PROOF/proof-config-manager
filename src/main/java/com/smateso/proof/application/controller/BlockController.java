@@ -25,37 +25,37 @@ public class BlockController implements IBlockController {
     @Override
     public ResponseEntity<List<BlockDto>> searchBlocks(@NonNull final Request request) {
         final var blocks = this.blockInteractor.searchBlocks(request);
-        final var result = blocks.stream().map((final var block) -> copyEntityProperties(block, new BlockDto(), false)).toList();
+        final var result = blocks.stream().map((final var block) -> copyEntityProperties(block, new BlockDto(), false, List.of())).toList();
         return ResponseEntity.ok(result);
     }
 
     @Override
     public ResponseEntity<List<BlockDto>> getBlocks() {
         final var blocks = this.blockInteractor.getBlocks();
-        final var result = blocks.stream().map((final var block) -> copyEntityProperties(block, new BlockDto(), false)).toList();
+        final var result = blocks.stream().map((final var block) -> copyEntityProperties(block, new BlockDto(), false, List.of())).toList();
         return ResponseEntity.ok(result);
     }
 
     @Override
     public ResponseEntity<BlockDto> getBlock(final String id) {
         final var block = this.blockInteractor.getBlock(id);
-        final var result = copyEntityProperties(block, new BlockDto(), false);
+        final var result = copyEntityProperties(block, new BlockDto(), false, List.of());
         return ResponseEntity.ok(result);
     }
 
     @Override
     public ResponseEntity<BlockDto> createBlock(@NonNull final BlockDto update, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
         final var username = getUsername(authentication);
-        final var block = this.blockInteractor.createBlock(copyEntityProperties(update, new BlockDao(), false), sessionKey, username);
-        final var result = copyEntityProperties(block, new BlockDto(), false);
+        final var block = this.blockInteractor.createBlock(copyEntityProperties(update, new BlockDao(), false, List.of()), sessionKey, username);
+        final var result = copyEntityProperties(block, new BlockDto(), false, List.of());
         return ResponseEntity.ok(result);
     }
 
     @Override
     public ResponseEntity<BlockDto> updateBlock(@NonNull final String blockId, @NonNull final BlockDto update, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
         final var username = getUsername(authentication);
-        final var block = this.blockInteractor.updateBlock(blockId, copyEntityProperties(update, new BlockDao(), false), sessionKey, username);
-        final var result = copyEntityProperties(block, new BlockDto(), false);
+        final var block = this.blockInteractor.updateBlock(blockId, copyEntityProperties(update, new BlockDao(), false, List.of()), sessionKey, username);
+        final var result = copyEntityProperties(block, new BlockDto(), false, List.of());
         return ResponseEntity.ok(result);
     }
 

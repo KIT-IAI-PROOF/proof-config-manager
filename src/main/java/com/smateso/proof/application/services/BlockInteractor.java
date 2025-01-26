@@ -59,7 +59,7 @@ public class BlockInteractor implements IBlockInteractor {
     @Override
     public BlockDao updateBlock(@NonNull final String id, @NonNull final BlockDao updatingBlock, @NonNull final String sessionKey, @NonNull final String username) {
         final var existingBlock = this.getBlock(id);
-        final var result = this.blockRepository.save(copyEntityProperties(updatingBlock, existingBlock, true));
+        final var result = this.blockRepository.save(copyEntityProperties(updatingBlock, existingBlock, true, List.of()));
         this.messageInteractor.blockUpdate(requireNonNull(result.getId()), UPDATED, sessionKey, username);
         return result;
     }

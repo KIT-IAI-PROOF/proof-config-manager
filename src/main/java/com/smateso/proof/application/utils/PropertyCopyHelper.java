@@ -1,7 +1,6 @@
 package com.smateso.proof.application.utils;
 
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import edu.kit.iai.webis.proofmodels.dto.Relational;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +11,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -34,13 +34,12 @@ public class PropertyCopyHelper {
     public static final String GET = "get";
     public static final String LIST = "java.util.List";
 
-    private static HashSet<String> getRelationalFields(@NonNull final Class<?> targetClass, @NonNull final Class<?> sourceClass) {
+    private static HashSet<String> getRelationalFields(@NonNull final Class<?> targetClass) {
         final var result = new HashSet<String>();
-        Stream
-                .concat(stream(sourceClass.getDeclaredFields()), stream(targetClass.getDeclaredFields()))
+        stream(targetClass.getDeclaredFields())
                 .forEach((final var field) -> {
                     final var annotations = field.getDeclaredAnnotations();
-                    if (stream(annotations).anyMatch((final var annotation) -> annotation.annotationType().equals(OneToOne.class) || annotation.annotationType().equals(OneToMany.class))) {
+                    if (stream(annotations).anyMatch((final var annotation) -> annotation.annotationType().equals(Relational.class))) {
                         result.add(field.getName());
                     }
                 });
@@ -66,42 +65,48 @@ public class PropertyCopyHelper {
         return forName(targetClassType.getTypeName()).getDeclaredConstructor().newInstance();
     }
 
-    @Nullable
-    public static <S, T> T copyEntityProperties(@Nullable final S source, @Nullable final T target, @NonNull final Boolean ignoreNullProperties) {
+    public static <S, T> T copyEntityProperties(@Nullable final S source, @Nullable final T target, @NonNull final Boolean ignoreNullProperties, @NonNull final List<String> excludedProperties) {
         if (source != null) {
             if (target != null) {
                 log.debug(COPY_BASIC_PROPERTIES.formatted(source.toString(), target.toString()));
-                copyProperties(source, target, ignoreNullProperties ? getNullPropertyNames(source) : new String[0]);
+                copyProperties(source, target, Stream.concat(ignoreNullProperties ? getNullPropertyNames(source) : Stream.of(), excludedProperties.stream()).toArray(String[]::new));
                 final var targetClass = target.getClass();
                 final var sourceClass = source.getClass();
-                final var relationalFieldNames = getRelationalFields(targetClass, sourceClass);
+                final var relationalFieldNames = getRelationalFields(targetClass);
                 log.debug(COPY_RELATIONAL_PROPERTIES.formatted(relationalFieldNames.toString(), target.toString()));
-                relationalFieldNames.forEach((final var relationalFieldName) -> {
-                    try {
-                        final var optionalRelationalField = stream(targetClass.getDeclaredFields()).filter((final Field field) -> field.getName().equals(relationalFieldName)).findFirst();
-                        if (optionalRelationalField.isPresent()) {
-                            final var relationalField = optionalRelationalField.get();
-                            final var sourceClassGetter = getSourceClassGetter(sourceClass, relationalField);
-                            if (relationalField.getType().getTypeName().equals(LIST)) {
-                                final var targetSubClassInstance = getTargetSubClassInstanceForList(relationalField);
-                                if (sourceClassGetter.isPresent()) {
-                                    final var sourceValue = (List<?>) sourceClassGetter.get().invoke(source);
-                                    final var result = sourceValue.stream().map((final var sourceInstance) -> copyEntityProperties(sourceInstance, targetSubClassInstance, ignoreNullProperties)).toList();
-                                    targetClass.getDeclaredMethod(SET + capitalize(relationalField.getName()), List.class).invoke(target, result);
+                relationalFieldNames
+                        .stream()
+                        .filter((final var relationalFieldName) -> !excludedProperties.contains(relationalFieldName))
+                        .forEach((final var relationalFieldName) -> {
+                            try {
+                                final var optionalRelationalField = stream(targetClass.getDeclaredFields()).filter((final Field field) -> field.getName().equals(relationalFieldName)).findFirst();
+                                if (optionalRelationalField.isPresent()) {
+                                    final var relationalField = optionalRelationalField.get();
+                                    final var sourceClassGetter = getSourceClassGetter(sourceClass, relationalField);
+                                    if (relationalField.getType().getTypeName().equals(LIST)) {
+                                        if (sourceClassGetter.isPresent()) {
+                                            final var sourceValue = (List<?>) sourceClassGetter.get().invoke(source);
+                                            final var result = new ArrayList<>();
+                                            for (Object sourceInstance : sourceValue) {
+                                                final var targetSubClassInstance = getTargetSubClassInstanceForList(relationalField);
+                                                Object o = copyEntityProperties(sourceInstance, targetSubClassInstance, ignoreNullProperties, relationalFieldNames.stream().toList());
+                                                result.add(o);
+                                            }
+                                            targetClass.getDeclaredMethod(SET + capitalize(relationalField.getName()), List.class).invoke(target, result);
+                                        }
+                                    } else {
+                                        final var targetSubClassInstance = getTargetSubClassInstance(relationalField);
+                                        if (sourceClassGetter.isPresent()) {
+                                            final var sourceValue = sourceClassGetter.get().invoke(source);
+                                            final var result = copyEntityProperties(sourceValue, targetSubClassInstance, ignoreNullProperties, relationalFieldNames.stream().toList());
+                                            targetClass.getDeclaredMethod(SET + capitalize(relationalField.getName()), relationalField.getType()).invoke(target, result);
+                                        }
+                                    }
                                 }
-                            } else {
-                                final var targetSubClassInstance = getTargetSubClassInstance(relationalField);
-                                if (sourceClassGetter.isPresent()) {
-                                    final var sourceValue = sourceClassGetter.get().invoke(source);
-                                    final var result = copyEntityProperties(sourceValue, targetSubClassInstance, ignoreNullProperties);
-                                    targetClass.getDeclaredMethod(SET + capitalize(relationalField.getName()), relationalField.getType()).invoke(target, result);
-                                }
+                            } catch (final Exception e) {
+                                throw new RuntimeException(e);
                             }
-                        }
-                    } catch (final Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                });
+                        });
                 return target;
             }
         }

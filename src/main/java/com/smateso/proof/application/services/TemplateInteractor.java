@@ -59,7 +59,7 @@ public class TemplateInteractor implements ITemplateInteractor {
     @Override
     public TemplateDao updateTemplate(@NonNull final String id, @NonNull final TemplateDao updatingTemplate, @NonNull final String sessionKey, @NonNull final String username) {
         final var existingTemplate = this.getTemplate(id);
-        final var result = this.templateRepository.save(copyEntityProperties(updatingTemplate, existingTemplate, true));
+        final var result = this.templateRepository.save(copyEntityProperties(updatingTemplate, existingTemplate, true, List.of()));
         this.messageInteractor.templateUpdate(requireNonNull(result.getId()), UPDATED, sessionKey, username);
         return result;
     }

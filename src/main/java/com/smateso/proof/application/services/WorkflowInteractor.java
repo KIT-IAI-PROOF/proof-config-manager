@@ -59,7 +59,7 @@ public class WorkflowInteractor implements IWorkflowInteractor {
     @Override
     public WorkflowDao updateWorkflow(@NonNull final String id, @NonNull final WorkflowDao updatingWorkflow, @NonNull final String sessionKey, @NonNull final String username) {
         final var existingWorkflow = this.getWorkflow(id);
-        final var result = this.workflowRepository.save(copyEntityProperties(updatingWorkflow, existingWorkflow, true));
+        final var result = this.workflowRepository.save(copyEntityProperties(updatingWorkflow, existingWorkflow, true, List.of()));
         this.messageInteractor.workflowUpdate(requireNonNull(result.getId()), UPDATED, sessionKey, username);
         return result;
     }
