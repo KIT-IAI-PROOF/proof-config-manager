@@ -12,7 +12,7 @@ import static org.springframework.data.domain.Sort.by;
 
 public class CriteriaBuilderHelper {
 
-    public static Path<?> getPath(Root<?> root, String columnPath) {
+    public static Path<?> getPath(@NonNull final Root<?> root, @NonNull final String columnPath) {
         if (!columnPath.contains(".")) {
             return root.get(columnPath);
         }
@@ -32,18 +32,20 @@ public class CriteriaBuilderHelper {
                         .and(filter
                                 .getItems()
                                 .stream()
-                                .map((final var item) -> {
-                                    return switch (item.getOperator()) {
-                                        case "like" ->
-                                                builder.like(getPath(root, item.getField()).as(String.class), "%" + item.getValue() + "%");
-                                        case "notLike" ->
-                                                builder.notLike(getPath(root, item.getField()).as(String.class), "%" + item.getValue() + "%");
-                                        case "gt" ->
-                                                builder.greaterThan(getPath(root, item.getField()).as(String.class), item.getValue());
-                                        case "gte" ->
-                                                builder.greaterThanOrEqualTo(getPath(root, item.getField()).as(String.class), item.getValue());
-                                        default -> builder.equal(getPath(root, item.getField()), item.getValue());
-                                    };
+                                .map((final var item) -> switch (item.getOperator()) {
+                                    case LIKE ->
+                                            builder.like(getPath(root, item.getField()).as(String.class), "%" + item.getValue() + "%");
+                                    case NOT_LIKE ->
+                                            builder.notLike(getPath(root, item.getField()).as(String.class), "%" + item.getValue() + "%");
+                                    case GT ->
+                                            builder.greaterThan(getPath(root, item.getField()).as(String.class), item.getValue());
+                                    case GTE ->
+                                            builder.greaterThanOrEqualTo(getPath(root, item.getField()).as(String.class), item.getValue());
+                                    case LT ->
+                                            builder.lessThan(getPath(root, item.getField()).as(String.class), item.getValue());
+                                    case LTE ->
+                                            builder.lessThanOrEqualTo(getPath(root, item.getField()).as(String.class), item.getValue());
+                                    default -> builder.equal(getPath(root, item.getField()), item.getValue());
                                 })
                                 .toArray(Predicate[]::new));
             }
@@ -55,7 +57,7 @@ public class CriteriaBuilderHelper {
         final Pageable pageable;
         if (request.getPagination() != null) {
             if (request.getSort() != null) {
-                final var sort = by(request.getSort().stream().map((final Request.Sort requestSort) -> new Sort.Order(Sort.Direction.fromString(requestSort.getSort()), requestSort.getField())).toList());
+                final var sort = by(request.getSort().stream().map((final com.smateso.proof.adapter.model.Sort requestSort) -> new Sort.Order(Sort.Direction.fromString(requestSort.getSort()), requestSort.getField())).toList());
                 pageable = of(request.getPagination().getPage(), request.getPagination().getPageSize(), sort);
             } else {
                 pageable = of(request.getPagination().getPage(), request.getPagination().getPageSize());
