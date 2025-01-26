@@ -2,7 +2,8 @@ package com.smateso.proof.adapter.boundaries.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.smateso.proof.adapter.model.Request;
-import edu.kit.iai.webis.proofmodels.dto.WorkflowDto;
+import edu.kit.iai.webis.proofmodels.dto.WorkflowRequestDto;
+import edu.kit.iai.webis.proofmodels.dto.WorkflowResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -35,7 +36,7 @@ public interface IWorkflowController {
                     @ApiResponse(responseCode = "500", description = "Retrieval incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @PostMapping(value = "search", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<List<WorkflowDto>> searchWorkflows(@RequestBody final Request request);
+    ResponseEntity<List<WorkflowResponseDto>> searchWorkflows(@RequestBody final Request request);
 
     @JsonView(Listing.class)
     @Operation(
@@ -47,7 +48,7 @@ public interface IWorkflowController {
                     @ApiResponse(responseCode = "500", description = "Retrieval incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @GetMapping(consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<List<WorkflowDto>> getWorkflows();
+    ResponseEntity<List<WorkflowResponseDto>> getWorkflows();
 
     @JsonView(Detail.class)
     @Operation(
@@ -59,7 +60,7 @@ public interface IWorkflowController {
                     @ApiResponse(responseCode = "500", description = "Retrieval incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @GetMapping(value = "{id}", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<WorkflowDto> getWorkflow(@PathVariable(value = "id") final String id);
+    ResponseEntity<WorkflowResponseDto> getWorkflow(@PathVariable(value = "id") final String id);
 
     @JsonView(Detail.class)
     @Operation(
@@ -71,7 +72,7 @@ public interface IWorkflowController {
                     @ApiResponse(responseCode = "500", description = "Create incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<WorkflowDto> createWorkflow(@RequestBody final WorkflowDto workflow, @RequestParam final String sessionKey, final Authentication authentication);
+    ResponseEntity<WorkflowResponseDto> createWorkflow(@RequestBody final WorkflowRequestDto workflow, @RequestParam final String sessionKey, final Authentication authentication);
 
     @JsonView(Detail.class)
     @Operation(
@@ -83,7 +84,7 @@ public interface IWorkflowController {
                     @ApiResponse(responseCode = "500", description = "Update incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @PostMapping(value = "{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<WorkflowDto> updateWorkflow(@PathVariable(value = "id") final String id, @RequestBody final WorkflowDto workflow, @RequestParam final String sessionKey, final Authentication authentication);
+    ResponseEntity<WorkflowResponseDto> updateWorkflow(@PathVariable(value = "id") final String id, @RequestBody final WorkflowRequestDto workflow, @RequestParam final String sessionKey, final Authentication authentication);
 
     @JsonView(Detail.class)
     @Operation(
@@ -94,7 +95,7 @@ public interface IWorkflowController {
                     @ApiResponse(responseCode = "200", description = "Delete successful", useReturnTypeSchema = true),
                     @ApiResponse(responseCode = "500", description = "Delete incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
-    @DeleteMapping(value = "{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @DeleteMapping(value = "{id}", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
     ResponseEntity<Void> deleteWorkflow(@PathVariable(value = "id") final String id, @RequestParam final String sessionKey, final Authentication authentication);
 
 }

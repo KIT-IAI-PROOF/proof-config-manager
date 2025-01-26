@@ -3,7 +3,6 @@ package com.smateso.proof.application.controller;
 import com.smateso.proof.adapter.boundaries.controller.ITemplateController;
 import com.smateso.proof.adapter.boundaries.services.ITemplateInteractor;
 import com.smateso.proof.adapter.model.Request;
-import com.smateso.proof.application.utils.PropertyCopyHelper;
 import edu.kit.iai.webis.proofmodels.dto.TemplateDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
@@ -12,7 +11,8 @@ import org.springframework.security.core.Authentication;
 import java.util.List;
 
 import static com.smateso.proof.adapter.config.AuditorProvider.getUsername;
-import static com.smateso.proof.application.utils.PropertyCopyHelper.copyTemplateProperties;
+import static com.smateso.proof.application.utils.PropertyCopyHelper.TemplatePropertyCopyHelper;
+import static com.smateso.proof.application.utils.PropertyCopyHelper.TemplatePropertyCopyHelper.copyTemplateProperties;
 
 public class TemplateController implements ITemplateController {
 
@@ -24,14 +24,14 @@ public class TemplateController implements ITemplateController {
 
     @Override
     public ResponseEntity<List<TemplateDto>> searchTemplates(@NonNull final Request request) {
-        final var result = this.templateInteractor.searchTemplates(request).stream().map(PropertyCopyHelper::copyTemplateProperties);
+        final var result = this.templateInteractor.searchTemplates(request).stream().map(TemplatePropertyCopyHelper::copyTemplateProperties);
         return ResponseEntity.ok(result.toList());
     }
 
     @Override
     public ResponseEntity<List<TemplateDto>> getTemplates() {
         final var blocks = this.templateInteractor.getTemplates();
-        final var result = blocks.stream().map(PropertyCopyHelper::copyTemplateProperties).toList();
+        final var result = blocks.stream().map(TemplatePropertyCopyHelper::copyTemplateProperties).toList();
         return ResponseEntity.ok(result);
     }
 

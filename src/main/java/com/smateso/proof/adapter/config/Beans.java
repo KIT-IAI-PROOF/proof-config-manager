@@ -43,44 +43,68 @@ public class Beans {
                 .create();
     }
 
-
     @Bean(value = "workflowInteractor", name = "workflowInteractor")
     public IWorkflowInteractor workflowInteractor(
             @Qualifier("workflowRepository") @NonNull final WorkflowRepository workflowRepository,
             @Qualifier("messageInteractor") @NonNull final IMessageInteractor messageInteractor) {
-        return new WorkflowInteractor(workflowRepository, messageInteractor);
+        return WorkflowInteractor
+                .builder()
+                .workflowRepository(workflowRepository)
+                .messageInteractor(messageInteractor)
+                .build();
     }
 
     @Bean(value = "blockInteractor", name = "blockInteractor")
     public IBlockInteractor blockInteractor(
             @Qualifier("blockRepository") @NonNull final BlockRepository blockRepository,
-            @Qualifier("messageInteractor") @NonNull final IMessageInteractor IMessageInteractor) {
-        return new BlockInteractor(blockRepository, IMessageInteractor);
+            @Qualifier("messageInteractor") @NonNull final IMessageInteractor messageInteractor) {
+        return BlockInteractor
+                .builder()
+                .blockRepository(blockRepository)
+                .messageInteractor(messageInteractor)
+                .build();
     }
 
     @Bean(value = "edgeInteractor", name = "edgeInteractor")
     public IEdgeInteractor edgeInteractor(@Qualifier("edgeRepository") @NonNull final EdgeRepository edgeRepository) {
-        return new EdgeInteractor(edgeRepository);
+        return EdgeInteractor
+                .builder()
+                .edgeRepository(edgeRepository)
+                .build();
     }
 
     @Bean(value = "templateInteractor", name = "templateInteractor")
     public ITemplateInteractor templateInteractor(@Qualifier("templateRepository") @NonNull final TemplateRepository templateRepository, @Qualifier("messageInteractor") @NonNull final IMessageInteractor IMessageInteractor) {
-        return new TemplateInteractor(templateRepository, IMessageInteractor);
+        return TemplateInteractor
+                .builder()
+                .templateRepository(templateRepository)
+                .messageInteractor(IMessageInteractor)
+                .build();
     }
 
     @Bean(value = "executionInteractor", name = "executionInteractor")
     public IExecutionInteractor executionInteractor(@Qualifier("executionRepository") @NonNull final ExecutionRepository executionRepository, @Qualifier("messageInteractor") @NonNull final IMessageInteractor IMessageInteractor) {
-        return new ExecutionInteractor(executionRepository, IMessageInteractor);
+        return ExecutionInteractor
+                .builder()
+                .executionRepository(executionRepository)
+                .messageInteractor(IMessageInteractor)
+                .build();
     }
 
     @Bean(value = "messageInteractor", name = "messageInteractor")
     public IMessageInteractor messageInteractor(@NonNull final SimpMessagingTemplate simpMessagingTemplate) {
-        return new MessageInteractor(simpMessagingTemplate);
+        return MessageInteractor
+                .builder()
+                .simpMessagingTemplate(simpMessagingTemplate)
+                .build();
     }
 
     @Bean(value = "workflowController", name = "workflowController")
     public IWorkflowController workflowController(@Qualifier("workflowInteractor") IWorkflowInteractor workflowInteractor) {
-        return new WorkflowController(workflowInteractor);
+        return WorkflowController
+                .builder()
+                .workflowInteractor(workflowInteractor)
+                .build();
     }
 
     @Bean(value = "blockController", name = "blockController")

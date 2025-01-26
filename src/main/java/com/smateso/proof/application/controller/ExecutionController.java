@@ -3,7 +3,7 @@ package com.smateso.proof.application.controller;
 import com.smateso.proof.adapter.boundaries.controller.IExecutionController;
 import com.smateso.proof.adapter.boundaries.services.IExecutionInteractor;
 import com.smateso.proof.adapter.model.Request;
-import com.smateso.proof.application.utils.PropertyCopyHelper;
+import com.smateso.proof.application.utils.PropertyCopyHelper.ExecutionPropertyCopyHelper;
 import edu.kit.iai.webis.proofmodels.dto.ExecutionDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
@@ -12,7 +12,7 @@ import org.springframework.security.core.Authentication;
 import java.util.List;
 
 import static com.smateso.proof.adapter.config.AuditorProvider.getUsername;
-import static com.smateso.proof.application.utils.PropertyCopyHelper.copyExecutionProperties;
+import static com.smateso.proof.application.utils.PropertyCopyHelper.ExecutionPropertyCopyHelper.copyExecutionProperties;
 
 public class ExecutionController implements IExecutionController {
 
@@ -24,13 +24,13 @@ public class ExecutionController implements IExecutionController {
 
     @Override
     public ResponseEntity<List<ExecutionDto>> searchExecutions(@NonNull final Request request) {
-        final var result = this.executionInteractor.searchExecutions(request).stream().map(PropertyCopyHelper::copyExecutionProperties);
+        final var result = this.executionInteractor.searchExecutions(request).stream().map(ExecutionPropertyCopyHelper::copyExecutionProperties);
         return ResponseEntity.ok(result.toList());
     }
 
     @Override
     public ResponseEntity<List<ExecutionDto>> getExecutions() {
-        return ResponseEntity.ok(this.executionInteractor.getExecutions().stream().map(PropertyCopyHelper::copyExecutionProperties).toList());
+        return ResponseEntity.ok(this.executionInteractor.getExecutions().stream().map(ExecutionPropertyCopyHelper::copyExecutionProperties).toList());
     }
 
     @Override

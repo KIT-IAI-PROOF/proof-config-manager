@@ -31,13 +31,6 @@ public class DataImporter implements CommandLineRunner {
         this.templateRepository = templateRepository;
     }
 
-    /**
-     * Executes the main logic for the application, processing the provided arguments.
-     * This method is triggered upon application startup and is responsible for evicting
-     * multiple cache entries to ensure data consistency.
-     *
-     * @param args the command-line arguments passed to the application, typically used for configuration or processing directives
-     */
     @Override
     @Caching(
             evict = {
@@ -63,6 +56,8 @@ public class DataImporter implements CommandLineRunner {
                 .color(color)
                 .type("block")
                 .description(label)
+                .sourceHandles(List.of())
+                .targetHandles(List.of())
                 .label(label)
                 .build();
         template.setTargetHandles(createTargetHandles(numberOfTargetHandles, template));

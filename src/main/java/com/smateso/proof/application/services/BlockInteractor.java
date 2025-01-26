@@ -6,68 +6,47 @@ import com.smateso.proof.adapter.exceptions.NotFoundException;
 import com.smateso.proof.adapter.model.Request;
 import com.smateso.proof.adapter.repositories.BlockRepository;
 import edu.kit.iai.webis.proofmodels.dao.BlockDao;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.smateso.proof.adapter.model.Action.*;
-import static com.smateso.proof.adapter.utils.NullAwareUtil.getNullPropertyNames;
-import static com.smateso.proof.application.utils.CriteriaBuilderHelper.getPath;
+import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createPageable;
+import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createSpecification;
+import static com.smateso.proof.application.utils.LogMessages.BLOCK_DAO_NOT_FOUND_MESSAGE;
+import static com.smateso.proof.application.utils.PropertyCopyHelper.BlockPropertyCopyHelper.copyNonNullBlockProperties;
 import static java.util.Objects.requireNonNull;
-import static org.springframework.beans.BeanUtils.copyProperties;
-import static org.springframework.data.domain.PageRequest.of;
-import static org.springframework.data.domain.Sort.by;
 
+@Slf4j
+@Builder
+@AllArgsConstructor
 public class BlockInteractor implements IBlockInteractor {
 
-    private final BlockRepository blockRepository;
     private final IMessageInteractor messageInteractor;
-
-    public BlockInteractor(@NonNull final BlockRepository blockRepository, @NonNull final IMessageInteractor messageInteractor) {
-        this.blockRepository = blockRepository;
-        this.messageInteractor = messageInteractor;
-    }
+    private final BlockRepository blockRepository;
 
     @Override
     public Page<BlockDao> searchBlocks(@NonNull final Request request) {
-        final Pageable pageable;
-        if (request.getPagination() != null) {
-            if (request.getSort() != null) {
-                final var sort = by(request.getSort().stream().map((final Request.Sort requestSort) -> new Sort.Order(Sort.Direction.fromString(requestSort.getSort()), requestSort.getField())).toList());
-                pageable = of(request.getPagination().getPage(), request.getPagination().getPageSize(), sort);
-            } else {
-                pageable = of(request.getPagination().getPage(), request.getPagination().getPageSize());
-            }
-        } else {
-            pageable = Pageable.unpaged();
-        }
-        return this.blockRepository.findAll((final Root<BlockDao> root, final CriteriaQuery<?> query, final CriteriaBuilder builder) -> {
-            List<Predicate> predicates = new ArrayList<>();
-            final var filter = request.getFilter();
-            if (filter != null) {
-                final var items = filter.getItems();
-                items.forEach((final Request.FilterItem item) -> predicates.add(builder.equal(getPath(root, item.getField()), item.getValue())));
-            }
-            return builder.and(predicates.toArray(new Predicate[]{}));
-        }, pageable);
+        final Specification<BlockDao> specification = createSpecification(request);
+        final var pageable = createPageable(request);
+        return this.blockRepository.findAll(specification, pageable);
+    }
+
+    @Override
+    public List<BlockDao> getBlocks() {
+        return this.blockRepository.findAll();
     }
 
     @Override
     public BlockDao getBlock(@NonNull final String id) {
         final var result = this.blockRepository.findById(id);
-        if (result.isPresent()) {
-            return result.get();
-        } else {
-            throw new NotFoundException("BlockDao with id %s not found".formatted(id));
-        }
+        if (result.isPresent()) return result.get();
+        else throw new NotFoundException(BLOCK_DAO_NOT_FOUND_MESSAGE.formatted(id));
     }
 
     @Override
@@ -78,13 +57,9 @@ public class BlockInteractor implements IBlockInteractor {
     }
 
     @Override
-    public BlockDao updateBlock(@NonNull final String id, @NonNull final BlockDao blockDao, @NonNull final String sessionKey, @NonNull final String username) {
+    public BlockDao updateBlock(@NonNull final String id, @NonNull final BlockDao updatingBlock, @NonNull final String sessionKey, @NonNull final String username) {
         final var existingBlock = this.getBlock(id);
-        copyProperties(blockDao, existingBlock, getNullPropertyNames(blockDao));
-        existingBlock.setWorkflow(existingBlock.getWorkflow());
-        existingBlock.setTargetHandles(existingBlock.getTargetHandles());
-        existingBlock.setSourceHandles(existingBlock.getSourceHandles());
-        final var result = this.blockRepository.save(existingBlock);
+        final var result = this.blockRepository.save(copyNonNullBlockProperties(updatingBlock, existingBlock));
         this.messageInteractor.blockUpdate(requireNonNull(result.getId()), UPDATED, sessionKey, username);
         return result;
     }
@@ -93,11 +68,6 @@ public class BlockInteractor implements IBlockInteractor {
     public void deleteBlock(@NonNull final String id, @NonNull final String sessionKey, @NonNull final String username) {
         this.blockRepository.deleteById(id);
         this.messageInteractor.blockUpdate(id, DELETED, sessionKey, username);
-    }
-
-    @Override
-    public List<BlockDao> getBlocks() {
-        return this.blockRepository.findAll();
     }
 
 }

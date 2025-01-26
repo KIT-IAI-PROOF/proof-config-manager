@@ -6,96 +6,68 @@ import com.smateso.proof.adapter.exceptions.NotFoundException;
 import com.smateso.proof.adapter.model.Request;
 import com.smateso.proof.adapter.repositories.TemplateRepository;
 import edu.kit.iai.webis.proofmodels.dao.TemplateDao;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import static com.smateso.proof.adapter.model.Action.CREATED;
-import static com.smateso.proof.adapter.model.Action.DELETED;
-import static com.smateso.proof.adapter.utils.NullAwareUtil.getNullPropertyNames;
-import static com.smateso.proof.application.utils.CriteriaBuilderHelper.getPath;
+import static com.smateso.proof.adapter.model.Action.*;
+import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createPageable;
+import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createSpecification;
+import static com.smateso.proof.application.utils.LogMessages.TEMPLATE_DAO_NOT_FOUND_MESSAGE;
+import static com.smateso.proof.application.utils.PropertyCopyHelper.TemplatePropertyCopyHelper.copyNonNullTemplateProperties;
 import static java.util.Objects.requireNonNull;
-import static org.springframework.beans.BeanUtils.copyProperties;
-import static org.springframework.data.domain.PageRequest.of;
-import static org.springframework.data.domain.Sort.by;
 
+@Slf4j
+@Builder
+@AllArgsConstructor
 public class TemplateInteractor implements ITemplateInteractor {
 
+    private final IMessageInteractor messageInteractor;
     private final TemplateRepository templateRepository;
-    private final com.smateso.proof.adapter.boundaries.services.IMessageInteractor IMessageInteractor;
-
-    public TemplateInteractor(@NonNull final TemplateRepository templateRepository, @NonNull final IMessageInteractor IMessageInteractor) {
-        this.templateRepository = templateRepository;
-        this.IMessageInteractor = IMessageInteractor;
-    }
 
     @Override
     public Page<TemplateDao> searchTemplates(@NonNull final Request request) {
-        final Pageable pageable;
-        if (request.getPagination() != null) {
-            if (request.getSort() != null) {
-                final var sort = by(request.getSort().stream().map((final Request.Sort requestSort) -> new Sort.Order(Sort.Direction.fromString(requestSort.getSort()), requestSort.getField())).toList());
-                pageable = of(request.getPagination().getPage(), request.getPagination().getPageSize(), sort);
-            } else {
-                pageable = of(request.getPagination().getPage(), request.getPagination().getPageSize());
-            }
-        } else {
-            pageable = Pageable.unpaged();
-        }
-        return this.templateRepository.findAll((final Root<TemplateDao> root, final CriteriaQuery<?> query, final CriteriaBuilder builder) -> {
-            List<Predicate> predicates = new ArrayList<>();
-            final var filter = request.getFilter();
-            if (filter != null) {
-                final var items = filter.getItems();
-                items.forEach((final Request.FilterItem item) -> predicates.add(builder.equal(getPath(root, item.getField()), item.getValue())));
-            }
-            return builder.and(predicates.toArray(new Predicate[]{}));
-        }, pageable);
-    }
-
-    @Override
-    public TemplateDao getTemplate(@NonNull final String id) {
-        final var result = this.templateRepository.findById(id);
-        if (result.isPresent()) {
-            return result.get();
-        } else {
-            throw new NotFoundException("TemplateDao with id %s not found".formatted(id));
-        }
-    }
-
-    @Override
-    public TemplateDao createTemplate(@NonNull final TemplateDao templateDao, @NonNull final String sessionKey, @NonNull final String username) {
-        final var result = this.templateRepository.save(templateDao);
-        this.IMessageInteractor.templateUpdate(requireNonNull(result.getId()), CREATED, sessionKey, username);
-        return result;
-    }
-
-    @Override
-    public TemplateDao updateTemplate(@NonNull final String id, @NonNull final TemplateDao templateDao, @NonNull final String sessionKey, @NonNull final String username) {
-        final var existingTemplate = this.getTemplate(id);
-        copyProperties(templateDao, existingTemplate, getNullPropertyNames(templateDao));
-        existingTemplate.setTargetHandles(existingTemplate.getTargetHandles());
-        existingTemplate.setSourceHandles(existingTemplate.getSourceHandles());
-        return this.templateRepository.save(existingTemplate);
-    }
-
-    @Override
-    public void deleteTemplate(@NonNull final String id, @NonNull final String sessionKey, @NonNull final String username) {
-        this.templateRepository.deleteById(id);
-        this.IMessageInteractor.templateUpdate(id, DELETED, sessionKey, username);
+        final Specification<TemplateDao> specification = createSpecification(request);
+        final var pageable = createPageable(request);
+        return this.templateRepository.findAll(specification, pageable);
     }
 
     @Override
     public List<TemplateDao> getTemplates() {
         return this.templateRepository.findAll();
+    }
+
+    @Override
+    public TemplateDao getTemplate(@NonNull final String id) {
+        final var result = this.templateRepository.findById(id);
+        if (result.isPresent()) return result.get();
+        else throw new NotFoundException(TEMPLATE_DAO_NOT_FOUND_MESSAGE.formatted(id));
+    }
+
+    @Override
+    public TemplateDao createTemplate(@NonNull final TemplateDao templateDao, @NonNull final String sessionKey, @NonNull final String username) {
+        final var result = this.templateRepository.save(templateDao);
+        this.messageInteractor.templateUpdate(requireNonNull(result.getId()), CREATED, sessionKey, username);
+        return result;
+    }
+
+    @Override
+    public TemplateDao updateTemplate(@NonNull final String id, @NonNull final TemplateDao updatingTemplate, @NonNull final String sessionKey, @NonNull final String username) {
+        final var existingTemplate = this.getTemplate(id);
+        final var result = this.templateRepository.save(copyNonNullTemplateProperties(updatingTemplate, existingTemplate));
+        this.messageInteractor.templateUpdate(requireNonNull(result.getId()), UPDATED, sessionKey, username);
+        return result;
+    }
+
+    @Override
+    public void deleteTemplate(@NonNull final String id, @NonNull final String sessionKey, @NonNull final String username) {
+        this.templateRepository.deleteById(id);
+        this.messageInteractor.templateUpdate(id, DELETED, sessionKey, username);
     }
 
 }

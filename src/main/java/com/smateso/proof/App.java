@@ -37,8 +37,8 @@ import static org.springframework.boot.SpringApplication.run;
 @EntityScan("edu.kit.iai.webis.proofmodels")
 @OpenAPIDefinition(
         info = @Info(
-                title = "PROOF Data Service",
-                description = "PROOF Data Service",
+                title = "PROOF Config Manager",
+                description = "PROOF Config Manager",
                 version = "1.0.0",
                 contact = @Contact(name = "Smateso GmbH")
         ),

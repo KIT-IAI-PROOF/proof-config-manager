@@ -3,7 +3,6 @@ package com.smateso.proof.application.controller;
 import com.smateso.proof.adapter.boundaries.controller.IEdgeController;
 import com.smateso.proof.adapter.boundaries.services.IEdgeInteractor;
 import com.smateso.proof.adapter.model.Request;
-import com.smateso.proof.application.utils.PropertyCopyHelper;
 import edu.kit.iai.webis.proofmodels.dto.EdgeDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
@@ -12,7 +11,8 @@ import org.springframework.security.core.Authentication;
 import java.util.List;
 
 import static com.smateso.proof.adapter.config.AuditorProvider.getUsername;
-import static com.smateso.proof.application.utils.PropertyCopyHelper.copyEdgeProperties;
+import static com.smateso.proof.application.utils.PropertyCopyHelper.EdgePropertyCopyHelper;
+import static com.smateso.proof.application.utils.PropertyCopyHelper.EdgePropertyCopyHelper.copyEdgeProperties;
 
 public class EdgeController implements IEdgeController {
 
@@ -24,14 +24,14 @@ public class EdgeController implements IEdgeController {
 
     @Override
     public ResponseEntity<List<EdgeDto>> searchEdges(@NonNull final Request request) {
-        final var result = this.edgeInteractor.searchEdges(request).stream().map(PropertyCopyHelper::copyEdgeProperties);
+        final var result = this.edgeInteractor.searchEdges(request).stream().map(EdgePropertyCopyHelper::copyEdgeProperties);
         return ResponseEntity.ok(result.toList());
     }
 
     @Override
     public ResponseEntity<List<EdgeDto>> getEdges() {
         final var edges = this.edgeInteractor.getEdges();
-        final var result = edges.stream().map(PropertyCopyHelper::copyEdgeProperties).toList();
+        final var result = edges.stream().map(EdgePropertyCopyHelper::copyEdgeProperties).toList();
         return ResponseEntity.ok(result);
     }
 
