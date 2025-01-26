@@ -48,7 +48,7 @@ public class PropertyCopyHelper {
     private static Optional<Method> getSourceClassGetter(@NonNull final Class<?> sourceClass, @NonNull final Field relationalField) {
         try {
             final var sourceClassMethods = sourceClass.getDeclaredMethods();
-            return stream(sourceClassMethods).filter(method -> method.getName().equals(GET + capitalize(relationalField.getName()))).findFirst();
+            return stream(sourceClassMethods).filter((final var method) -> method.getName().equals(GET + capitalize(relationalField.getName()))).findFirst();
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
@@ -77,9 +77,9 @@ public class PropertyCopyHelper {
                 final var optionalRelationalField = stream(targetClass.getDeclaredFields()).filter((final Field field) -> field.getName().equals(relationalFieldName)).findFirst();
                 if (optionalRelationalField.isPresent()) {
                     final var relationalField = optionalRelationalField.get();
+                    final var sourceClassGetter = getSourceClassGetter(sourceClass, relationalField);
                     if (relationalField.getType().getTypeName().equals(LIST)) {
                         final var targetSubClassInstance = getTargetSubClassInstanceForList(relationalField);
-                        final var sourceClassGetter = getSourceClassGetter(sourceClass, relationalField);
                         if (sourceClassGetter.isPresent()) {
                             final var sourceValue = (List<?>) sourceClassGetter.get().invoke(source);
                             final var result = sourceValue.stream().map((final var sourceInstance) -> copyEntityProperties(sourceInstance, targetSubClassInstance, ignoreNullProperties)).toList();
@@ -88,7 +88,6 @@ public class PropertyCopyHelper {
                         }
                     } else {
                         final var targetSubClassInstance = getTargetSubClassInstance(relationalField);
-                        final var sourceClassGetter = getSourceClassGetter(sourceClass, relationalField);
                         if (sourceClassGetter.isPresent()) {
                             final var sourceValue = sourceClassGetter.get().invoke(source);
                             final var result = copyEntityProperties(sourceValue, targetSubClassInstance, ignoreNullProperties);
