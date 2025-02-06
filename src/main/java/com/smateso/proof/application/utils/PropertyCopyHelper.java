@@ -1,6 +1,6 @@
 package com.smateso.proof.application.utils;
 
-import edu.kit.iai.webis.proofmodels.dto.Relational;
+import edu.kit.iai.webis.proofmodels.utils.Relational;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;

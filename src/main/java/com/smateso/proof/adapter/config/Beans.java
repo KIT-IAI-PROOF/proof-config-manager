@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -30,6 +31,9 @@ public class Beans {
 
     @Value("${timezone}")
     private String timezone;
+
+    @Value("${file.storage.root}")
+    private String fileStorageRoot;
 
     @Bean(value = "gson", name = "gson")
     public Gson gson() {
@@ -91,6 +95,14 @@ public class Beans {
                 .build();
     }
 
+    @Bean(value = "attachmentInteractor", name = "attachmentInteractor")
+    public IAttachmentInteractor attachmentInteractor(@Qualifier("attachmentRepository") @NonNull final AttachmentRepository attachmentRepository) {
+        return AttachmentInteractor
+                .builder()
+                .attachmentRepository(attachmentRepository)
+                .build();
+    }
+
     @Bean(value = "messageInteractor", name = "messageInteractor")
     public IMessageInteractor messageInteractor(@NonNull final SimpMessagingTemplate simpMessagingTemplate) {
         return MessageInteractor
@@ -125,6 +137,15 @@ public class Beans {
     @Bean(value = "templateController", name = "templateController")
     public ITemplateController templateController(@Qualifier("templateInteractor") ITemplateInteractor templateInteractor) {
         return new TemplateController(templateInteractor);
+    }
+
+    @Bean(value = "attachmentController", name = "attachmentController")
+    public IAttachmentController attachmentController(@Qualifier("attachmentInteractor") IAttachmentInteractor attachmentInteractor) {
+        return AttachmentController
+                .builder()
+                .fileStorageRoot(Paths.get(this.fileStorageRoot))
+                .attachmentInteractor(attachmentInteractor)
+                .build();
     }
 
     @Bean(value = "csrfController", name = "csrfController")

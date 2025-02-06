@@ -40,8 +40,6 @@ public class ServerSecurityConfig {
     public static final String ROLE = "ROLE_";
     public static final String ROLES = "roles";
     public static final String GROUPS = "groups";
-    public static final String ROLE_API_ACCESS = "api_access";
-    public static final String ROLE_SOCKET_ACCESS = "socket_access";
 
     /**
      * Configure the server security filter chain.
@@ -66,7 +64,6 @@ public class ServerSecurityConfig {
                 .csrf((var csrf) -> {
                     csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
                     csrf.csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler());
-                    csrf.ignoringRequestMatchers("/**");
                 })
                 .authorizeHttpRequests((final var authorize) -> {
                     authorize.requestMatchers("/swagger-ui/**").permitAll();
