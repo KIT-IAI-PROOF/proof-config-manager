@@ -54,3 +54,6 @@ springdoc:
 logging:
   level:
     root: off
+file:
+  storage:
+    root: "/tmp/proof"

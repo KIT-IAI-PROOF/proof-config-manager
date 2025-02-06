@@ -24,8 +24,10 @@ public interface WorkflowRepository extends JpaRepository<WorkflowDao, String>, 
     @Override
     @Caching(
             evict = {
+                    @CacheEvict(cacheNames = "blocks", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "edges", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "workflows", allEntries = true, beforeInvocation = true),
-                    @CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true)
+                    @CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true),
             },
             put = {
                     @CachePut(cacheNames = "workflows", key = "#workflow.id", unless = "#workflow.id == null")
@@ -47,8 +49,10 @@ public interface WorkflowRepository extends JpaRepository<WorkflowDao, String>, 
     @Override
     @Caching(
             evict = {
+                    @CacheEvict(cacheNames = "blocks", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "edges", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "workflows", allEntries = true, beforeInvocation = true),
-                    @CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true)
+                    @CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true),
             }
     )
     void deleteById(@NonNull final String workflowId);
