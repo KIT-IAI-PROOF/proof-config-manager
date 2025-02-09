@@ -64,6 +64,7 @@ public class ServerSecurityConfig {
                 .csrf((var csrf) -> {
                     csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
                     csrf.csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler());
+                    csrf.ignoringRequestMatchers("/**");
                 })
                 .authorizeHttpRequests((final var authorize) -> {
                     authorize.requestMatchers("/swagger-ui/**").permitAll();
