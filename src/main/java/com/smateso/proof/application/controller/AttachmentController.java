@@ -75,7 +75,7 @@ public class AttachmentController implements IAttachmentController {
 
     @Override
     public ResponseEntity<?> uploadFile(@NonNull final MultipartFile file) {
-        String filename = file.getOriginalFilename();
+        final var filename = file.getOriginalFilename();
         try {
             final var filePath = this.fileStorageRoot.resolve(requireNonNull(filename));
             copy(file.getInputStream(), filePath);

@@ -1,6 +1,7 @@
 package com.smateso.proof.adapter;
 
 import com.smateso.proof.adapter.repositories.TemplateRepository;
+import edu.kit.iai.webis.proofmodels.dao.ProgramDao;
 import edu.kit.iai.webis.proofmodels.dao.SourceHandleDao;
 import edu.kit.iai.webis.proofmodels.dao.TargetHandleDao;
 import edu.kit.iai.webis.proofmodels.dao.TemplateDao;
@@ -11,8 +12,11 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
+import static edu.kit.iai.webis.proofmodels.enums.ECommunicationParadigm.STEPBASED;
+import static edu.kit.iai.webis.proofmodels.enums.ERuntime.PYTHON;
 import static java.util.stream.IntStream.range;
 
 /**
@@ -52,17 +56,36 @@ public class DataImporter implements CommandLineRunner {
     private TemplateDao createTemplate(final String label, final String color, final int numberOfSourceHandles, final int numberOfTargetHandles) {
         final var template = TemplateDao
                 .builder()
+                .eventLifeCycles(List.of())
+                .blockIODefinitions(List.of())
+                .containerImage("proof-standard:latest")
                 .id(UUID.randomUUID().toString())
                 .color(color)
                 .type("block")
-                .description(label)
+                .description("A template for " + label)
+                .communicationParadigm(STEPBASED)
+                .startParameters(Map.of("path", "test"))
                 .sourceHandles(List.of())
                 .targetHandles(List.of())
                 .label(label)
                 .build();
+        template.setProgram(createProgram(template));
         template.setTargetHandles(createTargetHandles(numberOfTargetHandles, template));
         template.setSourceHandles(createSourceHandles(numberOfSourceHandles, template));
         return template;
+    }
+
+    private ProgramDao createProgram(final TemplateDao template) {
+        return ProgramDao
+                .builder()
+                .id(UUID.randomUUID().toString())
+                .label("test")
+                .description("test")
+                .attachments(List.of())
+                .entryPoint("test.py")
+                .runtime(PYTHON)
+                .template(template)
+                .build();
     }
 
     private List<SourceHandleDao> createSourceHandles(final int numberOfHandles, final TemplateDao template) {

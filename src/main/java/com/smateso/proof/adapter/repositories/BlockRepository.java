@@ -22,6 +22,7 @@ public interface BlockRepository extends JpaRepository<BlockDao, String>, JpaSpe
     @Override
     @Caching(
             evict = {
+                    @CacheEvict(cacheNames = "programs", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "attachments", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "blocks", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "edges", allEntries = true, beforeInvocation = true),
@@ -48,6 +49,7 @@ public interface BlockRepository extends JpaRepository<BlockDao, String>, JpaSpe
     @Override
     @Caching(
             evict = {
+                    @CacheEvict(cacheNames = "programs", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "attachments", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "blocks", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "edges", allEntries = true, beforeInvocation = true),
