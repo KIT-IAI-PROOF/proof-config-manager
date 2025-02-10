@@ -22,6 +22,7 @@ public interface ExecutionRepository extends JpaRepository<ExecutionDao, String>
     @Override
     @Caching(
             evict = {
+                    @CacheEvict(cacheNames = "attachments", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "blocks", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "edges", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "workflows", allEntries = true, beforeInvocation = true),
@@ -47,6 +48,7 @@ public interface ExecutionRepository extends JpaRepository<ExecutionDao, String>
     @Override
     @Caching(
             evict = {
+                    @CacheEvict(cacheNames = "attachments", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "blocks", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "edges", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "workflows", allEntries = true, beforeInvocation = true),

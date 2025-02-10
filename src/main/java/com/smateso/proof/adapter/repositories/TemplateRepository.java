@@ -22,7 +22,11 @@ public interface TemplateRepository extends JpaRepository<TemplateDao, String>, 
     @Override
     @Caching(
             evict = {
-                    @CacheEvict(cacheNames = "templates", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "attachments", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "blocks", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "edges", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "workflows", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true),
             },
             put = {
                     @CachePut(cacheNames = "templates", key = "#template.id", unless = "#template.id == null")
@@ -44,7 +48,11 @@ public interface TemplateRepository extends JpaRepository<TemplateDao, String>, 
     @Override
     @Caching(
             evict = {
-                    @CacheEvict(cacheNames = "templates", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "attachments", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "blocks", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "edges", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "workflows", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true),
             }
     )
     void deleteById(@NonNull final String templateId);

@@ -24,6 +24,7 @@ public interface WorkflowRepository extends JpaRepository<WorkflowDao, String>, 
     @Override
     @Caching(
             evict = {
+                    @CacheEvict(cacheNames = "attachments", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "blocks", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "edges", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "workflows", allEntries = true, beforeInvocation = true),
@@ -49,6 +50,7 @@ public interface WorkflowRepository extends JpaRepository<WorkflowDao, String>, 
     @Override
     @Caching(
             evict = {
+                    @CacheEvict(cacheNames = "attachments", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "blocks", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "edges", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "workflows", allEntries = true, beforeInvocation = true),
