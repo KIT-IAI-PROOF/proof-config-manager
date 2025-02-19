@@ -19,6 +19,13 @@ spring:
     defer-datasource-initialization: true
     open-in-view: false
     show-sql: false
+    properties:
+      hibernate:
+        globally_quoted_identifiers: true
+        enable_lazy_load_no_trans: true
+        event:
+          merge:
+            entity_copy_observer: allow
   datasource:
     username: admin
     password: admin
