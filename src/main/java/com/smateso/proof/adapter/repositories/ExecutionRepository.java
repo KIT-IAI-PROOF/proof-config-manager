@@ -63,6 +63,4 @@ public interface ExecutionRepository extends JpaRepository<ExecutionDao, String>
     @Override
     Page<ExecutionDao> findAll(@Nullable final Specification<ExecutionDao> spec, @NonNull final Pageable pageable);
 
-    List<ExecutionDao> findExecutionsByWorkflowId(@NonNull final String workflowId);
-
 }

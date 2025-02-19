@@ -54,7 +54,7 @@ public class ServerSecurityConfig {
                 .cors((final var cors) -> {
                     final var configuration = new CorsConfiguration();
                     final var source = new UrlBasedCorsConfigurationSource();
-                    configuration.setAllowedOrigins(corsProperties.getOrigins());
+                    configuration.setAllowedOriginPatterns(corsProperties.getOrigins());
                     configuration.setAllowedMethods(corsProperties.getMethods());
                     configuration.setAllowedHeaders(corsProperties.getHeaders());
                     configuration.setAllowCredentials(true);
@@ -64,7 +64,6 @@ public class ServerSecurityConfig {
                 .csrf((var csrf) -> {
                     csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
                     csrf.csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler());
-                    csrf.ignoringRequestMatchers("/**");
                 })
                 .authorizeHttpRequests((final var authorize) -> {
                     authorize.requestMatchers("/swagger-ui/**").permitAll();
