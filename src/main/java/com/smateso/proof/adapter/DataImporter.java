@@ -1,5 +1,6 @@
 package com.smateso.proof.adapter;
 
+import com.smateso.proof.adapter.repositories.ProgramRepository;
 import com.smateso.proof.adapter.repositories.TemplateRepository;
 import edu.kit.iai.webis.proofmodels.dao.ProgramDao;
 import edu.kit.iai.webis.proofmodels.dao.SourceHandleDao;
@@ -29,10 +30,12 @@ import static java.util.stream.IntStream.range;
 public class DataImporter implements CommandLineRunner {
 
 
+    private final ProgramRepository programRepository;
     private final TemplateRepository templateRepository;
 
-    public DataImporter(@NonNull final TemplateRepository templateRepository) {
+    public DataImporter(@NonNull final TemplateRepository templateRepository, @NonNull final ProgramRepository programRepository) {
         this.templateRepository = templateRepository;
+        this.programRepository = programRepository;
     }
 
     @Override
@@ -69,14 +72,14 @@ public class DataImporter implements CommandLineRunner {
                 .targetHandles(List.of())
                 .label(label)
                 .build();
-        template.setProgram(createProgram(template));
+        template.setProgram(createProgram());
         template.setTargetHandles(createTargetHandles(numberOfTargetHandles, template));
         template.setSourceHandles(createSourceHandles(numberOfSourceHandles, template));
         return template;
     }
 
-    private ProgramDao createProgram(final TemplateDao template) {
-        return ProgramDao
+    private ProgramDao createProgram() {
+        final var program = ProgramDao
                 .builder()
                 .id(UUID.randomUUID().toString())
                 .label("test")
@@ -84,8 +87,8 @@ public class DataImporter implements CommandLineRunner {
                 .attachments(List.of())
                 .entryPoint("test.py")
                 .runtime(PYTHON)
-                .template(template)
                 .build();
+        return this.programRepository.save(program);
     }
 
     private List<SourceHandleDao> createSourceHandles(final int numberOfHandles, final TemplateDao template) {
