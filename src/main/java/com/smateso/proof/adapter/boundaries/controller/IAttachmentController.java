@@ -95,7 +95,7 @@ public interface IAttachmentController {
                     @ApiResponse(responseCode = "200", description = "Delete successful", useReturnTypeSchema = true),
                     @ApiResponse(responseCode = "500", description = "Delete incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
-    @DeleteMapping(value = "{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @DeleteMapping(value = "{id}", consumes = ALL_VALUE, produces = ALL_VALUE)
     ResponseEntity<Void> deleteAttachment(@PathVariable(value = "id") final String id, @RequestParam final String sessionKey, final Authentication authentication);
 
     @PostMapping(value = "upload", name = "upload")
