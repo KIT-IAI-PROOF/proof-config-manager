@@ -11,30 +11,44 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
 
-import java.nio.file.Path;
 import java.util.List;
 
 import static com.smateso.proof.adapter.config.AuditorProvider.getUsername;
 import static com.smateso.proof.application.utils.PropertyCopyHelper.copyEntityProperties;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @Builder
 @AllArgsConstructor
 public class ProgramController implements IProgramController {
 
     private final IProgramInteractor programInteractor;
-    private final Path fileStorageRoot;
+
+    @NonNull
+    private static ProgramDto attachLinks(@NonNull final ProgramDto program) {
+        final var selfLink = linkTo(ProgramController.class).slash(program.getId()).withSelfRel();
+        program.add(selfLink);
+        return program;
+    }
 
     @Override
     public ResponseEntity<List<ProgramDto>> searchPrograms(@NonNull final Request request) {
         final var programs = this.programInteractor.searchPrograms(request);
-        final var result = programs.stream().map((final var program) -> copyEntityProperties(program, new ProgramDto(), false, List.of())).toList();
+        final var result = programs
+                .stream()
+                .map((final var program) -> copyEntityProperties(program, new ProgramDto(), false, List.of()))
+                .map(ProgramController::attachLinks)
+                .toList();
         return ResponseEntity.ok(result);
     }
 
     @Override
     public ResponseEntity<List<ProgramDto>> getPrograms() {
         final var programs = this.programInteractor.getPrograms();
-        final var result = programs.stream().map((final var program) -> copyEntityProperties(program, new ProgramDto(), false, List.of())).toList();
+        final var result = programs
+                .stream()
+                .map((final var program) -> copyEntityProperties(program, new ProgramDto(), false, List.of()))
+                .map(ProgramController::attachLinks)
+                .toList();
         return ResponseEntity.ok(result);
     }
 

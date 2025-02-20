@@ -21,6 +21,7 @@ import static com.smateso.proof.adapter.config.AuditorProvider.getUsername;
 import static com.smateso.proof.application.utils.PropertyCopyHelper.copyEntityProperties;
 import static java.nio.file.Files.copy;
 import static java.util.Objects.requireNonNull;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @Builder
 @AllArgsConstructor
@@ -29,17 +30,32 @@ public class AttachmentController implements IAttachmentController {
     private final IAttachmentInteractor attachmentInteractor;
     private final Path fileStorageRoot;
 
+    @NonNull
+    private static AttachmentDto attachLinks(@NonNull final AttachmentDto attachment) {
+        final var selfLink = linkTo(AttachmentController.class).slash(attachment.getId()).withSelfRel();
+        attachment.add(selfLink);
+        return attachment;
+    }
+
     @Override
     public ResponseEntity<List<AttachmentDto>> searchAttachments(@NonNull final Request request) {
         final var attachments = this.attachmentInteractor.searchAttachments(request);
-        final var result = attachments.stream().map((final var attachment) -> copyEntityProperties(attachment, new AttachmentDto(), false, List.of())).toList();
+        final var result = attachments
+                .stream()
+                .map((final var attachment) -> copyEntityProperties(attachment, new AttachmentDto(), false, List.of()))
+                .map(AttachmentController::attachLinks)
+                .toList();
         return ResponseEntity.ok(result);
     }
 
     @Override
     public ResponseEntity<List<AttachmentDto>> getAttachments() {
         final var attachments = this.attachmentInteractor.getAttachments();
-        final var result = attachments.stream().map((final var attachment) -> copyEntityProperties(attachment, new AttachmentDto(), false, List.of())).toList();
+        final var result = attachments
+                .stream()
+                .map((final var attachment) -> copyEntityProperties(attachment, new AttachmentDto(), false, List.of()))
+                .map(AttachmentController::attachLinks)
+                .toList();
         return ResponseEntity.ok(result);
     }
 

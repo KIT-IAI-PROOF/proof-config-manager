@@ -22,6 +22,7 @@ import static com.smateso.proof.application.utils.LogMessages.COPY_BASIC_PROPERT
 import static com.smateso.proof.application.utils.LogMessages.COPY_RELATIONAL_PROPERTIES;
 import static java.lang.Class.forName;
 import static java.util.Arrays.stream;
+import static java.util.Objects.isNull;
 import static org.springframework.beans.BeanUtils.copyProperties;
 import static org.springframework.util.StringUtils.capitalize;
 
@@ -86,13 +87,15 @@ public class PropertyCopyHelper {
                                     if (relationalField.getType().getTypeName().equals(LIST)) {
                                         if (sourceClassGetter.isPresent()) {
                                             final var sourceValue = (List<?>) sourceClassGetter.get().invoke(source);
-                                            final var result = new ArrayList<>();
-                                            for (Object sourceInstance : sourceValue) {
-                                                final var targetSubClassInstance = getTargetSubClassInstanceForList(relationalField);
-                                                Object o = copyEntityProperties(sourceInstance, targetSubClassInstance, ignoreNullProperties, relationalFieldNames.stream().toList());
-                                                result.add(o);
+                                            if (!isNull(sourceValue)) {
+                                                final var result = new ArrayList<>();
+                                                for (Object sourceInstance : sourceValue) {
+                                                    final var targetSubClassInstance = getTargetSubClassInstanceForList(relationalField);
+                                                    Object o = copyEntityProperties(sourceInstance, targetSubClassInstance, ignoreNullProperties, relationalFieldNames.stream().toList());
+                                                    result.add(o);
+                                                }
+                                                targetClass.getDeclaredMethod(SET + capitalize(relationalField.getName()), List.class).invoke(target, result);
                                             }
-                                            targetClass.getDeclaredMethod(SET + capitalize(relationalField.getName()), List.class).invoke(target, result);
                                         }
                                     } else {
                                         final var targetSubClassInstance = getTargetSubClassInstance(relationalField);

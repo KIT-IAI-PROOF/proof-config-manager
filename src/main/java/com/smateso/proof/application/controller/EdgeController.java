@@ -15,6 +15,7 @@ import java.util.List;
 
 import static com.smateso.proof.adapter.config.AuditorProvider.getUsername;
 import static com.smateso.proof.application.utils.PropertyCopyHelper.copyEntityProperties;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @Builder
 @AllArgsConstructor
@@ -22,17 +23,32 @@ public class EdgeController implements IEdgeController {
 
     private final IEdgeInteractor edgeInteractor;
 
+    @NonNull
+    private static EdgeDto attachLinks(@NonNull final EdgeDto edge) {
+        final var selfLink = linkTo(EdgeController.class).slash(edge.getId()).withSelfRel();
+        edge.add(selfLink);
+        return edge;
+    }
+
     @Override
     public ResponseEntity<List<EdgeDto>> searchEdges(@NonNull final Request request) {
         final var edges = this.edgeInteractor.searchEdges(request);
-        final var result = edges.stream().map((final var edge) -> copyEntityProperties(edge, new EdgeDto(), false, List.of())).toList();
+        final var result = edges
+                .stream()
+                .map((final var edge) -> copyEntityProperties(edge, new EdgeDto(), false, List.of()))
+                .map(EdgeController::attachLinks)
+                .toList();
         return ResponseEntity.ok(result);
     }
 
     @Override
     public ResponseEntity<List<EdgeDto>> getEdges() {
         final var edges = this.edgeInteractor.getEdges();
-        final var result = edges.stream().map((final var edge) -> copyEntityProperties(edge, new EdgeDto(), false, List.of())).toList();
+        final var result = edges
+                .stream()
+                .map((final var edge) -> copyEntityProperties(edge, new EdgeDto(), false, List.of()))
+                .map(EdgeController::attachLinks)
+                .toList();
         return ResponseEntity.ok(result);
     }
 

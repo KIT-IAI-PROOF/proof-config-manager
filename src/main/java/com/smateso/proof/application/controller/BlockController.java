@@ -15,6 +15,7 @@ import java.util.List;
 
 import static com.smateso.proof.adapter.config.AuditorProvider.getUsername;
 import static com.smateso.proof.application.utils.PropertyCopyHelper.copyEntityProperties;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @Builder
 @AllArgsConstructor
@@ -22,17 +23,32 @@ public class BlockController implements IBlockController {
 
     private final IBlockInteractor blockInteractor;
 
+    @NonNull
+    private static BlockDto attachLinks(@NonNull final BlockDto block) {
+        final var selfLink = linkTo(BlockController.class).slash(block.getId()).withSelfRel();
+        block.add(selfLink);
+        return block;
+    }
+
     @Override
     public ResponseEntity<List<BlockDto>> searchBlocks(@NonNull final Request request) {
         final var blocks = this.blockInteractor.searchBlocks(request);
-        final var result = blocks.stream().map((final var block) -> copyEntityProperties(block, new BlockDto(), false, List.of())).toList();
+        final var result = blocks
+                .stream()
+                .map((final var block) -> copyEntityProperties(block, new BlockDto(), false, List.of()))
+                .map(BlockController::attachLinks)
+                .toList();
         return ResponseEntity.ok(result);
     }
 
     @Override
     public ResponseEntity<List<BlockDto>> getBlocks() {
         final var blocks = this.blockInteractor.getBlocks();
-        final var result = blocks.stream().map((final var block) -> copyEntityProperties(block, new BlockDto(), false, List.of())).toList();
+        final var result = blocks
+                .stream()
+                .map((final var block) -> copyEntityProperties(block, new BlockDto(), false, List.of()))
+                .map(BlockController::attachLinks)
+                .toList();
         return ResponseEntity.ok(result);
     }
 

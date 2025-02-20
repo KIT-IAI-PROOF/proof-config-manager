@@ -15,6 +15,7 @@ import java.util.List;
 
 import static com.smateso.proof.adapter.config.AuditorProvider.getUsername;
 import static com.smateso.proof.application.utils.PropertyCopyHelper.copyEntityProperties;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @Builder
 @AllArgsConstructor
@@ -22,17 +23,32 @@ public class TemplateController implements ITemplateController {
 
     private final ITemplateInteractor templateInteractor;
 
+    @NonNull
+    private static TemplateDto attachLinks(@NonNull final TemplateDto template) {
+        final var selfLink = linkTo(TemplateController.class).slash(template.getId()).withSelfRel();
+        template.add(selfLink);
+        return template;
+    }
+
     @Override
     public ResponseEntity<List<TemplateDto>> searchTemplates(@NonNull final Request request) {
         final var templates = this.templateInteractor.searchTemplates(request);
-        final var result = templates.stream().map((final var template) -> copyEntityProperties(template, new TemplateDto(), false, List.of())).toList();
+        final var result = templates
+                .stream()
+                .map((final var template) -> copyEntityProperties(template, new TemplateDto(), false, List.of()))
+                .map(TemplateController::attachLinks)
+                .toList();
         return ResponseEntity.ok(result);
     }
 
     @Override
     public ResponseEntity<List<TemplateDto>> getTemplates() {
         final var templates = this.templateInteractor.getTemplates();
-        final var result = templates.stream().map((final var template) -> copyEntityProperties(template, new TemplateDto(), false, List.of())).toList();
+        final var result = templates
+                .stream()
+                .map((final var template) -> copyEntityProperties(template, new TemplateDto(), false, List.of()))
+                .map(TemplateController::attachLinks)
+                .toList();
         return ResponseEntity.ok(result);
     }
 
