@@ -11,7 +11,7 @@ import org.springframework.stereotype.Controller;
 public interface IMessageController {
 
     @MessageMapping("/edits")
-    @SendTo("/updates/edits")
+    @SendTo("/topic/edits")
     Message updateEdits(@NonNull final Message message, @NonNull final Authentication authentication);
 
 }

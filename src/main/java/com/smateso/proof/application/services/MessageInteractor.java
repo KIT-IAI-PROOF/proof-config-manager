@@ -6,6 +6,7 @@ import com.smateso.proof.adapter.model.Message;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.lang.NonNull;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
@@ -28,6 +29,7 @@ public class MessageInteractor implements IMessageInteractor {
     private static final String ENTITY_TEMPLATE = "templates";
     private static final String ENTITY_BLOCK = "blocks";
     private final SimpMessagingTemplate simpMessagingTemplate;
+    private final AmqpTemplate amqpTemplate;
 
 
     /**
@@ -114,8 +116,7 @@ public class MessageInteractor implements IMessageInteractor {
                 .sessionKey(sessionKey)
                 .user(username)
                 .build();
-        this.simpMessagingTemplate.convertAndSend("/updates/%s".formatted(entity), message);
-        this.simpMessagingTemplate.convertAndSend("/updates/%s/%s".formatted(entity, id), message);
+        this.simpMessagingTemplate.convertAndSend("/topic/updates", message);
     }
 
 }

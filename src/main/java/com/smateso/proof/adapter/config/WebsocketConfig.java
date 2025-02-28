@@ -36,12 +36,20 @@ public class WebsocketConfig implements WebSocketMessageBrokerConfigurer {
      * application-specific destination prefixes for messages and enables a simple
      * broker for routing messages to specific destinations.
      *
-     * @param config the {@link MessageBrokerRegistry} used to configure message broker settings
+     * @param registry the {@link MessageBrokerRegistry} used to configure message broker settings
      */
     @Override
-    public void configureMessageBroker(@NonNull final MessageBrokerRegistry config) {
-        config.setApplicationDestinationPrefixes("/app");
-        config.enableSimpleBroker("/updates");
+    public void configureMessageBroker(@NonNull final MessageBrokerRegistry registry) {
+        registry.setApplicationDestinationPrefixes("/app");
+        registry
+                .enableStompBrokerRelay("/topic/", "/queue/", "/exchange/", "/amq/queue/")
+                .setAutoStartup(true)
+                .setRelayHost("localhost")
+                .setSystemLogin("admin")
+                .setSystemPasscode("admin")
+                .setClientLogin("admin")
+                .setClientPasscode("admin")
+                .setRelayPort(61613);
     }
 
     /**
@@ -56,5 +64,4 @@ public class WebsocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(@NonNull final StompEndpointRegistry registry) {
         registry.addEndpoint("/ws").setAllowedOrigins(corsProperties.getOrigins().toArray(String[]::new));
     }
-
 }

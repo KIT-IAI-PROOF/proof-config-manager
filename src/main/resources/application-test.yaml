@@ -3,6 +3,9 @@ server:
     include-stacktrace: never
   port: 8100
 spring:
+  rabbitmq:
+    password: admin
+    username: admin
   data:
     redis:
       repositories:

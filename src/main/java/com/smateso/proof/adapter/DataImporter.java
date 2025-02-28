@@ -6,6 +6,9 @@ import edu.kit.iai.webis.proofmodels.dao.ProgramDao;
 import edu.kit.iai.webis.proofmodels.dao.SourceHandleDao;
 import edu.kit.iai.webis.proofmodels.dao.TargetHandleDao;
 import edu.kit.iai.webis.proofmodels.dao.TemplateDao;
+import edu.kit.iai.webis.proofmodels.enums.ECommunicationType;
+import edu.kit.iai.webis.proofmodels.enums.EIOType;
+import edu.kit.iai.webis.proofmodels.enums.EWorkflowPhase;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
@@ -97,6 +100,10 @@ public class DataImporter implements CommandLineRunner {
                         .builder()
                         .id(UUID.randomUUID().toString())
                         .label("i" + (i + 1))
+                        .description("input " + (i + 1))
+                        .communicationType(ECommunicationType.STEPBASED)
+                        .type(EIOType.OBJECT)
+                        .phase(EWorkflowPhase.EXECUTE)
                         .template(template)
                         .build()
                 )
@@ -109,6 +116,10 @@ public class DataImporter implements CommandLineRunner {
                         .builder()
                         .id(UUID.randomUUID().toString())
                         .label("o" + (i + 1))
+                        .description("output " + (i + 1))
+                        .communicationType(ECommunicationType.STEPBASED)
+                        .phase(EWorkflowPhase.EXECUTE)
+                        .type(EIOType.OBJECT)
                         .template(template)
                         .build()
                 )
