@@ -3,15 +3,11 @@ server:
     include-stacktrace: never
   port: 8100
 spring:
-  rabbitmq:
-    password: admin
-    username: admin
-  data:
-    redis:
-      repositories:
-        enabled: false
-      host: localhost
-      port: 6379
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+      - org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
   sql:
     init:
       mode: always
@@ -54,16 +50,15 @@ spring:
             client-secret: TE8xwoZlEA3UvKc2CL6bWLOhVWpDvQSb
             client-name: proof
             authorization-grant-type: client_credentials
-
   h2:
     console:
-      enabled: true
+      enabled: false
 timezone: Europe/Berlin
 springdoc:
   show-actuator: false
 logging:
   level:
-    root: off
+    root: info
 file:
   storage:
     root: "/tmp/proof"

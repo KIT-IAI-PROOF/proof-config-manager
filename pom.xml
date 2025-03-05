@@ -12,15 +12,15 @@
 
     <groupId>edu.kit.iai.webis</groupId>
     <artifactId>proof-config-manager</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <name>PROOF Config Manager</name>
     <description>PROOF Config Manager</description>
     <packaging>jar</packaging>
 
     <properties>
-        <java.version>23</java.version>
-        <maven.compiler.source>23</maven.compiler.source>
-        <maven.compiler.target>23</maven.compiler.target>
+        <java.version>21</java.version>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <gitHost>gitlab.kit.edu/</gitHost>
         <gitUserId>kit/iai/webis/proof2</gitUserId>
@@ -159,8 +159,9 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>3.2.3</version>
+                <version>3.3.6</version>
                 <configuration>
+                    <jmxPort>9009</jmxPort>
                     <jvmArguments>-ea -XX:+EnableDynamicAgentLoading -Xshare:off</jvmArguments>
                     <mainClass>com.smateso.proof.App</mainClass>
                     <excludes>
@@ -310,5 +311,20 @@
             </plugin>
         </plugins>
     </build>
+
+    <repositories>
+        <repository>
+            <id>iai-artifactory</id>
+            <url>https://iai-artifactory.iai.kit.edu/artifactory/webis/</url>
+        </repository>
+    </repositories>
+
+    <distributionManagement>
+        <repository>
+            <id>iai-artifactory</id>
+            <name>iai-artifactory</name>
+            <url>https://iai-artifactory.iai.kit.edu/artifactory/webis-common</url>
+        </repository>
+    </distributionManagement>
 
 </project>
