@@ -103,6 +103,14 @@ public class Beans {
                 .build();
     }
 
+    @Bean(value = "programInteractor", name = "programInteractor")
+    public IProgramInteractor programInteractor(@Qualifier("programRepository") @NonNull final ProgramRepository programRepository) {
+        return ProgramInteractor
+                .builder()
+                .programRepository(programRepository)
+                .build();
+    }
+
     @Bean(value = "messageInteractor", name = "messageInteractor")
     public IMessageInteractor messageInteractor(@NonNull final SimpMessagingTemplate simpMessagingTemplate) {
         return MessageInteractor
@@ -146,6 +154,11 @@ public class Beans {
                 .fileStorageRoot(Paths.get(this.fileStorageRoot))
                 .attachmentInteractor(attachmentInteractor)
                 .build();
+    }
+
+    @Bean(value = "programController", name ="programController" )
+    public IProgramController programController(@Qualifier("programInteractor") IProgramInteractor programInteractor) {
+        return new ProgramController(programInteractor);
     }
 
     @Bean(value = "csrfController", name = "csrfController")
