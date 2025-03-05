@@ -290,16 +290,10 @@
             <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
-                <version>3.4.4</version>
                 <configuration>
                     <from>
-                        <image>
-                            azul/zulu-openjdk-alpine:21.0.2-jre
-                        </image>
+                        <image>azul/zulu-openjdk:21</image>
                     </from>
-                    <container>
-                        <mainClass>com.smateso.proof.App</mainClass>
-                    </container>
                 </configuration>
             </plugin>
         </plugins>
