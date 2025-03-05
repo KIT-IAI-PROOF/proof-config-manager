@@ -2,6 +2,7 @@ package com.smateso.proof.adapter.config;
 
 import com.smateso.proof.adapter.model.CorsProperties;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -26,6 +27,9 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 public class WebsocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private final CorsProperties corsProperties;
+    
+    @Value("${websocket.broker.relayHost}")
+    private String relayHost;
 
     public WebsocketConfig(@Qualifier("corsProperties") @NonNull final CorsProperties corsProperties) {
         this.corsProperties = corsProperties;
@@ -44,7 +48,7 @@ public class WebsocketConfig implements WebSocketMessageBrokerConfigurer {
         registry
                 .enableStompBrokerRelay("/topic/", "/queue/", "/exchange/", "/amq/queue/")
                 .setAutoStartup(true)
-                .setRelayHost("localhost")
+                .setRelayHost(relayHost)
                 .setSystemLogin("admin")
                 .setSystemPasscode("admin")
                 .setClientLogin("admin")

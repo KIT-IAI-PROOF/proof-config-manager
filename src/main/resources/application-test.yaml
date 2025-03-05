@@ -67,3 +67,6 @@ logging:
 file:
   storage:
     root: "/tmp/proof"
+websocket:
+  broker:
+    relayHost: "localhost"
