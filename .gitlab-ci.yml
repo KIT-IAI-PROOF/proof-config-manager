@@ -4,4 +4,4 @@ include:
 
 variables:
   JIB: 'true'
-  DOCKER_IMAGE_NAME: 'proof-2/proof-data-service'
+  DOCKER_IMAGE_NAME: 'proof-2/proof-config-manager'

@@ -12,7 +12,7 @@
 
     <groupId>edu.kit.iai.webis</groupId>
     <artifactId>proof-config-manager</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
     <name>PROOF Config Manager</name>
     <description>PROOF Config Manager</description>
     <packaging>jar</packaging>
@@ -294,16 +294,9 @@
                 <configuration>
                     <from>
                         <image>
-                            azul/zulu-openjdk-alpine:23-jre-headless-latest@sha256:6966ccee5eefa2970842067f31c591aefe4b8651d04e047b65913bef8f737f06
+                            azul/zulu-openjdk-alpine:21.0.2-jre
                         </image>
                     </from>
-                    <to>
-                        <image>${project.artifactId}</image>
-                        <tags>
-                            <tag>latest</tag>
-                            <tag>${project.version}</tag>
-                        </tags>
-                    </to>
                     <container>
                         <mainClass>com.smateso.proof.App</mainClass>
                     </container>
