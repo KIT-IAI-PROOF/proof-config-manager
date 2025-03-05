@@ -58,7 +58,7 @@ springdoc:
   show-actuator: false
 logging:
   level:
-    root: info
+    root: off
 file:
   storage:
     root: "/tmp/proof"

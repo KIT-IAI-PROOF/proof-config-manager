@@ -8,24 +8,6 @@
             </pattern>
         </encoder>
     </appender>
-    <appender name="AMQP" class="org.springframework.amqp.rabbit.logback.AmqpAppender">
-        <layout>
-            <pattern><![CDATA[ %d %p %t [%c] - <%m>%n ]]></pattern>
-        </layout>
-        <host>localhost</host>
-        <port>5672</port>
-        <username>admin</username>
-        <password>admin</password>
-        <applicationId>config-manager</applicationId>
-        <routingKeyPattern>config-manager</routingKeyPattern>
-        <generateId>true</generateId>
-        <charset>UTF-8</charset>
-        <durable>true</durable>
-        <declareExchange>true</declareExchange>
-        <exchangeType>direct</exchangeType>
-        <exchangeName>logs</exchangeName>
-        <deliveryMode>PERSISTENT</deliveryMode>
-    </appender>
     <root level="info">
         <appender-ref ref="CONSOLE"/>
     </root>
