@@ -28,6 +28,7 @@ public interface ProgramRepository extends JpaRepository<ProgramDao, String>, Jp
                     @CacheEvict(cacheNames = "edges", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "workflows", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "templates", allEntries = true, beforeInvocation = true),
             },
             put = {
                     @CachePut(cacheNames = "programs", key = "#program.id", unless = "#program.id == null")
@@ -55,6 +56,7 @@ public interface ProgramRepository extends JpaRepository<ProgramDao, String>, Jp
                     @CacheEvict(cacheNames = "edges", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "workflows", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "templates", allEntries = true, beforeInvocation = true),
             }
     )
     void deleteById(@NonNull final String programId);

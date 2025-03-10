@@ -28,6 +28,7 @@ public interface AttachmentRepository extends JpaRepository<AttachmentDao, Strin
                     @CacheEvict(cacheNames = "edges", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "workflows", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "templates", allEntries = true, beforeInvocation = true),
             },
             put = {
                     @CachePut(cacheNames = "attachments", key = "#attachment.id", unless = "#attachment.id == null")
@@ -55,6 +56,7 @@ public interface AttachmentRepository extends JpaRepository<AttachmentDao, Strin
                     @CacheEvict(cacheNames = "edges", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "workflows", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "templates", allEntries = true, beforeInvocation = true),
             }
     )
     void deleteById(@NonNull final String attachmentId);

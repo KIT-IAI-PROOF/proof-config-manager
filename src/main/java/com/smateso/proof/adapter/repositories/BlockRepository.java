@@ -28,6 +28,7 @@ public interface BlockRepository extends JpaRepository<BlockDao, String>, JpaSpe
                     @CacheEvict(cacheNames = "edges", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "workflows", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "templates", allEntries = true, beforeInvocation = true),
             },
             put = {
                     @CachePut(cacheNames = "blocks", key = "#block.id", unless = "#block.id == null")
@@ -55,6 +56,7 @@ public interface BlockRepository extends JpaRepository<BlockDao, String>, JpaSpe
                     @CacheEvict(cacheNames = "edges", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "workflows", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "templates", allEntries = true, beforeInvocation = true),
             }
     )
     void deleteById(@NonNull final String blockId);
