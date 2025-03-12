@@ -1,11 +1,13 @@
 package com.smateso.proof.adapter;
 
+import com.smateso.proof.adapter.repositories.AttachmentRepository;
 import com.smateso.proof.adapter.repositories.ProgramRepository;
 import com.smateso.proof.adapter.repositories.TemplateRepository;
 import edu.kit.iai.webis.proofmodels.dao.ProgramDao;
 import edu.kit.iai.webis.proofmodels.dao.SourceHandleDao;
 import edu.kit.iai.webis.proofmodels.dao.TargetHandleDao;
 import edu.kit.iai.webis.proofmodels.dao.TemplateDao;
+import edu.kit.iai.webis.proofmodels.dao.AttachmentDao;
 import edu.kit.iai.webis.proofmodels.enums.ECommunicationType;
 import edu.kit.iai.webis.proofmodels.enums.EIOType;
 import edu.kit.iai.webis.proofmodels.enums.EWorkflowPhase;
@@ -35,10 +37,12 @@ public class DataImporter implements CommandLineRunner {
 
     private final ProgramRepository programRepository;
     private final TemplateRepository templateRepository;
+    private final AttachmentRepository attachmentRepository;
 
-    public DataImporter(@NonNull final TemplateRepository templateRepository, @NonNull final ProgramRepository programRepository) {
+    public DataImporter(@NonNull final TemplateRepository templateRepository, @NonNull final ProgramRepository programRepository, @NonNull final AttachmentRepository attachmentRepository) {
         this.templateRepository = templateRepository;
         this.programRepository = programRepository;
+        this.attachmentRepository = attachmentRepository;
     }
 
     @Override
@@ -56,7 +60,13 @@ public class DataImporter implements CommandLineRunner {
                 createTemplate("Transformer", "#0C63E7", 5, 6),
                 createTemplate("Writer", "#0A85ED", 4, 2)
         );
+        final var attachments = List.of(
+                createAttachment("Attachment1", "test1", "/proof/latest:test1"),
+                createAttachment("Attachment2", "test2", "/proof/latest:test2"),
+                createAttachment("Attachment3", "test3", "/proof/latest:test3")
+        );
         this.templateRepository.saveAll(templates);
+        this.attachmentRepository.saveAll(attachments);
     }
 
     private TemplateDao createTemplate(final String label, final String color, final int numberOfSourceHandles, final int numberOfTargetHandles) {
@@ -126,4 +136,13 @@ public class DataImporter implements CommandLineRunner {
                 .toList();
     }
 
+    private AttachmentDao createAttachment(final String label, final String description, final String path) {
+        return AttachmentDao
+                .builder()
+                .id(UUID.randomUUID().toString())
+                .label(label)
+                .description(description)
+                .path(path)
+                .build();
+    }
 }
