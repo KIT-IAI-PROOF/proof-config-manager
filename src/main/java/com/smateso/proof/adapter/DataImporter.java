@@ -52,6 +52,7 @@ public class DataImporter implements CommandLineRunner {
                     @CacheEvict(value = "executions", allEntries = true),
                     @CacheEvict(value = "templates", allEntries = true),
                     @CacheEvict(value = "blocks", allEntries = true),
+                    @CacheEvict(value = "attachments", allEntries = true),
             }
     )
     public void run(final String... args) {
