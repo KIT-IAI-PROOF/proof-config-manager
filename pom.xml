@@ -231,7 +231,7 @@
                                 <additionalProperty>supportsES6=true</additionalProperty>
                                 <additionalProperty>withInterfaces=true</additionalProperty>
                                 <additionalProperty>npmVersion=${project.version}</additionalProperty>
-                                <additionalProperty>npmName=@proof/config-manager-client</additionalProperty>
+                                <additionalProperty>npmName=@webis/proof-config-manager-client</additionalProperty>
                             </additionalProperties>
                         </configuration>
                     </execution>
