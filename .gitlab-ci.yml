@@ -5,3 +5,19 @@ include:
 variables:
   JIB: 'true'
   DOCKER_IMAGE_NAME: 'proof-2/proof-config-manager'
+
+build-client:
+  stage: build
+  image: iai-artifactory.iai.kit.edu/docker-webis/ci-build/jdk17-maven-node18:latest
+  # only create package if a tag was set
+  rules:
+    - if: '$CI_COMMIT_TAG != null'
+  script:
+    - cd generated/typescript
+    - config-npm-deploy-auth
+    - npm install
+    - npm run build
+  artifacts:
+    paths:
+      - dist/
+    expire_in: 1 days
