@@ -49,4 +49,4 @@ deploy:client:maven:
   script:
     - config-mvn-deploy-auth
     - cd generated/java
-    - mvn-ci clean deploy -DaltDeploymentRepository=iai-artifactory::https://iai-artifactory.iai.kit.edu/artifactory/webis-common'
+    - mvn-ci clean deploy -DaltDeploymentRepository=iai-artifactory::https://iai-artifactory.iai.kit.edu/artifactory/webis-common
