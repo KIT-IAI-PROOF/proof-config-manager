@@ -6,8 +6,11 @@ variables:
   JIB: 'true'
   DOCKER_IMAGE_NAME: 'proof-2/proof-config-manager'
 
-build-client:
-  stage: post-deploy
+stages:
+  - buildclient
+
+buildclient:
+  stage: buildclient
   needs: [ "deployjibjob" ]
   image: iai-artifactory.iai.kit.edu/docker-webis/ci-build/jdk17-maven-node18:latest
   # only create package if a tag was set
