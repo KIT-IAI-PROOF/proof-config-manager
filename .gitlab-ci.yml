@@ -7,7 +7,8 @@ variables:
   DOCKER_IMAGE_NAME: 'proof-2/proof-config-manager'
 
 stages:
-  - buildjob
+  - build
+  - deploy
   - buildclient
 
 buildclient:
