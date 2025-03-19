@@ -1,27 +1,44 @@
-include:
-  project: '$GITLAB_CI_TEMPLATE_PROJECT'
-  file: 'java/maven-build.yml'
+cache:
+  paths:
+    - .m2/repository
 
 variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository -Djava.awt.headless=true"
   JIB: 'true'
   DOCKER_IMAGE_NAME: 'proof-2/proof-config-manager'
 
 stages:
-  - build
   - deploy
-  - buildclient
+  - post-deploy
 
-buildclient:
-  stage: buildclient
-  image: iai-artifactory.iai.kit.edu/docker-webis/ci-build/jdk17-maven-node18:latest
-  # only create package if a tag was set
+deploy:jib:
+  stage: deploy
+  image:
+    name: iai-artifactory.iai.kit.edu/docker-webis/ci-build/jdk21-maven-node18@${JDK21_MAVEN_NODE18_IMG_VERSION}
   rules:
     - if: '$CI_COMMIT_TAG != null'
   script:
-    - cd generated/typescript
+    - check-mvn-git-project-version-match
+    - config-mvn-deploy-auth
+    - mkdir -p $HOME/.docker && echo "$DOCKER_AUTH_CONFIG" > $HOME/.docker/config.json
+    - mvn-ci clean
+    - for REG in $(get-jib-docker-registry | tr ";" "\n"); do mvn-ci compile com.google.cloud.tools:jib-maven-plugin:3.4.4:build "-Dimage=$REG/$(get-docker-image-name)"; done
+  artifacts:
+    paths:
+      - generated/
+    expire_in: 1 days
+
+deploy:client:npm:
+  stage: post-deploy
+  image: iai-artifactory.iai.kit.edu/docker-webis/ci-build/jdk21-maven-node18@${JDK21_MAVEN_NODE18_IMG_VERSION}
+  rules:
+    - if: '$CI_COMMIT_TAG != null'
+  script:
     - config-npm-deploy-auth
+    - cd generated/typescript
     - npm install
     - npm run build
+    - npm publish
   artifacts:
     paths:
       - dist/
