@@ -39,7 +39,14 @@ deploy:client:npm:
     - npm install
     - npm run build
     - npm publish
-  artifacts:
-    paths:
-      - dist/
-    expire_in: 1 days
+
+deploy:client:maven:
+  stage: post-deploy
+  image:
+    name: iai-artifactory.iai.kit.edu/docker-webis/ci-build/jdk21-maven-node18@${JDK21_MAVEN_NODE18_IMG_VERSION}
+  rules:
+    - if: '$CI_COMMIT_TAG != null'
+  script:
+    - config-mvn-deploy-auth
+    - cd generated/java
+    - mvn-ci clean deploy -DaltDeploymentRepository=iai-artifactory::https://iai-artifactory.iai.kit.edu/artifactory/webis-common'
