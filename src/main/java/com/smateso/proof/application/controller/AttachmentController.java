@@ -4,7 +4,7 @@ import com.smateso.proof.adapter.boundaries.controller.IAttachmentController;
 import com.smateso.proof.adapter.boundaries.services.IAttachmentInteractor;
 import com.smateso.proof.adapter.model.Request;
 import edu.kit.iai.webis.proofmodels.dao.AttachmentDao;
-import edu.kit.iai.webis.proofmodels.dto.AttachmentDto;
+import edu.kit.iai.webis.proofmodels.dto.Attachment;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import org.springframework.http.HttpStatus;
@@ -31,54 +31,54 @@ public class AttachmentController implements IAttachmentController {
     private final Path fileStorageRoot;
 
     @NonNull
-    private static AttachmentDto attachLinks(@NonNull final AttachmentDto attachment) {
+    private static Attachment attachLinks(@NonNull final Attachment attachment) {
         final var selfLink = linkTo(AttachmentController.class).slash(attachment.getId()).withSelfRel();
         attachment.add(selfLink);
         return attachment;
     }
 
     @Override
-    public ResponseEntity<List<AttachmentDto>> searchAttachments(@NonNull final Request request) {
+    public ResponseEntity<List<Attachment>> searchAttachments(@NonNull final Request request) {
         final var attachments = this.attachmentInteractor.searchAttachments(request);
         final var result = attachments
                 .stream()
-                .map((final var attachment) -> copyEntityProperties(attachment, new AttachmentDto(), false, List.of()))
+                .map((final var attachment) -> copyEntityProperties(attachment, new Attachment(), false, List.of()))
                 .map(AttachmentController::attachLinks)
                 .toList();
         return ResponseEntity.ok(result);
     }
 
     @Override
-    public ResponseEntity<List<AttachmentDto>> getAttachments() {
+    public ResponseEntity<List<Attachment>> getAttachments() {
         final var attachments = this.attachmentInteractor.getAttachments();
         final var result = attachments
                 .stream()
-                .map((final var attachment) -> copyEntityProperties(attachment, new AttachmentDto(), false, List.of()))
+                .map((final var attachment) -> copyEntityProperties(attachment, new Attachment(), false, List.of()))
                 .map(AttachmentController::attachLinks)
                 .toList();
         return ResponseEntity.ok(result);
     }
 
     @Override
-    public ResponseEntity<AttachmentDto> getAttachment(final String id) {
+    public ResponseEntity<Attachment> getAttachment(final String id) {
         final var attachment = this.attachmentInteractor.getAttachment(id);
-        final var result = copyEntityProperties(attachment, new AttachmentDto(), false, List.of());
+        final var result = copyEntityProperties(attachment, new Attachment(), false, List.of());
         return ResponseEntity.ok(result);
     }
 
     @Override
-    public ResponseEntity<AttachmentDto> createAttachment(@NonNull final AttachmentDto update, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
+    public ResponseEntity<Attachment> createAttachment(@NonNull final Attachment update, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
         final var username = getUsername(authentication);
         final var attachment = this.attachmentInteractor.createAttachment(copyEntityProperties(update, new AttachmentDao(), false, List.of()), sessionKey, username);
-        final var result = copyEntityProperties(attachment, new AttachmentDto(), false, List.of());
+        final var result = copyEntityProperties(attachment, new Attachment(), false, List.of());
         return ResponseEntity.ok(result);
     }
 
     @Override
-    public ResponseEntity<AttachmentDto> updateAttachment(@NonNull final String attachmentId, @NonNull final AttachmentDto update, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
+    public ResponseEntity<Attachment> updateAttachment(@NonNull final String attachmentId, @NonNull final Attachment update, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
         final var username = getUsername(authentication);
         final var attachment = this.attachmentInteractor.updateAttachment(attachmentId, copyEntityProperties(update, new AttachmentDao(), false, List.of()), sessionKey, username);
-        final var result = copyEntityProperties(attachment, new AttachmentDto(), false, List.of());
+        final var result = copyEntityProperties(attachment, new Attachment(), false, List.of());
         return ResponseEntity.ok(result);
     }
 

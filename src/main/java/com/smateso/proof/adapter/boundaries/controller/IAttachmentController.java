@@ -2,7 +2,7 @@ package com.smateso.proof.adapter.boundaries.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.smateso.proof.adapter.model.Request;
-import edu.kit.iai.webis.proofmodels.dto.AttachmentDto;
+import edu.kit.iai.webis.proofmodels.dto.Attachment;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -36,7 +36,7 @@ public interface IAttachmentController {
                     @ApiResponse(responseCode = "500", description = "Retrieval incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @PostMapping(value = "search", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<List<AttachmentDto>> searchAttachments(@RequestBody final Request request);
+    ResponseEntity<List<Attachment>> searchAttachments(@RequestBody final Request request);
 
     @JsonView(Listing.class)
     @Operation(
@@ -48,7 +48,7 @@ public interface IAttachmentController {
                     @ApiResponse(responseCode = "500", description = "Retrieval incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @GetMapping(consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<List<AttachmentDto>> getAttachments();
+    ResponseEntity<List<Attachment>> getAttachments();
 
     @JsonView(Detail.class)
     @Operation(
@@ -60,7 +60,7 @@ public interface IAttachmentController {
                     @ApiResponse(responseCode = "500", description = "Retrieval incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @GetMapping(value = "{id}", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<AttachmentDto> getAttachment(@PathVariable(value = "id") final String id);
+    ResponseEntity<Attachment> getAttachment(@PathVariable(value = "id") final String id);
 
     @JsonView(Detail.class)
     @Operation(
@@ -72,7 +72,7 @@ public interface IAttachmentController {
                     @ApiResponse(responseCode = "500", description = "Create incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<AttachmentDto> createAttachment(@RequestBody final AttachmentDto attachment, @RequestParam final String sessionKey, final Authentication authentication);
+    ResponseEntity<Attachment> createAttachment(@RequestBody final Attachment attachment, @RequestParam final String sessionKey, final Authentication authentication);
 
     @JsonView(Detail.class)
     @Operation(
@@ -84,7 +84,7 @@ public interface IAttachmentController {
                     @ApiResponse(responseCode = "500", description = "Update incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @PostMapping(value = "{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<AttachmentDto> updateAttachment(@PathVariable(value = "id") final String id, @RequestBody final AttachmentDto attachment, @RequestParam final String sessionKey, final Authentication authentication);
+    ResponseEntity<Attachment> updateAttachment(@PathVariable(value = "id") final String id, @RequestBody final Attachment attachment, @RequestParam final String sessionKey, final Authentication authentication);
 
     @JsonView(Detail.class)
     @Operation(

@@ -4,7 +4,7 @@ import com.smateso.proof.adapter.boundaries.controller.IExecutionController;
 import com.smateso.proof.adapter.boundaries.services.IExecutionInteractor;
 import com.smateso.proof.adapter.model.Request;
 import edu.kit.iai.webis.proofmodels.dao.ExecutionDao;
-import edu.kit.iai.webis.proofmodels.dto.ExecutionDto;
+import edu.kit.iai.webis.proofmodels.dto.Execution;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import org.springframework.http.ResponseEntity;
@@ -24,54 +24,54 @@ public class ExecutionController implements IExecutionController {
     private final IExecutionInteractor executionInteractor;
 
     @NonNull
-    private static ExecutionDto attachLinks(@NonNull final ExecutionDto execution) {
+    private static Execution attachLinks(@NonNull final Execution execution) {
         final var selfLink = linkTo(ExecutionController.class).slash(execution.getId()).withSelfRel();
         execution.add(selfLink);
         return execution;
     }
 
     @Override
-    public ResponseEntity<List<ExecutionDto>> searchExecutions(@NonNull final Request request) {
+    public ResponseEntity<List<Execution>> searchExecutions(@NonNull final Request request) {
         final var executions = this.executionInteractor.searchExecutions(request);
         final var result = executions
                 .stream()
-                .map((final var execution) -> copyEntityProperties(execution, new ExecutionDto(), false, List.of()))
+                .map((final var execution) -> copyEntityProperties(execution, new Execution(), false, List.of()))
                 .map(ExecutionController::attachLinks)
                 .toList();
         return ResponseEntity.ok(result);
     }
 
     @Override
-    public ResponseEntity<List<ExecutionDto>> getExecutions() {
+    public ResponseEntity<List<Execution>> getExecutions() {
         final var executions = this.executionInteractor.getExecutions();
         final var result = executions
                 .stream()
-                .map((final var execution) -> copyEntityProperties(execution, new ExecutionDto(), false, List.of()))
+                .map((final var execution) -> copyEntityProperties(execution, new Execution(), false, List.of()))
                 .map(ExecutionController::attachLinks)
                 .toList();
         return ResponseEntity.ok(result);
     }
 
     @Override
-    public ResponseEntity<ExecutionDto> getExecution(final String id) {
+    public ResponseEntity<Execution> getExecution(final String id) {
         final var execution = this.executionInteractor.getExecution(id);
-        final var result = copyEntityProperties(execution, new ExecutionDto(), false, List.of());
+        final var result = copyEntityProperties(execution, new Execution(), false, List.of());
         return ResponseEntity.ok(result);
     }
 
     @Override
-    public ResponseEntity<ExecutionDto> createExecution(@NonNull final ExecutionDto update, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
+    public ResponseEntity<Execution> createExecution(@NonNull final Execution update, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
         final var username = getUsername(authentication);
         final var execution = this.executionInteractor.createExecution(copyEntityProperties(update, new ExecutionDao(), false, List.of()), sessionKey, username);
-        final var result = copyEntityProperties(execution, new ExecutionDto(), false, List.of());
+        final var result = copyEntityProperties(execution, new Execution(), false, List.of());
         return ResponseEntity.ok(result);
     }
 
     @Override
-    public ResponseEntity<ExecutionDto> updateExecution(@NonNull final String executionId, @NonNull final ExecutionDto update, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
+    public ResponseEntity<Execution> updateExecution(@NonNull final String executionId, @NonNull final Execution update, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
         final var username = getUsername(authentication);
         final var execution = this.executionInteractor.updateExecution(executionId, copyEntityProperties(update, new ExecutionDao(), false, List.of()), sessionKey, username);
-        final var result = copyEntityProperties(execution, new ExecutionDto(), false, List.of());
+        final var result = copyEntityProperties(execution, new Execution(), false, List.of());
         return ResponseEntity.ok(result);
     }
 

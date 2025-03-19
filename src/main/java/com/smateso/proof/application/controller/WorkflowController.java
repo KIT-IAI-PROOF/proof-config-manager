@@ -4,8 +4,8 @@ import com.smateso.proof.adapter.boundaries.controller.IWorkflowController;
 import com.smateso.proof.adapter.boundaries.services.IWorkflowInteractor;
 import com.smateso.proof.adapter.model.Request;
 import edu.kit.iai.webis.proofmodels.dao.WorkflowDao;
-import edu.kit.iai.webis.proofmodels.dto.WorkflowRequestDto;
-import edu.kit.iai.webis.proofmodels.dto.WorkflowResponseDto;
+import edu.kit.iai.webis.proofmodels.dto.WorkflowRequest;
+import edu.kit.iai.webis.proofmodels.dto.WorkflowResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import org.springframework.http.ResponseEntity;
@@ -25,54 +25,54 @@ public class WorkflowController implements IWorkflowController {
     private final IWorkflowInteractor workflowInteractor;
 
     @NonNull
-    private static WorkflowResponseDto attachLinks(@NonNull final WorkflowResponseDto workflow) {
+    private static WorkflowResponse attachLinks(@NonNull final WorkflowResponse workflow) {
         final var selfLink = linkTo(WorkflowController.class).slash(workflow.getId()).withSelfRel();
         workflow.add(selfLink);
         return workflow;
     }
 
     @Override
-    public ResponseEntity<List<WorkflowResponseDto>> searchWorkflows(@NonNull final Request request) {
+    public ResponseEntity<List<WorkflowResponse>> searchWorkflows(@NonNull final Request request) {
         final var workflows = this.workflowInteractor.searchWorkflows(request);
         final var result = workflows
                 .stream()
-                .map((final var workflow) -> copyEntityProperties(workflow, new WorkflowResponseDto(), false, List.of()))
+                .map((final var workflow) -> copyEntityProperties(workflow, new WorkflowResponse(), false, List.of()))
                 .map(WorkflowController::attachLinks)
                 .toList();
         return ResponseEntity.ok(result);
     }
 
     @Override
-    public ResponseEntity<List<WorkflowResponseDto>> getWorkflows() {
+    public ResponseEntity<List<WorkflowResponse>> getWorkflows() {
         final var workflows = this.workflowInteractor.getWorkflows();
         final var result = workflows
                 .stream()
-                .map((final var workflow) -> copyEntityProperties(workflow, new WorkflowResponseDto(), false, List.of()))
+                .map((final var workflow) -> copyEntityProperties(workflow, new WorkflowResponse(), false, List.of()))
                 .map(WorkflowController::attachLinks)
                 .toList();
         return ResponseEntity.ok(result);
     }
 
     @Override
-    public ResponseEntity<WorkflowResponseDto> getWorkflow(final String id) {
+    public ResponseEntity<WorkflowResponse> getWorkflow(final String id) {
         final var workflow = this.workflowInteractor.getWorkflow(id);
-        final var result = copyEntityProperties(workflow, new WorkflowResponseDto(), false, List.of());
+        final var result = copyEntityProperties(workflow, new WorkflowResponse(), false, List.of());
         return ResponseEntity.ok(result);
     }
 
     @Override
-    public ResponseEntity<WorkflowResponseDto> createWorkflow(@NonNull final WorkflowRequestDto update, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
+    public ResponseEntity<WorkflowResponse> createWorkflow(@NonNull final WorkflowRequest update, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
         final var username = getUsername(authentication);
         final var workflow = this.workflowInteractor.createWorkflow(copyEntityProperties(update, new WorkflowDao(), false, List.of()), sessionKey, username);
-        final var result = copyEntityProperties(workflow, new WorkflowResponseDto(), false, List.of());
+        final var result = copyEntityProperties(workflow, new WorkflowResponse(), false, List.of());
         return ResponseEntity.ok(result);
     }
 
     @Override
-    public ResponseEntity<WorkflowResponseDto> updateWorkflow(@NonNull final String workflowId, @NonNull final WorkflowRequestDto update, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
+    public ResponseEntity<WorkflowResponse> updateWorkflow(@NonNull final String workflowId, @NonNull final WorkflowRequest update, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
         final var username = getUsername(authentication);
         final var workflow = this.workflowInteractor.updateWorkflow(workflowId, copyEntityProperties(update, new WorkflowDao(), false, List.of()), sessionKey, username);
-        final var result = copyEntityProperties(workflow, new WorkflowResponseDto(), false, List.of());
+        final var result = copyEntityProperties(workflow, new WorkflowResponse(), false, List.of());
         return ResponseEntity.ok(result);
     }
 

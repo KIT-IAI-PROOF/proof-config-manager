@@ -72,6 +72,7 @@ public class ServerSecurityConfig {
                 })
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
+                .sessionManagement(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
                 .oauth2ResourceServer((final var oauth2) ->
                         oauth2.jwt((final var jwt) -> jwt

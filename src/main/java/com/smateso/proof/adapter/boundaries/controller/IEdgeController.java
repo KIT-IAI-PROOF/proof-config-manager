@@ -2,7 +2,7 @@ package com.smateso.proof.adapter.boundaries.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.smateso.proof.adapter.model.Request;
-import edu.kit.iai.webis.proofmodels.dto.EdgeDto;
+import edu.kit.iai.webis.proofmodels.dto.Edge;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -35,7 +35,7 @@ public interface IEdgeController {
                     @ApiResponse(responseCode = "500", description = "Retrieval incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @PostMapping(value = "search", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<List<EdgeDto>> searchEdges(@RequestBody final Request request);
+    ResponseEntity<List<Edge>> searchEdges(@RequestBody final Request request);
 
     @JsonView(Listing.class)
     @Operation(
@@ -47,7 +47,7 @@ public interface IEdgeController {
                     @ApiResponse(responseCode = "500", description = "Retrieval incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @GetMapping(consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<List<EdgeDto>> getEdges();
+    ResponseEntity<List<Edge>> getEdges();
 
     @JsonView(Detail.class)
     @Operation(
@@ -59,7 +59,7 @@ public interface IEdgeController {
                     @ApiResponse(responseCode = "500", description = "Retrieval incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @GetMapping(value = "{id}", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<EdgeDto> getEdge(@PathVariable(value = "id") final String id);
+    ResponseEntity<Edge> getEdge(@PathVariable(value = "id") final String id);
 
     @JsonView(Detail.class)
     @Operation(
@@ -71,7 +71,7 @@ public interface IEdgeController {
                     @ApiResponse(responseCode = "500", description = "Create incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<EdgeDto> createEdge(@RequestBody final EdgeDto edge, @RequestParam final String sessionKey, final Authentication authentication);
+    ResponseEntity<Edge> createEdge(@RequestBody final Edge edge, @RequestParam final String sessionKey, final Authentication authentication);
 
     @JsonView(Detail.class)
     @Operation(
@@ -83,7 +83,7 @@ public interface IEdgeController {
                     @ApiResponse(responseCode = "500", description = "Update incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @PostMapping(value = "{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<EdgeDto> updateEdge(@PathVariable(value = "id") final String id, @RequestBody final EdgeDto edge, @RequestParam final String sessionKey, final Authentication authentication);
+    ResponseEntity<Edge> updateEdge(@PathVariable(value = "id") final String id, @RequestBody final Edge edge, @RequestParam final String sessionKey, final Authentication authentication);
 
     @JsonView(Detail.class)
     @Operation(

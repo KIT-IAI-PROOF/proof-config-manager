@@ -4,7 +4,7 @@ import com.smateso.proof.adapter.boundaries.controller.IProgramController;
 import com.smateso.proof.adapter.boundaries.services.IProgramInteractor;
 import com.smateso.proof.adapter.model.Request;
 import edu.kit.iai.webis.proofmodels.dao.ProgramDao;
-import edu.kit.iai.webis.proofmodels.dto.ProgramDto;
+import edu.kit.iai.webis.proofmodels.dto.Program;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import org.springframework.http.ResponseEntity;
@@ -24,54 +24,54 @@ public class ProgramController implements IProgramController {
     private final IProgramInteractor programInteractor;
 
     @NonNull
-    private static ProgramDto attachLinks(@NonNull final ProgramDto program) {
+    private static Program attachLinks(@NonNull final Program program) {
         final var selfLink = linkTo(ProgramController.class).slash(program.getId()).withSelfRel();
         program.add(selfLink);
         return program;
     }
 
     @Override
-    public ResponseEntity<List<ProgramDto>> searchPrograms(@NonNull final Request request) {
+    public ResponseEntity<List<Program>> searchPrograms(@NonNull final Request request) {
         final var programs = this.programInteractor.searchPrograms(request);
         final var result = programs
                 .stream()
-                .map((final var program) -> copyEntityProperties(program, new ProgramDto(), false, List.of()))
+                .map((final var program) -> copyEntityProperties(program, new Program(), false, List.of()))
                 .map(ProgramController::attachLinks)
                 .toList();
         return ResponseEntity.ok(result);
     }
 
     @Override
-    public ResponseEntity<List<ProgramDto>> getPrograms() {
+    public ResponseEntity<List<Program>> getPrograms() {
         final var programs = this.programInteractor.getPrograms();
         final var result = programs
                 .stream()
-                .map((final var program) -> copyEntityProperties(program, new ProgramDto(), false, List.of()))
+                .map((final var program) -> copyEntityProperties(program, new Program(), false, List.of()))
                 .map(ProgramController::attachLinks)
                 .toList();
         return ResponseEntity.ok(result);
     }
 
     @Override
-    public ResponseEntity<ProgramDto> getProgram(final String id) {
+    public ResponseEntity<Program> getProgram(final String id) {
         final var program = this.programInteractor.getProgram(id);
-        final var result = copyEntityProperties(program, new ProgramDto(), false, List.of());
+        final var result = copyEntityProperties(program, new Program(), false, List.of());
         return ResponseEntity.ok(result);
     }
 
     @Override
-    public ResponseEntity<ProgramDto> createProgram(@NonNull final ProgramDto update, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
+    public ResponseEntity<Program> createProgram(@NonNull final Program update, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
         final var username = getUsername(authentication);
         final var program = this.programInteractor.createProgram(copyEntityProperties(update, new ProgramDao(), false, List.of()), sessionKey, username);
-        final var result = copyEntityProperties(program, new ProgramDto(), false, List.of());
+        final var result = copyEntityProperties(program, new Program(), false, List.of());
         return ResponseEntity.ok(result);
     }
 
     @Override
-    public ResponseEntity<ProgramDto> updateProgram(@NonNull final String programId, @NonNull final ProgramDto update, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
+    public ResponseEntity<Program> updateProgram(@NonNull final String programId, @NonNull final Program update, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
         final var username = getUsername(authentication);
         final var program = this.programInteractor.updateProgram(programId, copyEntityProperties(update, new ProgramDao(), false, List.of()), sessionKey, username);
-        final var result = copyEntityProperties(program, new ProgramDto(), false, List.of());
+        final var result = copyEntityProperties(program, new Program(), false, List.of());
         return ResponseEntity.ok(result);
     }
 

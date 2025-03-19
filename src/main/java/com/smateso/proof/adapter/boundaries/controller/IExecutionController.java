@@ -2,7 +2,7 @@ package com.smateso.proof.adapter.boundaries.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.smateso.proof.adapter.model.Request;
-import edu.kit.iai.webis.proofmodels.dto.ExecutionDto;
+import edu.kit.iai.webis.proofmodels.dto.Execution;
 import edu.kit.iai.webis.proofmodels.utils.Views.Detail;
 import edu.kit.iai.webis.proofmodels.utils.Views.Listing;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,7 +35,7 @@ public interface IExecutionController {
                     @ApiResponse(responseCode = "500", description = "Retrieval incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @PostMapping(value = "search", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<List<ExecutionDto>> searchExecutions(@RequestBody final Request request);
+    ResponseEntity<List<Execution>> searchExecutions(@RequestBody final Request request);
 
     @JsonView(Listing.class)
     @Operation(
@@ -47,7 +47,7 @@ public interface IExecutionController {
                     @ApiResponse(responseCode = "500", description = "Retrieval incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @GetMapping(consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<List<ExecutionDto>> getExecutions();
+    ResponseEntity<List<Execution>> getExecutions();
 
     @JsonView(Detail.class)
     @Operation(
@@ -59,7 +59,7 @@ public interface IExecutionController {
                     @ApiResponse(responseCode = "500", description = "Retrieval incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @GetMapping(value = "{id}", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<ExecutionDto> getExecution(@PathVariable(value = "id") final String id);
+    ResponseEntity<Execution> getExecution(@PathVariable(value = "id") final String id);
 
     @JsonView(Detail.class)
     @Operation(
@@ -71,7 +71,7 @@ public interface IExecutionController {
                     @ApiResponse(responseCode = "500", description = "Create incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<ExecutionDto> createExecution(@RequestBody final ExecutionDto execution, @RequestParam final String sessionKey, final Authentication authentication);
+    ResponseEntity<Execution> createExecution(@RequestBody final Execution execution, @RequestParam final String sessionKey, final Authentication authentication);
 
     @JsonView(Detail.class)
     @Operation(
@@ -83,7 +83,7 @@ public interface IExecutionController {
                     @ApiResponse(responseCode = "500", description = "Update incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @PostMapping(value = "{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<ExecutionDto> updateExecution(@PathVariable(value = "id") final String id, @RequestBody final ExecutionDto execution, @RequestParam final String sessionKey, final Authentication authentication);
+    ResponseEntity<Execution> updateExecution(@PathVariable(value = "id") final String id, @RequestBody final Execution execution, @RequestParam final String sessionKey, final Authentication authentication);
 
     @JsonView(Detail.class)
     @Operation(

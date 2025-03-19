@@ -4,7 +4,7 @@ import com.smateso.proof.adapter.boundaries.controller.IEdgeController;
 import com.smateso.proof.adapter.boundaries.services.IEdgeInteractor;
 import com.smateso.proof.adapter.model.Request;
 import edu.kit.iai.webis.proofmodels.dao.EdgeDao;
-import edu.kit.iai.webis.proofmodels.dto.EdgeDto;
+import edu.kit.iai.webis.proofmodels.dto.Edge;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import org.springframework.http.ResponseEntity;
@@ -24,54 +24,54 @@ public class EdgeController implements IEdgeController {
     private final IEdgeInteractor edgeInteractor;
 
     @NonNull
-    private static EdgeDto attachLinks(@NonNull final EdgeDto edge) {
+    private static Edge attachLinks(@NonNull final Edge edge) {
         final var selfLink = linkTo(EdgeController.class).slash(edge.getId()).withSelfRel();
         edge.add(selfLink);
         return edge;
     }
 
     @Override
-    public ResponseEntity<List<EdgeDto>> searchEdges(@NonNull final Request request) {
+    public ResponseEntity<List<Edge>> searchEdges(@NonNull final Request request) {
         final var edges = this.edgeInteractor.searchEdges(request);
         final var result = edges
                 .stream()
-                .map((final var edge) -> copyEntityProperties(edge, new EdgeDto(), false, List.of()))
+                .map((final var edge) -> copyEntityProperties(edge, new Edge(), false, List.of()))
                 .map(EdgeController::attachLinks)
                 .toList();
         return ResponseEntity.ok(result);
     }
 
     @Override
-    public ResponseEntity<List<EdgeDto>> getEdges() {
+    public ResponseEntity<List<Edge>> getEdges() {
         final var edges = this.edgeInteractor.getEdges();
         final var result = edges
                 .stream()
-                .map((final var edge) -> copyEntityProperties(edge, new EdgeDto(), false, List.of()))
+                .map((final var edge) -> copyEntityProperties(edge, new Edge(), false, List.of()))
                 .map(EdgeController::attachLinks)
                 .toList();
         return ResponseEntity.ok(result);
     }
 
     @Override
-    public ResponseEntity<EdgeDto> getEdge(final String id) {
+    public ResponseEntity<Edge> getEdge(final String id) {
         final var edge = this.edgeInteractor.getEdge(id);
-        final var result = copyEntityProperties(edge, new EdgeDto(), false, List.of());
+        final var result = copyEntityProperties(edge, new Edge(), false, List.of());
         return ResponseEntity.ok(result);
     }
 
     @Override
-    public ResponseEntity<EdgeDto> createEdge(@NonNull final EdgeDto update, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
+    public ResponseEntity<Edge> createEdge(@NonNull final Edge update, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
         final var username = getUsername(authentication);
         final var edge = this.edgeInteractor.createEdge(copyEntityProperties(update, new EdgeDao(), false, List.of()), sessionKey, username);
-        final var result = copyEntityProperties(edge, new EdgeDto(), false, List.of());
+        final var result = copyEntityProperties(edge, new Edge(), false, List.of());
         return ResponseEntity.ok(result);
     }
 
     @Override
-    public ResponseEntity<EdgeDto> updateEdge(@NonNull final String edgeId, @NonNull final EdgeDto update, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
+    public ResponseEntity<Edge> updateEdge(@NonNull final String edgeId, @NonNull final Edge update, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
         final var username = getUsername(authentication);
         final var edge = this.edgeInteractor.updateEdge(edgeId, copyEntityProperties(update, new EdgeDao(), false, List.of()), sessionKey, username);
-        final var result = copyEntityProperties(edge, new EdgeDto(), false, List.of());
+        final var result = copyEntityProperties(edge, new Edge(), false, List.of());
         return ResponseEntity.ok(result);
     }
 
