@@ -22,7 +22,7 @@ deploy:jib:
     - config-mvn-deploy-auth
     - mkdir -p $HOME/.docker && echo "$DOCKER_AUTH_CONFIG" > $HOME/.docker/config.json
     - mvn-ci clean
-    - for REG in $(get-jib-docker-registry | tr ";" "\n"); do mvn-ci compile com.google.cloud.tools:jib-maven-plugin:3.4.4:build "-Dimage=$REG/$(get-docker-image-name)"; done
+    - for REG in $(get-jib-docker-registry | tr ";" "\n"); do mvn-ci install com.google.cloud.tools:jib-maven-plugin:3.4.4:build "-Dimage=$REG/$(get-docker-image-name)"; done
   artifacts:
     paths:
       - generated/
