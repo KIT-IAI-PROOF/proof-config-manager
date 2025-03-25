@@ -12,7 +12,7 @@
 
     <groupId>edu.kit.iai.webis</groupId>
     <artifactId>proof-config-manager</artifactId>
-    <version>1.0.6</version>
+    <version>1.0.7</version>
     <name>PROOF Config Manager</name>
     <description>PROOF Config Manager</description>
     <packaging>jar</packaging>
@@ -31,7 +31,7 @@
         <dependency>
             <groupId>edu.kit.iai.webis</groupId>
             <artifactId>proof-models</artifactId>
-            <version>3.0.15</version>
+            <version>3.0.16</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -254,10 +254,10 @@
                             <gitRepoId>${gitRepoId}</gitRepoId>
                             <gitHost>gitlab.kit.edu</gitHost>
                             <artifactId>config-manager-client</artifactId>
-                            <groupId>com.smateso.proof</groupId>
+                            <groupId>edu.kit.iai.webis.proof</groupId>
                             <artifactVersion>${project.version}</artifactVersion>
-                            <apiPackage>api</apiPackage>
-                            <modelPackage>model</modelPackage>
+                            <apiPackage>edu.kit.iai.webis.proofapi</apiPackage>
+                            <modelPackage>edu.kit.iai.webis.proofmodels</modelPackage>
                             <additionalProperties>
                                 <additionalProperty>annotationLibrary=swagger2</additionalProperty>
                                 <additionalProperty>serializationLibrary=jackson</additionalProperty>
