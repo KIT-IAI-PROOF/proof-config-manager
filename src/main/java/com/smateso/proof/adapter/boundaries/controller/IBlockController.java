@@ -27,7 +27,6 @@ public interface IBlockController {
 
     @JsonView(Listing.class)
     @Operation(
-            ignoreJsonView = true,
             summary = "Retrieve blocks",
             description = "Retrieve blocks",
             security = @SecurityRequirement(name = "oauth2"),
@@ -40,7 +39,6 @@ public interface IBlockController {
 
     @JsonView(Listing.class)
     @Operation(
-            ignoreJsonView = true,
             summary = "Retrieve blocks",
             description = "Retrieve blocks",
             security = @SecurityRequirement(name = "oauth2"),
@@ -53,7 +51,6 @@ public interface IBlockController {
 
     @JsonView(Detail.class)
     @Operation(
-            ignoreJsonView = true,
             summary = "Retrieve block",
             description = "Retrieve block",
             security = @SecurityRequirement(name = "oauth2"),
@@ -66,7 +63,6 @@ public interface IBlockController {
 
     @JsonView(Detail.class)
     @Operation(
-            ignoreJsonView = true,
             summary = "Create block",
             description = "Create block",
             security = @SecurityRequirement(name = "oauth2"),
@@ -79,7 +75,6 @@ public interface IBlockController {
 
     @JsonView(Detail.class)
     @Operation(
-            ignoreJsonView = true,
             summary = "Update block",
             description = "Update block",
             security = @SecurityRequirement(name = "oauth2"),
@@ -92,7 +87,6 @@ public interface IBlockController {
 
     @JsonView(Detail.class)
     @Operation(
-            ignoreJsonView = true,
             summary = "Delete block",
             description = "Delete block",
             security = @SecurityRequirement(name = "oauth2"),

@@ -156,7 +156,7 @@ public class Beans {
                 .build();
     }
 
-    @Bean(value = "programController", name ="programController" )
+    @Bean(value = "programController", name = "programController")
     public IProgramController programController(@Qualifier("programInteractor") IProgramInteractor programInteractor) {
         return new ProgramController(programInteractor);
     }
