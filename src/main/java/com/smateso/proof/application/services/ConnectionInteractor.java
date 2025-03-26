@@ -18,7 +18,7 @@ import java.util.List;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createPageable;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createSpecification;
 import static com.smateso.proof.application.utils.LogMessages.CONNECTION_DAO_NOT_FOUND_MESSAGE;
-import static com.smateso.proof.application.utils.PropertyCopyHelper.copyEntityProperties;
+import static com.smateso.proof.application.utils.PropertyCopyHelper.relationalCopyEntityProperties;
 
 @Slf4j
 @Builder
@@ -48,14 +48,14 @@ public class ConnectionInteractor implements IConnectionInteractor {
     }
 
     @Override
-    public ConnectionDao createConnection(@NonNull final ConnectionDao connectionDao, @NonNull final String sessionKey, @NonNull final String username) {
-        return this.connectionRepository.save(connectionDao);
+    public ConnectionDao createConnection(@NonNull final ConnectionDao edgeDao, @NonNull final String sessionKey, @NonNull final String username) {
+        return this.connectionRepository.save(edgeDao);
     }
 
     @Override
-    public ConnectionDao updateConnection(@NonNull final String id, @NonNull final ConnectionDao updatingConnection, @NonNull final String sessionKey, @NonNull final String username) {
-        final var existingConnection = this.getConnection(id);
-        return this.connectionRepository.save(copyEntityProperties(updatingConnection, existingConnection, true, List.of()));
+    public ConnectionDao updateConnection(@NonNull final String id, @NonNull final ConnectionDao updatingEdge, @NonNull final String sessionKey, @NonNull final String username) {
+        final var existingEdge = this.getConnection(id);
+        return this.connectionRepository.save(relationalCopyEntityProperties(updatingEdge, existingEdge, true, List.of()));
     }
 
     @Override

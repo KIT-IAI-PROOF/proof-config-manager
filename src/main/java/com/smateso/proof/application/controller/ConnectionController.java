@@ -14,7 +14,7 @@ import org.springframework.security.core.Authentication;
 import java.util.List;
 
 import static com.smateso.proof.adapter.config.AuditorProvider.getUsername;
-import static com.smateso.proof.application.utils.PropertyCopyHelper.copyEntityProperties;
+import static com.smateso.proof.application.utils.PropertyCopyHelper.relationalCopyEntityProperties;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @Builder
@@ -35,7 +35,7 @@ public class ConnectionController implements IConnectionController {
         final var connections = this.connectionInteractor.searchConnections(request);
         final var result = connections
                 .stream()
-                .map((final var connection) -> copyEntityProperties(connection, new Connection(), false, List.of()))
+                .map((final var connection) -> relationalCopyEntityProperties(connection, new Connection(), false, List.of()))
                 .map(ConnectionController::attachLinks)
                 .toList();
         return ResponseEntity.ok(result);
@@ -46,7 +46,7 @@ public class ConnectionController implements IConnectionController {
         final var connections = this.connectionInteractor.getConnections();
         final var result = connections
                 .stream()
-                .map((final var connection) -> copyEntityProperties(connection, new Connection(), false, List.of()))
+                .map((final var connection) -> relationalCopyEntityProperties(connection, new Connection(), false, List.of()))
                 .map(ConnectionController::attachLinks)
                 .toList();
         return ResponseEntity.ok(result);
@@ -55,21 +55,23 @@ public class ConnectionController implements IConnectionController {
     @Override
     public ResponseEntity<Connection> getConnection(final String id) {
         final var connection = this.connectionInteractor.getConnection(id);
-        final var result = copyEntityProperties(connection, new Connection(), false, List.of());
+        final var result = relationalCopyEntityProperties(connection, new Connection(), false, List.of());
         return ResponseEntity.ok(result);
     }
 
+    @Override
     public ResponseEntity<Connection> createConnection(@NonNull final Connection update, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
         final var username = getUsername(authentication);
-        final var connection = this.connectionInteractor.createConnection(copyEntityProperties(update, new ConnectionDao(), false, List.of()), sessionKey, username);
-        final var result = copyEntityProperties(connection, new Connection(), false, List.of());
+        final var connection = this.connectionInteractor.createConnection(relationalCopyEntityProperties(update, new ConnectionDao(), false, List.of()), sessionKey, username);
+        final var result = relationalCopyEntityProperties(connection, new Connection(), false, List.of());
         return ResponseEntity.ok(result);
     }
 
+    @Override
     public ResponseEntity<Connection> updateConnection(@NonNull final String connectionId, @NonNull final Connection update, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
         final var username = getUsername(authentication);
-        final var connection = this.connectionInteractor.updateConnection(connectionId, copyEntityProperties(update, new ConnectionDao(), false, List.of()), sessionKey, username);
-        final var result = copyEntityProperties(connection, new Connection(), false, List.of());
+        final var connection = this.connectionInteractor.updateConnection(connectionId, relationalCopyEntityProperties(update, new ConnectionDao(), false, List.of()), sessionKey, username);
+        final var result = relationalCopyEntityProperties(connection, new Connection(), false, List.of());
         return ResponseEntity.ok(result);
     }
 
