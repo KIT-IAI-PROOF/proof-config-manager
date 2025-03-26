@@ -18,7 +18,7 @@ import java.util.List;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createPageable;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createSpecification;
 import static com.smateso.proof.application.utils.LogMessages.EDGE_DAO_NOT_FOUND_MESSAGE;
-import static com.smateso.proof.application.utils.PropertyCopyHelper.copyEntityProperties;
+import static com.smateso.proof.application.utils.PropertyCopyHelper.relationalCopyEntityProperties;
 
 @Slf4j
 @Builder
@@ -55,7 +55,7 @@ public class EdgeInteractor implements IEdgeInteractor {
     @Override
     public EdgeDao updateEdge(@NonNull final String id, @NonNull final EdgeDao updatingEdge, @NonNull final String sessionKey, @NonNull final String username) {
         final var existingEdge = this.getEdge(id);
-        return this.edgeRepository.save(copyEntityProperties(updatingEdge, existingEdge, true, List.of()));
+        return this.edgeRepository.save(relationalCopyEntityProperties(updatingEdge, existingEdge, true, List.of()));
     }
 
     @Override

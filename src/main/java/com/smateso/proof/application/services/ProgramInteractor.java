@@ -17,7 +17,7 @@ import java.util.List;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createPageable;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createSpecification;
 import static com.smateso.proof.application.utils.LogMessages.PROGRAM_DAO_NOT_FOUND_MESSAGE;
-import static com.smateso.proof.application.utils.PropertyCopyHelper.copyEntityProperties;
+import static com.smateso.proof.application.utils.PropertyCopyHelper.relationalCopyEntityProperties;
 
 @Slf4j
 @Builder
@@ -53,7 +53,7 @@ public class ProgramInteractor implements IProgramInteractor {
     @Override
     public ProgramDao updateProgram(@NonNull final String id, @NonNull final ProgramDao updatingProgram, @NonNull final String sessionKey, @NonNull final String username) {
         final var existingProgram = this.getProgram(id);
-        return this.programRepository.save(copyEntityProperties(updatingProgram, existingProgram, true, List.of()));
+        return this.programRepository.save(relationalCopyEntityProperties(updatingProgram, existingProgram, true, List.of()));
     }
 
     @Override

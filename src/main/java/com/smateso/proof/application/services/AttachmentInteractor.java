@@ -17,7 +17,7 @@ import java.util.List;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createPageable;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createSpecification;
 import static com.smateso.proof.application.utils.LogMessages.ATTACHMENT_DAO_NOT_FOUND_MESSAGE;
-import static com.smateso.proof.application.utils.PropertyCopyHelper.copyEntityProperties;
+import static com.smateso.proof.application.utils.PropertyCopyHelper.relationalCopyEntityProperties;
 
 @Slf4j
 @Builder
@@ -53,7 +53,7 @@ public class AttachmentInteractor implements IAttachmentInteractor {
     @Override
     public AttachmentDao updateAttachment(@NonNull final String id, @NonNull final AttachmentDao updatingAttachment, @NonNull final String sessionKey, @NonNull final String username) {
         final var existingAttachment = this.getAttachment(id);
-        return this.attachmentRepository.save(copyEntityProperties(updatingAttachment, existingAttachment, true, List.of()));
+        return this.attachmentRepository.save(relationalCopyEntityProperties(updatingAttachment, existingAttachment, true, List.of()));
     }
 
     @Override

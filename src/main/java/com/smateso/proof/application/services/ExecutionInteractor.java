@@ -19,7 +19,7 @@ import static com.smateso.proof.adapter.model.Action.*;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createPageable;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createSpecification;
 import static com.smateso.proof.application.utils.LogMessages.EXECUTION_DAO_NOT_FOUND_MESSAGE;
-import static com.smateso.proof.application.utils.PropertyCopyHelper.copyEntityProperties;
+import static com.smateso.proof.application.utils.PropertyCopyHelper.relationalCopyEntityProperties;
 import static java.util.Objects.requireNonNull;
 
 @Slf4j
@@ -59,7 +59,7 @@ public class ExecutionInteractor implements IExecutionInteractor {
     @Override
     public ExecutionDao updateExecution(@NonNull final String id, @NonNull final ExecutionDao updatingExecution, @NonNull final String sessionKey, @NonNull final String username) {
         final var existingExecution = this.getExecution(id);
-        final var result = this.executionRepository.save(copyEntityProperties(updatingExecution, existingExecution, true, List.of()));
+        final var result = this.executionRepository.save(relationalCopyEntityProperties(updatingExecution, existingExecution, true, List.of()));
         this.messageInteractor.executionUpdate(requireNonNull(result.getId()), UPDATED, sessionKey, username);
         return result;
     }

@@ -14,7 +14,7 @@ import org.springframework.security.core.Authentication;
 import java.util.List;
 
 import static com.smateso.proof.adapter.config.AuditorProvider.getUsername;
-import static com.smateso.proof.application.utils.PropertyCopyHelper.copyEntityProperties;
+import static com.smateso.proof.application.utils.PropertyCopyHelper.relationalCopyEntityProperties;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @Builder
@@ -35,7 +35,7 @@ public class ExecutionController implements IExecutionController {
         final var executions = this.executionInteractor.searchExecutions(request);
         final var result = executions
                 .stream()
-                .map((final var execution) -> copyEntityProperties(execution, new Execution(), false, List.of()))
+                .map((final var execution) -> relationalCopyEntityProperties(execution, new Execution(), false, List.of()))
                 .map(ExecutionController::attachLinks)
                 .toList();
         return ResponseEntity.ok(result);
@@ -46,7 +46,7 @@ public class ExecutionController implements IExecutionController {
         final var executions = this.executionInteractor.getExecutions();
         final var result = executions
                 .stream()
-                .map((final var execution) -> copyEntityProperties(execution, new Execution(), false, List.of()))
+                .map((final var execution) -> relationalCopyEntityProperties(execution, new Execution(), false, List.of()))
                 .map(ExecutionController::attachLinks)
                 .toList();
         return ResponseEntity.ok(result);
@@ -55,23 +55,23 @@ public class ExecutionController implements IExecutionController {
     @Override
     public ResponseEntity<Execution> getExecution(final String id) {
         final var execution = this.executionInteractor.getExecution(id);
-        final var result = copyEntityProperties(execution, new Execution(), false, List.of());
+        final var result = relationalCopyEntityProperties(execution, new Execution(), false, List.of());
         return ResponseEntity.ok(result);
     }
 
     @Override
     public ResponseEntity<Execution> createExecution(@NonNull final Execution update, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
         final var username = getUsername(authentication);
-        final var execution = this.executionInteractor.createExecution(copyEntityProperties(update, new ExecutionDao(), false, List.of()), sessionKey, username);
-        final var result = copyEntityProperties(execution, new Execution(), false, List.of());
+        final var execution = this.executionInteractor.createExecution(relationalCopyEntityProperties(update, new ExecutionDao(), false, List.of()), sessionKey, username);
+        final var result = relationalCopyEntityProperties(execution, new Execution(), false, List.of());
         return ResponseEntity.ok(result);
     }
 
     @Override
     public ResponseEntity<Execution> updateExecution(@NonNull final String executionId, @NonNull final Execution update, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
         final var username = getUsername(authentication);
-        final var execution = this.executionInteractor.updateExecution(executionId, copyEntityProperties(update, new ExecutionDao(), false, List.of()), sessionKey, username);
-        final var result = copyEntityProperties(execution, new Execution(), false, List.of());
+        final var execution = this.executionInteractor.updateExecution(executionId, relationalCopyEntityProperties(update, new ExecutionDao(), false, List.of()), sessionKey, username);
+        final var result = relationalCopyEntityProperties(execution, new Execution(), false, List.of());
         return ResponseEntity.ok(result);
     }
 

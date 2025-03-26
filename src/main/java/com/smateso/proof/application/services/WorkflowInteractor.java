@@ -19,7 +19,7 @@ import static com.smateso.proof.adapter.model.Action.*;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createPageable;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createSpecification;
 import static com.smateso.proof.application.utils.LogMessages.WORKFLOW_DAO_NOT_FOUND_MESSAGE;
-import static com.smateso.proof.application.utils.PropertyCopyHelper.copyEntityProperties;
+import static com.smateso.proof.application.utils.PropertyCopyHelper.relationalCopyEntityProperties;
 import static java.util.Objects.requireNonNull;
 
 @Slf4j
@@ -59,7 +59,7 @@ public class WorkflowInteractor implements IWorkflowInteractor {
     @Override
     public WorkflowDao updateWorkflow(@NonNull final String id, @NonNull final WorkflowDao updatingWorkflow, @NonNull final String sessionKey, @NonNull final String username) {
         final var existingWorkflow = this.getWorkflow(id);
-        final var result = this.workflowRepository.save(copyEntityProperties(updatingWorkflow, existingWorkflow, true, List.of()));
+        final var result = this.workflowRepository.save(relationalCopyEntityProperties(updatingWorkflow, existingWorkflow, true, List.of()));
         this.messageInteractor.workflowUpdate(requireNonNull(result.getId()), UPDATED, sessionKey, username);
         return result;
     }

@@ -14,7 +14,7 @@ import org.springframework.security.core.Authentication;
 import java.util.List;
 
 import static com.smateso.proof.adapter.config.AuditorProvider.getUsername;
-import static com.smateso.proof.application.utils.PropertyCopyHelper.copyEntityProperties;
+import static com.smateso.proof.application.utils.PropertyCopyHelper.relationalCopyEntityProperties;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @Builder
@@ -35,7 +35,7 @@ public class EdgeController implements IEdgeController {
         final var edges = this.edgeInteractor.searchEdges(request);
         final var result = edges
                 .stream()
-                .map((final var edge) -> copyEntityProperties(edge, new Edge(), false, List.of()))
+                .map((final var edge) -> relationalCopyEntityProperties(edge, new Edge(), false, List.of()))
                 .map(EdgeController::attachLinks)
                 .toList();
         return ResponseEntity.ok(result);
@@ -46,7 +46,7 @@ public class EdgeController implements IEdgeController {
         final var edges = this.edgeInteractor.getEdges();
         final var result = edges
                 .stream()
-                .map((final var edge) -> copyEntityProperties(edge, new Edge(), false, List.of()))
+                .map((final var edge) -> relationalCopyEntityProperties(edge, new Edge(), false, List.of()))
                 .map(EdgeController::attachLinks)
                 .toList();
         return ResponseEntity.ok(result);
@@ -55,23 +55,23 @@ public class EdgeController implements IEdgeController {
     @Override
     public ResponseEntity<Edge> getEdge(final String id) {
         final var edge = this.edgeInteractor.getEdge(id);
-        final var result = copyEntityProperties(edge, new Edge(), false, List.of());
+        final var result = relationalCopyEntityProperties(edge, new Edge(), false, List.of());
         return ResponseEntity.ok(result);
     }
 
     @Override
     public ResponseEntity<Edge> createEdge(@NonNull final Edge update, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
         final var username = getUsername(authentication);
-        final var edge = this.edgeInteractor.createEdge(copyEntityProperties(update, new EdgeDao(), false, List.of()), sessionKey, username);
-        final var result = copyEntityProperties(edge, new Edge(), false, List.of());
+        final var edge = this.edgeInteractor.createEdge(relationalCopyEntityProperties(update, new EdgeDao(), false, List.of()), sessionKey, username);
+        final var result = relationalCopyEntityProperties(edge, new Edge(), false, List.of());
         return ResponseEntity.ok(result);
     }
 
     @Override
     public ResponseEntity<Edge> updateEdge(@NonNull final String edgeId, @NonNull final Edge update, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
         final var username = getUsername(authentication);
-        final var edge = this.edgeInteractor.updateEdge(edgeId, copyEntityProperties(update, new EdgeDao(), false, List.of()), sessionKey, username);
-        final var result = copyEntityProperties(edge, new Edge(), false, List.of());
+        final var edge = this.edgeInteractor.updateEdge(edgeId, relationalCopyEntityProperties(update, new EdgeDao(), false, List.of()), sessionKey, username);
+        final var result = relationalCopyEntityProperties(edge, new Edge(), false, List.of());
         return ResponseEntity.ok(result);
     }
 
