@@ -6,7 +6,7 @@ public class LogMessages {
     public static final String TEMPLATE_DAO_NOT_FOUND_MESSAGE = "Template with id %s not found";
     public static final String BLOCK_DAO_NOT_FOUND_MESSAGE = "Block with id %s not found";
     public static final String ATTACHMENT_DAO_NOT_FOUND_MESSAGE = "Attachment with id %s not found";
-    public static final String EDGE_DAO_NOT_FOUND_MESSAGE = "Edge with id %s not found";
+    public static final String CONNECTION_DAO_NOT_FOUND_MESSAGE = "Connection with id %s not found";
     public static final String EXECUTION_DAO_NOT_FOUND_MESSAGE = "Execution with id %s not found";
     public static final String COPY_BASIC_PROPERTIES = "Copying basic properties of %s to %s";
     public static final String COPY_RELATIONAL_PROPERTIES = "Copying relational properties %s to %s";

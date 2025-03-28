@@ -1,6 +1,6 @@
 package com.smateso.proof.adapter.repositories;
 
-import edu.kit.iai.webis.proofmodels.dao.EdgeDao;
+import edu.kit.iai.webis.proofmodels.dao.ConnectionDao;
 import org.springframework.cache.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-@CacheConfig(cacheNames = "edges")
-public interface EdgeRepository extends JpaRepository<EdgeDao, String>, JpaSpecificationExecutor<EdgeDao> {
+@CacheConfig(cacheNames = "connections")
+public interface ConnectionRepository extends JpaRepository<ConnectionDao, String>, JpaSpecificationExecutor<ConnectionDao> {
 
     @NonNull
     @Override
@@ -25,26 +25,26 @@ public interface EdgeRepository extends JpaRepository<EdgeDao, String>, JpaSpeci
                     @CacheEvict(cacheNames = "programs", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "attachments", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "blocks", allEntries = true, beforeInvocation = true),
-                    @CacheEvict(cacheNames = "edges", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "connections", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "workflows", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "templates", allEntries = true, beforeInvocation = true),
             },
             put = {
-                    @CachePut(cacheNames = "edges", key = "#edge.id", unless = "#edge.id == null")
+                    @CachePut(cacheNames = "connections", key = "#connection.id", unless = "#connection.id == null")
             }
     )
-    <S extends EdgeDao> S save(@NonNull S edge);
+    <S extends ConnectionDao> S save(@NonNull S connection);
 
     @NonNull
     @Override
-    @Cacheable(value = "edges")
-    List<EdgeDao> findAll();
+    @Cacheable(value = "connections")
+    List<ConnectionDao> findAll();
 
     @NonNull
     @Override
-    @Cacheable(value = "edges", key = "#edgeId", unless = "#result == null")
-    Optional<EdgeDao> findById(@NonNull final String edgeId);
+    @Cacheable(value = "connections", key = "#connectionId", unless = "#result == null")
+    Optional<ConnectionDao> findById(@NonNull final String connectionId);
 
     @NonNull
     @Override
@@ -53,18 +53,18 @@ public interface EdgeRepository extends JpaRepository<EdgeDao, String>, JpaSpeci
                     @CacheEvict(cacheNames = "programs", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "attachments", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "blocks", allEntries = true, beforeInvocation = true),
-                    @CacheEvict(cacheNames = "edges", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "connections", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "workflows", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true),
                     @CacheEvict(cacheNames = "templates", allEntries = true, beforeInvocation = true),
             }
     )
-    void deleteById(@NonNull final String edgeId);
+    void deleteById(@NonNull final String connectionId);
 
     @NonNull
     @Override
-    Page<EdgeDao> findAll(@Nullable final Specification<EdgeDao> spec, @NonNull final Pageable pageable);
+    Page<ConnectionDao> findAll(@Nullable final Specification<ConnectionDao> spec, @NonNull final Pageable pageable);
 
-    List<EdgeDao> findEdgesByWorkflowId(@NonNull final String workflowId);
+    List<ConnectionDao> findConnectionsByWorkflowId(@NonNull final String workflowId);
 
 }
