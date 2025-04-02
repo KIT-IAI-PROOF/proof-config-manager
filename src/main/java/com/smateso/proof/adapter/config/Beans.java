@@ -69,11 +69,11 @@ public class Beans {
                 .build();
     }
 
-    @Bean(value = "edgeInteractor", name = "edgeInteractor")
-    public IEdgeInteractor edgeInteractor(@Qualifier("edgeRepository") @NonNull final EdgeRepository edgeRepository) {
-        return EdgeInteractor
+    @Bean(value = "connectionInteractor", name = "connectionInteractor")
+    public IConnectionInteractor connectionInteractor(@Qualifier("connectionRepository") @NonNull final ConnectionRepository connectionRepository) {
+        return ConnectionInteractor
                 .builder()
-                .edgeRepository(edgeRepository)
+                .connectionRepository(connectionRepository)
                 .build();
     }
 
@@ -132,9 +132,9 @@ public class Beans {
         return new BlockController(blockInteractor);
     }
 
-    @Bean(value = "edgeController", name = "edgeController")
-    public IEdgeController edgeController(@Qualifier("edgeInteractor") IEdgeInteractor edgeInteractor) {
-        return new EdgeController(edgeInteractor);
+    @Bean(value = "connectionController", name = "connectionController")
+    public IConnectionController connectionController(@Qualifier("connectionInteractor") IConnectionInteractor connectionInteractor) {
+        return new ConnectionController(connectionInteractor);
     }
 
     @Bean(value = "executionController", name = "executionController")

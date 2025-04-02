@@ -3,7 +3,11 @@ package com.smateso.proof.adapter;
 import com.smateso.proof.adapter.repositories.AttachmentRepository;
 import com.smateso.proof.adapter.repositories.ProgramRepository;
 import com.smateso.proof.adapter.repositories.TemplateRepository;
-import edu.kit.iai.webis.proofmodels.dao.*;
+import edu.kit.iai.webis.proofmodels.dao.ProgramDao;
+import edu.kit.iai.webis.proofmodels.dao.OutputDao;
+import edu.kit.iai.webis.proofmodels.dao.InputDao;
+import edu.kit.iai.webis.proofmodels.dao.TemplateDao;
+import edu.kit.iai.webis.proofmodels.dao.AttachmentDao;
 import edu.kit.iai.webis.proofmodels.enums.ECommunicationType;
 import edu.kit.iai.webis.proofmodels.enums.EIOType;
 import edu.kit.iai.webis.proofmodels.enums.EWorkflowPhase;
@@ -66,7 +70,7 @@ public class DataImporter implements CommandLineRunner {
         this.attachmentRepository.saveAll(attachments);
     }
 
-    private TemplateDao createTemplate(final String label, final String color, final int numberOfSourceHandles, final int numberOfTargetHandles) {
+    private TemplateDao createTemplate(final String label, final String color, final int numberOfOutputs, final int numberOfInputs) {
         final var template = TemplateDao
                 .builder()
                 .eventLifeCycles(List.of())
@@ -78,13 +82,13 @@ public class DataImporter implements CommandLineRunner {
                 .description("A template for " + label)
                 .communicationParadigm(STEPBASED)
                 .startParameters(Map.of("path", "test"))
-                .sourceHandles(List.of())
-                .targetHandles(List.of())
+                .outputs(List.of())
+                .inputs(List.of())
                 .label(label)
                 .build();
         template.setProgram(createProgram());
-        template.setTargetHandles(createTargetHandles(numberOfTargetHandles, template));
-        template.setSourceHandles(createSourceHandles(numberOfSourceHandles, template));
+        template.setInputs(createInputs(numberOfInputs, template));
+        template.setOutputs(createOutputs(numberOfOutputs, template));
         return template;
     }
 
@@ -101,9 +105,9 @@ public class DataImporter implements CommandLineRunner {
         return this.programRepository.save(program);
     }
 
-    private List<SourceHandleDao> createSourceHandles(final int numberOfHandles, final TemplateDao template) {
+    private List<OutputDao> createOutputs(final int numberOfHandles, final TemplateDao template) {
         return range(0, numberOfHandles)
-                .mapToObj(i -> SourceHandleDao
+                .mapToObj(i -> OutputDao
                         .builder()
                         .id(UUID.randomUUID().toString())
                         .label("i" + (i + 1))
@@ -117,9 +121,9 @@ public class DataImporter implements CommandLineRunner {
                 .toList();
     }
 
-    private List<TargetHandleDao> createTargetHandles(final int numberOfHandles, final TemplateDao template) {
+    private List<InputDao> createInputs(final int numberOfHandles, final TemplateDao template) {
         return range(0, numberOfHandles)
-                .mapToObj(i -> TargetHandleDao
+                .mapToObj(i -> InputDao
                         .builder()
                         .id(UUID.randomUUID().toString())
                         .label("o" + (i + 1))
