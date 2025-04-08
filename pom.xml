@@ -31,7 +31,7 @@
         <dependency>
             <groupId>edu.kit.iai.webis</groupId>
             <artifactId>proof-models</artifactId>
-            <version>3.0.17</version>
+            <version>3.0.17-local</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -249,6 +249,16 @@
                             <output>${project.basedir}/generated/java</output>
                             <library>webclient</library>
                             <generatorName>java</generatorName>
+                            <typeMappings>
+                                <typeMapping>Boolean=boolean</typeMapping>
+                                <typeMapping>Integer=int</typeMapping>
+                                <typeMapping>Long=long</typeMapping>
+                                <typeMapping>Float=float</typeMapping>
+                                <typeMapping>Double=double</typeMapping>
+                                <typeMapping>Character=char</typeMapping>
+                                <typeMapping>Byte=byte</typeMapping>
+                                <typeMapping>Short=short</typeMapping>
+                            </typeMappings>
                             <gitHost>${gitHost}</gitHost>
                             <gitUserId>${gitUserId}</gitUserId>
                             <gitRepoId>${gitRepoId}</gitRepoId>
