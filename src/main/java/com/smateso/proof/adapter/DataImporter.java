@@ -1,13 +1,8 @@
 package com.smateso.proof.adapter;
 
-import com.smateso.proof.adapter.repositories.AttachmentRepository;
-import com.smateso.proof.adapter.repositories.ProgramRepository;
 import com.smateso.proof.adapter.repositories.TemplateRepository;
-import edu.kit.iai.webis.proofmodels.dao.ProgramDao;
-import edu.kit.iai.webis.proofmodels.dao.OutputDao;
-import edu.kit.iai.webis.proofmodels.dao.InputDao;
-import edu.kit.iai.webis.proofmodels.dao.TemplateDao;
-import edu.kit.iai.webis.proofmodels.dao.AttachmentDao;
+import com.smateso.proof.adapter.repositories.WorkflowRepository;
+import edu.kit.iai.webis.proofmodels.dao.*;
 import edu.kit.iai.webis.proofmodels.enums.ECommunicationType;
 import edu.kit.iai.webis.proofmodels.enums.EIOType;
 import edu.kit.iai.webis.proofmodels.enums.EWorkflowPhase;
@@ -17,8 +12,10 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 import static edu.kit.iai.webis.proofmodels.enums.ECommunicationParadigm.STEPBASED;
@@ -34,15 +31,12 @@ import static java.util.stream.IntStream.range;
 @Component
 public class DataImporter implements CommandLineRunner {
 
-
-    private final ProgramRepository programRepository;
     private final TemplateRepository templateRepository;
-    private final AttachmentRepository attachmentRepository;
+    private final WorkflowRepository workflowRepository;
 
-    public DataImporter(@NonNull final TemplateRepository templateRepository, @NonNull final ProgramRepository programRepository, @NonNull final AttachmentRepository attachmentRepository) {
+    public DataImporter(@NonNull final TemplateRepository templateRepository, WorkflowRepository workflowRepository) {
         this.templateRepository = templateRepository;
-        this.programRepository = programRepository;
-        this.attachmentRepository = attachmentRepository;
+        this.workflowRepository = workflowRepository;
     }
 
     @Override
@@ -56,21 +50,68 @@ public class DataImporter implements CommandLineRunner {
             }
     )
     public void run(final String... args) {
-        final var templates = List.of(
-                createTemplate("Reader", "#0D41E1", 2, 4),
-                createTemplate("Transformer", "#0C63E7", 5, 6),
-                createTemplate("Writer", "#0A85ED", 4, 2)
-        );
-        final var attachments = List.of(
-                createAttachment("Attachment1", "test1", "/proof/latest:test1"),
-                createAttachment("Attachment2", "test2", "/proof/latest:test2"),
-                createAttachment("Attachment3", "test3", "/proof/latest:test3")
-        );
-        this.templateRepository.saveAll(templates);
-        this.attachmentRepository.saveAll(attachments);
+   
     }
 
-    private TemplateDao createTemplate(final String label, final String color, final int numberOfOutputs, final int numberOfInputs) {
+    private WorkflowDao createWorkflow(final String name, final String label, final String description, final List<BlockDao> blocks) {
+        final var workflow = WorkflowDao
+                .builder()
+                .name(name)
+                .communicationParadigm(STEPBASED)
+                .label(label)
+                .description(description)
+                .build();
+        workflow.setStepBasedConfig(StepBasedConfigurationDao
+                .builder()
+                .workflow(workflow)
+                .startPoint(0)
+                .endPoint(0)
+                .id(UUID.randomUUID().toString())
+                .startTime(0L)
+                .endTime(0L)
+                .duration(0L)
+                .defaultStepSize(0)
+                .build());
+        workflow.setBlocks(blocks);
+        workflow.setConnections(List.of());
+        return workflow;
+    }
+
+    private BlockDao createBlock(TemplateDao template) {
+        final var block = BlockDao
+                .builder()
+                .id(UUID.randomUUID().toString())
+                .label(template.getName() + LocalDateTime.now())
+                .description(template.getDescription() + LocalDateTime.now())
+                .type(template.getType())
+                .startParameters(Map.of("test", "test"))
+                .blockIODefinitions(List.of())
+                .containerImage(template.getContainerImage())
+                .templateId(template.getId())
+                .templateName(template.getName())
+                .build();
+        block.setOutputs(Objects.requireNonNull(template.getOutputs()).stream().map(o -> OutputDao.builder()
+                .id(UUID.randomUUID().toString())
+                .label(o.getLabel())
+                .block(block)
+                .description(o.getDescription())
+                .communicationType(o.getCommunicationType())
+                .phase(o.getPhase())
+                .type(o.getType())
+                .build()).toList());
+        block.setInputs(Objects.requireNonNull(template.getInputs()).stream().map(i -> InputDao.builder()
+                .id(UUID.randomUUID().toString())
+                .label(i.getLabel())
+                .block(block)
+                .description(i.getDescription())
+                .communicationType(i.getCommunicationType())
+                .phase(i.getPhase())
+                .type(i.getType())
+                .build()).toList());
+        return block;
+    }
+
+    private TemplateDao createTemplate(final String name, final String color, final int numberOfOutputs, final int numberOfInputs) {
         final var template = TemplateDao
                 .builder()
                 .eventLifeCycles(List.of())
@@ -79,12 +120,12 @@ public class DataImporter implements CommandLineRunner {
                 .id(UUID.randomUUID().toString())
                 .color(color)
                 .type("block")
-                .description("A template for " + label)
+                .description("A template for " + name)
                 .communicationParadigm(STEPBASED)
                 .startParameters(Map.of("path", "test"))
                 .outputs(List.of())
                 .inputs(List.of())
-                .label(label)
+                .name(name)
                 .build();
         template.setProgram(createProgram());
         template.setInputs(createInputs(numberOfInputs, template));
@@ -93,16 +134,19 @@ public class DataImporter implements CommandLineRunner {
     }
 
     private ProgramDao createProgram() {
-        final var program = ProgramDao
+        return ProgramDao
                 .builder()
                 .id(UUID.randomUUID().toString())
                 .label("test")
                 .description("test")
-                .attachments(List.of())
+                .attachments(List.of(
+                        createAttachment("Attachment1", "test1", "/proof/latest:test1"),
+                        createAttachment("Attachment2", "test2", "/proof/latest:test2"),
+                        createAttachment("Attachment3", "test3", "/proof/latest:test3")
+                ))
                 .entryPoint("test.py")
                 .runtime(PYTHON)
                 .build();
-        return this.programRepository.save(program);
     }
 
     private List<OutputDao> createOutputs(final int numberOfHandles, final TemplateDao template) {
@@ -146,4 +190,5 @@ public class DataImporter implements CommandLineRunner {
                 .path(path)
                 .build();
     }
+
 }
