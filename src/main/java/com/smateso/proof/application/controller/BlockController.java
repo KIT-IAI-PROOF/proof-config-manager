@@ -53,6 +53,11 @@ public class BlockController implements IBlockController {
     }
 
     @Override
+    public ResponseEntity<List<Block>> exportBlocks() {
+        return this.getBlocks();
+    }
+
+    @Override
     public ResponseEntity<Block> getBlock(final String id) {
         final var block = this.blockInteractor.getBlock(id);
         final var result = relationalCopyEntityProperties(block, new Block(), false, List.of());

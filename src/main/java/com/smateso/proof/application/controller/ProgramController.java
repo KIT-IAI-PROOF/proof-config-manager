@@ -53,6 +53,11 @@ public class ProgramController implements IProgramController {
     }
 
     @Override
+    public ResponseEntity<List<Program>> exportPrograms() {
+        return this.getPrograms();
+    }
+
+    @Override
     public ResponseEntity<Program> getProgram(final String id) {
         final var program = this.programInteractor.getProgram(id);
         final var result = relationalCopyEntityProperties(program, new Program(), false, List.of());

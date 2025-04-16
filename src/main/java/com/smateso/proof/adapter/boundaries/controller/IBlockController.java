@@ -51,6 +51,18 @@ public interface IBlockController {
 
     @JsonView(Detail.class)
     @Operation(
+            summary = "Export blocks",
+            description = "Export blocks",
+            security = @SecurityRequirement(name = "oauth2"),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Retrieval successful", useReturnTypeSchema = true),
+                    @ApiResponse(responseCode = "500", description = "Retrieval incomplete", content = @Content(schema = @Schema(hidden = true))),
+            })
+    @GetMapping(value = "export", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
+    ResponseEntity<List<Block>> exportBlocks();
+
+    @JsonView(Detail.class)
+    @Operation(
             summary = "Retrieve block",
             description = "Retrieve block",
             security = @SecurityRequirement(name = "oauth2"),

@@ -53,6 +53,11 @@ public class TemplateController implements ITemplateController {
     }
 
     @Override
+    public ResponseEntity<List<Template>> exportTemplates() {
+        return this.getTemplates();
+    }
+
+    @Override
     public ResponseEntity<Template> getTemplate(final String id) {
         final var template = this.templateInteractor.getTemplate(id);
         final var result = relationalCopyEntityProperties(template, new Template(), false, List.of());

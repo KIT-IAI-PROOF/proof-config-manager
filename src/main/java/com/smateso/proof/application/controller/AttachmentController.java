@@ -60,6 +60,11 @@ public class AttachmentController implements IAttachmentController {
     }
 
     @Override
+    public ResponseEntity<List<Attachment>> exportAttachments() {
+        return this.getAttachments();
+    }
+
+    @Override
     public ResponseEntity<Attachment> getAttachment(final String id) {
         final var attachment = this.attachmentInteractor.getAttachment(id);
         final var result = relationalCopyEntityProperties(attachment, new Attachment(), false, List.of());

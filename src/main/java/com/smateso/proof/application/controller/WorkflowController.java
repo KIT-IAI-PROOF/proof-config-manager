@@ -54,6 +54,11 @@ public class WorkflowController implements IWorkflowController {
     }
 
     @Override
+    public ResponseEntity<List<WorkflowResponse>> exportWorkflows() {
+        return this.getWorkflows();
+    }
+
+    @Override
     public ResponseEntity<WorkflowResponse> getWorkflow(final String id) {
         final var workflow = this.workflowInteractor.getWorkflow(id);
         final var result = relationalCopyEntityProperties(workflow, new WorkflowResponse(), false, List.of());
