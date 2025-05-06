@@ -10,8 +10,8 @@
 --
 
 INSERT INTO public.workflow
-VALUES (0, 0, '2025-04-23 15:02:28.341', '2025-04-23 15:03:25.771', 'test', 'FileReader2FileWriter',
-        '11f02ad7-08d0-4f92-b911-f70f969a6ba6', 'FileReader2FileWriter', 'test', NULL);
+VALUES (0, 3, NULL, '2025-05-06 11:32:21.808', NULL, 'FileReader2FileWriter', '11f02ad7-08d0-4f92-b911-f70f969a6ba6',
+        'FileReader2FileWriter', 'anonymous', 'FileReader2FileWriter');
 
 
 --
@@ -29,12 +29,12 @@ VALUES (0, 0, '2025-04-23 15:02:28.341', '2025-04-23 15:03:25.771', 'test', 'Fil
 --
 
 INSERT INTO public.program
-VALUES (0, '2025-04-23 14:59:46.713', '2025-04-23 15:03:25.771', 'anonymous',
+VALUES (0, '2025-04-23 14:59:46.713', '2025-05-06 11:32:21.81', 'anonymous',
         'Provide other blocks with one line per SYNC from a given file', 'attachment_file_line_provider',
-        'prog_file_line_provider', 'prog_file_line_provider', 'test', 'testFLP');
+        'prog_file_line_provider', 'prog_file_line_provider', 'anonymous', 'testFLP');
 INSERT INTO public.program
-VALUES (0, '2025-04-23 14:59:49.853', '2025-04-23 15:03:25.771', 'anonymous', 'Write data to a file',
-        'attachment_file_writer', 'prog_file_writer', 'prog_file_writer', 'test', 'test');
+VALUES (0, '2025-04-23 14:59:49.853', '2025-05-06 11:32:21.81', 'anonymous', 'Write data to a file',
+        'attachment_file_writer', 'prog_file_writer', 'prog_file_writer', 'anonymous', 'test');
 
 
 --
@@ -55,14 +55,14 @@ VALUES ('2025-04-23 14:59:46.722', '2025-04-23 14:59:46.722', 'anonymous',
 --
 
 INSERT INTO public.block
-VALUES (0, NULL, NULL, 0, 10, '2025-04-23 15:03:25.743', '2025-04-23 15:03:25.771', '#0D41E1',
+VALUES (0, 0, 0, 0, 10, '2025-04-23 15:03:25.743', '2025-05-06 11:00:50.941', '#0D41E1',
         'iai-artifactory.iai.kit.edu/docker-webis/proof-2/proof-standard:latest', 'test', 'Provide lines from a file',
-        'bed2ac71-2575-462b-9b73-048e5f60388a', 'File Provider', 'test', 'prog_file_line_provider',
+        'bed2ac71-2575-462b-9b73-048e5f60388a', 'File Provider', 'anonymous', 'prog_file_line_provider',
         'block_file_line_provider', 'File Provider', 'block', '11f02ad7-08d0-4f92-b911-f70f969a6ba6');
 INSERT INTO public.block
-VALUES (0, NULL, NULL, 200, 0, '2025-04-23 15:03:25.76', '2025-04-23 15:03:25.772', '#0D41E1',
+VALUES (0, 1, 0, 200, 0, '2025-04-23 15:03:25.76', '2025-05-06 11:00:50.941', '#0D41E1',
         'iai-artifactory.iai.kit.edu/docker-webis/proof-2/proof-standard:latest', 'test', 'Write data to a file',
-        'da35e3b1-aaea-4ba3-bd27-34c1323dd2af', 'File Writer', 'test', 'prog_file_writer', 'block_file_writer',
+        'da35e3b1-aaea-4ba3-bd27-34c1323dd2af', 'File Writer', 'anonymous', 'prog_file_writer', 'block_file_writer',
         'File Writer', 'block', '11f02ad7-08d0-4f92-b911-f70f969a6ba6');
 
 
@@ -198,9 +198,6 @@ INSERT INTO public.input
 VALUES (3, 0, 1, true, 0, '2025-04-23 15:03:25.748', '2025-04-23 15:03:25.748', 'bed2ac71-2575-462b-9b73-048e5f60388a',
         'test', 'Input: file_name', 'e264da1e-f5dc-4c41-8f38-214d07ca6240', 'file_name', 'test', NULL, NULL);
 INSERT INTO public.input
-VALUES (3, 0, 1, false, 1, '2025-04-23 15:03:25.75', '2025-04-23 15:03:25.75', 'bed2ac71-2575-462b-9b73-048e5f60388a',
-        'test', 'Input: num_steps', 'd3de0d44-d55b-4e18-b16b-e2afe0474ad3', 'num_steps', 'test', NULL, NULL);
-INSERT INTO public.input
 VALUES (3, 1, 1, false, 0, '2025-04-23 15:03:25.752', '2025-04-23 15:03:25.752', 'bed2ac71-2575-462b-9b73-048e5f60388a',
         'test', 'Input: ignore_first_line', '562d0d6f-762f-452f-b6eb-d6565dc35b84', 'ignore_first_line', 'test', NULL,
         NULL);
@@ -216,6 +213,9 @@ VALUES (3, 0, 1, false, 0, '2025-04-23 15:03:25.765', '2025-04-23 15:03:25.765',
 INSERT INTO public.input
 VALUES (0, 1, 2, false, 0, '2025-04-23 15:03:25.766', '2025-04-23 15:03:25.766', 'da35e3b1-aaea-4ba3-bd27-34c1323dd2af',
         'test', 'Input: data', 'b3d6434d-dd6d-49ca-ab1c-742c0bcdab3c', 'data', 'test', NULL, NULL);
+INSERT INTO public.input
+VALUES (3, 0, 1, false, 2, '2025-04-23 15:03:25.75', '2025-05-06 10:49:13.07', 'bed2ac71-2575-462b-9b73-048e5f60388a',
+        'test', 'Input: num_steps', 'd3de0d44-d55b-4e18-b16b-e2afe0474ad3', 'num_steps', 'anonymous', NULL, NULL);
 
 
 --
@@ -261,15 +261,32 @@ VALUES (0, 1, 2, 0, '2025-04-23 15:03:25.753', '2025-04-23 15:03:25.753', 'bed2a
 -- Data for Name: step_based_config; Type: TABLE DATA; Schema: public; Owner: admin
 --
 
+INSERT INTO public.step_based_config
+VALUES (1, 10, 1, '2025-05-06 10:49:13.057', 500, 1000, '2025-05-06 11:32:21.804', 0, 'anonymous',
+        'e4b90ac9-6d78-441b-9762-87af0114115f', 'anonymous', '11f02ad7-08d0-4f92-b911-f70f969a6ba6');
+
 
 --
 -- Data for Name: step_size_definition; Type: TABLE DATA; Schema: public; Owner: admin
 --
 
+INSERT INTO public.step_size_definition
+VALUES (1, 10, 2, '2025-05-06 10:49:13.061', '2025-05-06 11:32:21.812', 'anonymous',
+        'a387198d-8220-4f8f-afcc-57e2c4365f1a', 'anonymous', '0', 'e4b90ac9-6d78-441b-9762-87af0114115f');
+
 
 --
 -- Data for Name: stepsizes; Type: TABLE DATA; Schema: public; Owner: admin
 --
+
+INSERT INTO public.stepsizes
+VALUES (2, '2', 'a387198d-8220-4f8f-afcc-57e2c4365f1a');
+INSERT INTO public.stepsizes
+VALUES (1, '4', 'a387198d-8220-4f8f-afcc-57e2c4365f1a');
+INSERT INTO public.stepsizes
+VALUES (2, '5', 'a387198d-8220-4f8f-afcc-57e2c4365f1a');
+INSERT INTO public.stepsizes
+VALUES (1, '7', 'a387198d-8220-4f8f-afcc-57e2c4365f1a');
 
 
 --

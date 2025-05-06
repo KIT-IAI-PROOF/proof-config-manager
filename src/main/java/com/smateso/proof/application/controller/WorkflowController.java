@@ -13,6 +13,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.smateso.proof.adapter.config.AuditorProvider.getUsername;
 import static com.smateso.proof.application.utils.PropertyCopyHelper.relationalCopyEntityProperties;
@@ -31,26 +33,57 @@ public class WorkflowController implements IWorkflowController {
         return workflow;
     }
 
+    private static void convertStepSizeDefinitions(WorkflowDao source, WorkflowResponse target) {
+        assert source.getStepBasedConfig() != null;
+        assert source.getStepBasedConfig().getStepSizeDefinitions() != null;
+        target.getStepBasedConfig().setStepSizeDefinitions(
+                source.getStepBasedConfig().getStepSizeDefinitions().entrySet().stream()
+                        .collect(Collectors.toMap(
+                                Map.Entry::getKey,
+                                e -> relationalCopyEntityProperties(e.getValue(), new edu.kit.iai.webis.proofmodels.dto.StepSizeDefinition(), false, List.of())
+                        ))
+        );
+    }
+
+    private static void convertStepSizeDefinitions(WorkflowRequest source, WorkflowDao target) {
+        assert target.getStepBasedConfig() != null;
+        target.getStepBasedConfig().setStepSizeDefinitions(
+                source.getStepBasedConfig().getStepSizeDefinitions().entrySet().stream()
+                        .collect(Collectors.toMap(
+                                Map.Entry::getKey,
+                                e -> relationalCopyEntityProperties(e.getValue(), new edu.kit.iai.webis.proofmodels.dao.StepSizeDefinitionDao(), false, List.of())
+                        ))
+        );
+    }
+
     @Override
     public ResponseEntity<List<WorkflowResponse>> searchWorkflows(@NonNull final Request request) {
         final var workflows = this.workflowInteractor.searchWorkflows(request);
-        final var result = workflows
+        final var results = workflows
                 .stream()
-                .map((final var workflow) -> relationalCopyEntityProperties(workflow, new WorkflowResponse(), false, List.of()))
+                .map((final var workflow) -> {
+                    final var result = relationalCopyEntityProperties(workflow, new WorkflowResponse(), false, List.of());
+                    convertStepSizeDefinitions(workflow, result);
+                    return result;
+                })
                 .map(WorkflowController::attachLinks)
                 .toList();
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(results);
     }
 
     @Override
     public ResponseEntity<List<WorkflowResponse>> getWorkflows() {
         final var workflows = this.workflowInteractor.getWorkflows();
-        final var result = workflows
+        final var results = workflows
                 .stream()
-                .map((final var workflow) -> relationalCopyEntityProperties(workflow, new WorkflowResponse(), false, List.of()))
+                .map((final var workflow) -> {
+                    final var result = relationalCopyEntityProperties(workflow, new WorkflowResponse(), false, List.of());
+                    convertStepSizeDefinitions(workflow, result);
+                    return result;
+                })
                 .map(WorkflowController::attachLinks)
                 .toList();
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(results);
     }
 
     @Override
@@ -62,22 +95,29 @@ public class WorkflowController implements IWorkflowController {
     public ResponseEntity<WorkflowResponse> getWorkflow(final String id) {
         final var workflow = this.workflowInteractor.getWorkflow(id);
         final var result = relationalCopyEntityProperties(workflow, new WorkflowResponse(), false, List.of());
+        convertStepSizeDefinitions(workflow, result);
         return ResponseEntity.ok(result);
     }
 
     @Override
-    public ResponseEntity<WorkflowResponse> createWorkflow(@NonNull final WorkflowRequest update, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
+    public ResponseEntity<WorkflowResponse> createWorkflow(@NonNull final WorkflowRequest workflowToUpdate, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
         final var username = getUsername(authentication);
-        final var workflow = this.workflowInteractor.createWorkflow(relationalCopyEntityProperties(update, new WorkflowDao(), false, List.of()), sessionKey, username);
+        final var convertedWorkflow = relationalCopyEntityProperties(workflowToUpdate, new WorkflowDao(), false, List.of());
+        convertStepSizeDefinitions(workflowToUpdate, convertedWorkflow);
+        final var workflow = this.workflowInteractor.createWorkflow(relationalCopyEntityProperties(convertedWorkflow, new WorkflowDao(), false, List.of()), sessionKey, username);
         final var result = relationalCopyEntityProperties(workflow, new WorkflowResponse(), false, List.of());
+        convertStepSizeDefinitions(workflow, result);
         return ResponseEntity.ok(result);
     }
 
     @Override
-    public ResponseEntity<WorkflowResponse> updateWorkflow(@NonNull final String workflowId, @NonNull final WorkflowRequest update, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
+    public ResponseEntity<WorkflowResponse> updateWorkflow(@NonNull final String workflowId, @NonNull final WorkflowRequest workflowToUpdate, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
         final var username = getUsername(authentication);
-        final var workflow = this.workflowInteractor.updateWorkflow(workflowId, relationalCopyEntityProperties(update, new WorkflowDao(), false, List.of()), sessionKey, username);
+        final var convertedWorkflow = relationalCopyEntityProperties(workflowToUpdate, new WorkflowDao(), false, List.of());
+        convertStepSizeDefinitions(workflowToUpdate, convertedWorkflow);
+        final var workflow = this.workflowInteractor.updateWorkflow(workflowId, convertedWorkflow, sessionKey, username);
         final var result = relationalCopyEntityProperties(workflow, new WorkflowResponse(), false, List.of());
+        convertStepSizeDefinitions(workflow, result);
         return ResponseEntity.ok(result);
     }
 
