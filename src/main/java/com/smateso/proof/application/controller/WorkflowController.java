@@ -14,6 +14,7 @@ import org.springframework.security.core.Authentication;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.smateso.proof.adapter.config.AuditorProvider.getUsername;
@@ -34,26 +35,27 @@ public class WorkflowController implements IWorkflowController {
     }
 
     private static void convertStepSizeDefinitions(WorkflowDao source, WorkflowResponse target) {
-        assert source.getStepBasedConfig() != null;
-        assert source.getStepBasedConfig().getStepSizeDefinitions() != null;
-        target.getStepBasedConfig().setStepSizeDefinitions(
-                source.getStepBasedConfig().getStepSizeDefinitions().entrySet().stream()
-                        .collect(Collectors.toMap(
-                                Map.Entry::getKey,
-                                e -> relationalCopyEntityProperties(e.getValue(), new edu.kit.iai.webis.proofmodels.dto.StepSizeDefinition(), false, List.of())
-                        ))
-        );
+        if (!Objects.isNull(source.getStepBasedConfig()) && !Objects.isNull(target.getStepBasedConfig())) {
+            target.getStepBasedConfig().setStepSizeDefinitions(
+                    Objects.requireNonNull(source.getStepBasedConfig().getStepSizeDefinitions()).entrySet().stream()
+                            .collect(Collectors.toMap(
+                                    Map.Entry::getKey,
+                                    e -> relationalCopyEntityProperties(e.getValue(), new edu.kit.iai.webis.proofmodels.dto.StepSizeDefinition(), false, List.of())
+                            ))
+            );
+        }
     }
 
     private static void convertStepSizeDefinitions(WorkflowRequest source, WorkflowDao target) {
-        assert target.getStepBasedConfig() != null;
-        target.getStepBasedConfig().setStepSizeDefinitions(
-                source.getStepBasedConfig().getStepSizeDefinitions().entrySet().stream()
-                        .collect(Collectors.toMap(
-                                Map.Entry::getKey,
-                                e -> relationalCopyEntityProperties(e.getValue(), new edu.kit.iai.webis.proofmodels.dao.StepSizeDefinitionDao(), false, List.of())
-                        ))
-        );
+        if (!Objects.isNull(source.getStepBasedConfig()) && !Objects.isNull(target.getStepBasedConfig())) {
+            target.getStepBasedConfig().setStepSizeDefinitions(
+                    source.getStepBasedConfig().getStepSizeDefinitions().entrySet().stream()
+                            .collect(Collectors.toMap(
+                                    Map.Entry::getKey,
+                                    e -> relationalCopyEntityProperties(e.getValue(), new edu.kit.iai.webis.proofmodels.dao.StepSizeDefinitionDao(), false, List.of())
+                            ))
+            );
+        }
     }
 
     @Override

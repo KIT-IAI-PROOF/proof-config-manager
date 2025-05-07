@@ -11,7 +11,7 @@
 
 INSERT INTO public.workflow
 VALUES (0, 3, NULL, '2025-05-06 11:32:21.808', NULL, 'FileReader2FileWriter', '11f02ad7-08d0-4f92-b911-f70f969a6ba6',
-        'FileReader2FileWriter', 'anonymous', 'FileReader2FileWriter');
+        'FileReader2FileWriter', 'anonymous');
 
 
 --
