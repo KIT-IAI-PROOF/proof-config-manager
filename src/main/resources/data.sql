@@ -31,10 +31,10 @@ VALUES (0, 3, NULL, '2025-05-06 11:32:21.808', NULL, 'FileReader2FileWriter', '1
 INSERT INTO public.program
 VALUES (0, '2025-04-23 14:59:46.713', '2025-05-06 11:32:21.81', 'anonymous',
         'Provide other blocks with one line per SYNC from a given file', 'attachment_file_line_provider',
-        'prog_file_line_provider', 'prog_file_line_provider', 'anonymous', 'testFLP');
+        '08d4fc61-b9d5-4bd8-9f69-19bff1f33e29', 'prog_file_line_provider', 'anonymous', 'testFLP');
 INSERT INTO public.program
 VALUES (0, '2025-04-23 14:59:49.853', '2025-05-06 11:32:21.81', 'anonymous', 'Write data to a file',
-        'attachment_file_writer', 'prog_file_writer', 'prog_file_writer', 'anonymous', 'test');
+        'attachment_file_writer', '7554873a-813c-4e00-b8d3-be072f12bea8', 'prog_file_writer', 'anonymous', 'test');
 
 
 --
@@ -43,11 +43,13 @@ VALUES (0, '2025-04-23 14:59:49.853', '2025-05-06 11:32:21.81', 'anonymous', 'Wr
 
 INSERT INTO public.attachment
 VALUES ('2025-04-23 14:59:49.855', '2025-04-23 14:59:49.855', 'anonymous', 'Write data to a file',
-        'attachment_file_writer', 'file_writer.py', 'anonymous', '/proof/latest:file_writer.py', 'prog_file_writer');
+        'attachment_file_writer', 'file_writer.py', 'anonymous', '/proof/latest:file_writer.py',
+        '7554873a-813c-4e00-b8d3-be072f12bea8');
 INSERT INTO public.attachment
 VALUES ('2025-04-23 14:59:46.722', '2025-04-23 14:59:46.722', 'anonymous',
         'Provide other blocks with one line per SYNC from a given file', 'attachment_file_line_provider',
-        'file_line_provider.py', 'anonymous', '/proof/latest:file_line_provider.py', 'prog_file_line_provider');
+        'file_line_provider.py', 'anonymous', '/proof/latest:file_line_provider.py',
+        '08d4fc61-b9d5-4bd8-9f69-19bff1f33e29');
 
 
 --
@@ -57,12 +59,13 @@ VALUES ('2025-04-23 14:59:46.722', '2025-04-23 14:59:46.722', 'anonymous',
 INSERT INTO public.block
 VALUES (0, 0, 0, 0, 10, '2025-04-23 15:03:25.743', '2025-05-06 11:00:50.941', '#0D41E1',
         'iai-artifactory.iai.kit.edu/docker-webis/proof-2/proof-standard:latest', 'test', 'Provide lines from a file',
-        'bed2ac71-2575-462b-9b73-048e5f60388a', 'File Provider', 'anonymous', 'prog_file_line_provider',
-        'block_file_line_provider', 'File Provider', 'block', '11f02ad7-08d0-4f92-b911-f70f969a6ba6');
+        'bed2ac71-2575-462b-9b73-048e5f60388a', 'File Provider', 'anonymous', '08d4fc61-b9d5-4bd8-9f69-19bff1f33e29',
+        '365d5380-54eb-4b40-a377-b4921d7370c6', 'File Provider', 'block', '11f02ad7-08d0-4f92-b911-f70f969a6ba6');
 INSERT INTO public.block
 VALUES (0, 1, 0, 200, 0, '2025-04-23 15:03:25.76', '2025-05-06 11:00:50.941', '#0D41E1',
         'iai-artifactory.iai.kit.edu/docker-webis/proof-2/proof-standard:latest', 'test', 'Write data to a file',
-        'da35e3b1-aaea-4ba3-bd27-34c1323dd2af', 'File Writer', 'anonymous', 'prog_file_writer', 'block_file_writer',
+        'da35e3b1-aaea-4ba3-bd27-34c1323dd2af', 'File Writer', 'anonymous', '7554873a-813c-4e00-b8d3-be072f12bea8',
+        '4ad32c27-23c5-4e07-9e75-50a6549e82de',
         'File Writer', 'block', '11f02ad7-08d0-4f92-b911-f70f969a6ba6');
 
 
@@ -106,12 +109,13 @@ VALUES (1, '2025-04-23 14:59:49.856', '2025-04-23 14:59:49.856', 'anonymous', NU
 INSERT INTO public.template
 VALUES (0, NULL, '2025-04-23 14:59:46.724', '2025-04-23 14:59:46.745', '#0D41E1',
         'iai-artifactory.iai.kit.edu/docker-webis/proof-2/proof-standard:latest', 'anonymous',
-        'Provide lines from a file', 'block_file_line_provider', 'anonymous', 'File Provider',
-        'prog_file_line_provider', 'block');
+        'Provide lines from a file', '365d5380-54eb-4b40-a377-b4921d7370c6', 'anonymous', 'File Provider',
+        '08d4fc61-b9d5-4bd8-9f69-19bff1f33e29', 'block');
 INSERT INTO public.template
 VALUES (0, NULL, '2025-04-23 14:59:49.855', '2025-04-23 14:59:49.864', '#0D41E1',
         'iai-artifactory.iai.kit.edu/docker-webis/proof-2/proof-standard:latest', 'anonymous', 'Write data to a file',
-        'block_file_writer', 'anonymous', 'File Writer', 'prog_file_writer', 'block');
+        '4ad32c27-23c5-4e07-9e75-50a6549e82de', 'anonymous', 'File Writer', '7554873a-813c-4e00-b8d3-be072f12bea8',
+        'block');
 
 
 --
@@ -173,27 +177,28 @@ VALUES (NULL, '2025-04-23 15:03:25.769', '2025-04-23 15:03:25.772', 'bezier-catm
 
 INSERT INTO public.input
 VALUES (3, 0, 1, true, 0, '2025-04-23 14:59:46.731', '2025-04-23 14:59:46.731', NULL, 'anonymous', 'Input: file_name',
-        '689eef18-1189-4538-9019-7d7a646d9af4', 'file_name', 'anonymous', 'block_file_line_provider', NULL);
+        '689eef18-1189-4538-9019-7d7a646d9af4', 'file_name', 'anonymous', '365d5380-54eb-4b40-a377-b4921d7370c6', NULL);
 INSERT INTO public.input
 VALUES (3, 0, 1, false, 1, '2025-04-23 14:59:46.733', '2025-04-23 14:59:46.733', NULL, 'anonymous', 'Input: num_steps',
-        'e2063aa3-e694-4593-8f54-d322b977971e', 'num_steps', 'anonymous', 'block_file_line_provider', NULL);
+        'e2063aa3-e694-4593-8f54-d322b977971e', 'num_steps', 'anonymous', '365d5380-54eb-4b40-a377-b4921d7370c6', NULL);
 INSERT INTO public.input
 VALUES (3, 1, 1, false, 0, '2025-04-23 14:59:46.735', '2025-04-23 14:59:46.735', NULL, 'anonymous',
         'Input: ignore_first_line', '509cea6d-dc33-4e2a-af9d-b8b0475d8c46', 'ignore_first_line', 'anonymous',
-        'block_file_line_provider', NULL);
+        '365d5380-54eb-4b40-a377-b4921d7370c6', NULL);
 INSERT INTO public.input
 VALUES (3, 0, 1, true, 0, '2025-04-23 14:59:49.859', '2025-04-23 14:59:49.859', NULL, 'anonymous', 'Input: file_name',
-        'cd25d323-9544-4236-91a5-963e68dc3620', 'file_name', 'anonymous', 'block_file_writer', NULL);
+        'cd25d323-9544-4236-91a5-963e68dc3620', 'file_name', 'anonymous', '4ad32c27-23c5-4e07-9e75-50a6549e82de', NULL);
 INSERT INTO public.input
 VALUES (3, 0, 1, false, 0, '2025-04-23 14:59:49.86', '2025-04-23 14:59:49.86', NULL, 'anonymous', 'Input: mode',
-        'ca76bf1a-6f3a-4754-87d8-924c8a9ac1d0', 'mode', 'anonymous', 'block_file_writer', NULL);
+        'ca76bf1a-6f3a-4754-87d8-924c8a9ac1d0', 'mode', 'anonymous', '4ad32c27-23c5-4e07-9e75-50a6549e82de', NULL);
 INSERT INTO public.input
 VALUES (3, 0, 1, false, 0, '2025-04-23 14:59:49.862', '2025-04-23 14:59:49.862', NULL, 'anonymous',
-        'Input: waitForSync', '1ad1aea4-e255-4324-9809-6923f537ec23', 'waitForSync', 'anonymous', 'block_file_writer',
+        'Input: waitForSync', '1ad1aea4-e255-4324-9809-6923f537ec23', 'waitForSync', 'anonymous',
+        '4ad32c27-23c5-4e07-9e75-50a6549e82de',
         NULL);
 INSERT INTO public.input
 VALUES (0, 1, 2, false, 0, '2025-04-23 14:59:49.863', '2025-04-23 14:59:49.863', NULL, 'anonymous', 'Input: data',
-        'f71ba36a-cb03-4353-adeb-a2d6985932e0', 'data', 'anonymous', 'block_file_writer', NULL);
+        'f71ba36a-cb03-4353-adeb-a2d6985932e0', 'data', 'anonymous', '4ad32c27-23c5-4e07-9e75-50a6549e82de', NULL);
 INSERT INTO public.input
 VALUES (3, 0, 1, true, 0, '2025-04-23 15:03:25.748', '2025-04-23 15:03:25.748', 'bed2ac71-2575-462b-9b73-048e5f60388a',
         'test', 'Input: file_name', 'e264da1e-f5dc-4c41-8f38-214d07ca6240', 'file_name', 'test', NULL, NULL);
@@ -246,7 +251,7 @@ VALUES ('data', 'data', '5df0565e-e203-474a-877d-5ff46022a00b');
 
 INSERT INTO public.output
 VALUES (0, 1, 2, 0, '2025-04-23 14:59:46.738', '2025-04-23 14:59:46.738', NULL, 'anonymous', 'Output: line',
-        '7000cc5d-637d-4c7f-b961-a9c9e797c50b', 'line', 'anonymous', 'block_file_line_provider', NULL);
+        '7000cc5d-637d-4c7f-b961-a9c9e797c50b', 'line', 'anonymous', '365d5380-54eb-4b40-a377-b4921d7370c6', NULL);
 INSERT INTO public.output
 VALUES (0, 1, 2, 0, '2025-04-23 15:03:25.753', '2025-04-23 15:03:25.753', 'bed2ac71-2575-462b-9b73-048e5f60388a',
         'test', 'Output: line', '189208ed-769f-42b3-9778-2f38141702c8', 'line', 'test', NULL, NULL);
