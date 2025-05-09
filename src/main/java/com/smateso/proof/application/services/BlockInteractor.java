@@ -19,7 +19,7 @@ import static com.smateso.proof.adapter.model.Action.*;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createPageable;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createSpecification;
 import static com.smateso.proof.application.utils.LogMessages.BLOCK_DAO_NOT_FOUND_MESSAGE;
-import static com.smateso.proof.application.utils.PropertyCopyHelper.relationalCopyEntityProperties;
+import static com.smateso.proof.application.utils.PropertyCopyHelper.deepCopyEntityProperties;
 import static java.util.Objects.requireNonNull;
 
 @Slf4j
@@ -27,6 +27,8 @@ import static java.util.Objects.requireNonNull;
 @AllArgsConstructor
 public class BlockInteractor implements IBlockInteractor {
 
+    private static final List<String> COMPLEX_FIELDS = List.of("inputs", "outputs", "eventLifeCycles", "blockIODefinitions");
+    private static final String ENTITY_BLOCK = "blocks";
     private final IMessageInteractor messageInteractor;
     private final BlockRepository blockRepository;
 
@@ -52,22 +54,23 @@ public class BlockInteractor implements IBlockInteractor {
     @Override
     public BlockDao createBlock(@NonNull final BlockDao blockDao, @NonNull final String sessionKey, @NonNull final String username) {
         final var result = this.blockRepository.save(blockDao);
-        this.messageInteractor.blockUpdate(requireNonNull(result.getId()), CREATED, sessionKey, username);
+        this.messageInteractor.sendUpdate(ENTITY_BLOCK, requireNonNull(result.getId()), CREATED, sessionKey, username);
         return result;
     }
 
     @Override
-    public BlockDao updateBlock(@NonNull final String id, @NonNull final BlockDao updatingBlock, @NonNull final String sessionKey, @NonNull final String username) {
-        final var existingBlock = this.getBlock(id);
-        final var result = this.blockRepository.save(relationalCopyEntityProperties(updatingBlock, existingBlock, true, List.of()));
-        this.messageInteractor.blockUpdate(requireNonNull(result.getId()), UPDATED, sessionKey, username);
+    public BlockDao updateBlock(@NonNull final String id, @NonNull final BlockDao partial, @NonNull final String sessionKey, @NonNull final String username) {
+        final var block = this.blockRepository.findById(id).orElseThrow();
+        deepCopyEntityProperties(partial, block, true, List.of(), COMPLEX_FIELDS);
+        final var result = this.blockRepository.save(block);
+        this.messageInteractor.sendUpdate(ENTITY_BLOCK, requireNonNull(result.getId()), UPDATED, sessionKey, username);
         return result;
     }
 
     @Override
     public void deleteBlock(@NonNull final String id, @NonNull final String sessionKey, @NonNull final String username) {
         this.blockRepository.deleteById(id);
-        this.messageInteractor.blockUpdate(id, DELETED, sessionKey, username);
+        this.messageInteractor.sendUpdate(ENTITY_BLOCK, id, DELETED, sessionKey, username);
     }
 
 }

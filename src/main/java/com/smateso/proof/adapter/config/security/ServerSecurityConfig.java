@@ -19,6 +19,8 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
 import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
@@ -60,9 +62,8 @@ public class ServerSecurityConfig {
                     cors.configurationSource(source);
                 })
                 .csrf((var csrf) -> {
-                    // csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
-                    // csrf.csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler());
-                    csrf.disable();
+                    csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+                    csrf.csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler());
                 })
                 .authorizeHttpRequests((final var authorize) -> {
                     authorize.requestMatchers("/swagger-ui/**").permitAll();

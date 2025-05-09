@@ -19,7 +19,7 @@ import static com.smateso.proof.adapter.model.Action.*;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createPageable;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createSpecification;
 import static com.smateso.proof.application.utils.LogMessages.EXECUTION_DAO_NOT_FOUND_MESSAGE;
-import static com.smateso.proof.application.utils.PropertyCopyHelper.relationalCopyEntityProperties;
+import static com.smateso.proof.application.utils.PropertyCopyHelper.deepCopyEntityProperties;
 import static java.util.Objects.requireNonNull;
 
 @Slf4j
@@ -27,6 +27,8 @@ import static java.util.Objects.requireNonNull;
 @AllArgsConstructor
 public class ExecutionInteractor implements IExecutionInteractor {
 
+    private static final List<String> COMPLEX_FIELDS = List.of();
+    private static final String ENTITY_EXECUTION = "executions";
     private final IMessageInteractor messageInteractor;
     private final ExecutionRepository executionRepository;
 
@@ -52,22 +54,23 @@ public class ExecutionInteractor implements IExecutionInteractor {
     @Override
     public ExecutionDao createExecution(@NonNull final ExecutionDao executionDao, @NonNull final String sessionKey, @NonNull final String username) {
         final var result = this.executionRepository.save(executionDao);
-        this.messageInteractor.executionUpdate(requireNonNull(result.getId()), CREATED, sessionKey, username);
+        this.messageInteractor.sendUpdate(ENTITY_EXECUTION, requireNonNull(result.getId()), CREATED, sessionKey, username);
         return result;
     }
 
     @Override
-    public ExecutionDao updateExecution(@NonNull final String id, @NonNull final ExecutionDao updatingExecution, @NonNull final String sessionKey, @NonNull final String username) {
-        final var existingExecution = this.getExecution(id);
-        final var result = this.executionRepository.save(relationalCopyEntityProperties(updatingExecution, existingExecution, true, List.of()));
-        this.messageInteractor.executionUpdate(requireNonNull(result.getId()), UPDATED, sessionKey, username);
+    public ExecutionDao updateExecution(@NonNull final String id, @NonNull final ExecutionDao partial, @NonNull final String sessionKey, @NonNull final String username) {
+        final var execution = this.executionRepository.findById(id).orElseThrow();
+        deepCopyEntityProperties(partial, execution, true, List.of(), COMPLEX_FIELDS);
+        final var result = this.executionRepository.save(execution);
+        this.messageInteractor.sendUpdate(ENTITY_EXECUTION, requireNonNull(result.getId()), UPDATED, sessionKey, username);
         return result;
     }
 
     @Override
     public void deleteExecution(@NonNull final String id, @NonNull final String sessionKey, @NonNull final String username) {
         this.executionRepository.deleteById(id);
-        this.messageInteractor.executionUpdate(id, DELETED, sessionKey, username);
+        this.messageInteractor.sendUpdate(ENTITY_EXECUTION, id, DELETED, sessionKey, username);
     }
 
 }

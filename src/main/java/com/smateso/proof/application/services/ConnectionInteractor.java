@@ -15,16 +15,20 @@ import org.springframework.lang.NonNull;
 
 import java.util.List;
 
+import static com.smateso.proof.adapter.model.Action.*;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createPageable;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createSpecification;
 import static com.smateso.proof.application.utils.LogMessages.CONNECTION_DAO_NOT_FOUND_MESSAGE;
-import static com.smateso.proof.application.utils.PropertyCopyHelper.relationalCopyEntityProperties;
+import static com.smateso.proof.application.utils.PropertyCopyHelper.deepCopyEntityProperties;
+import static java.util.Objects.requireNonNull;
 
 @Slf4j
 @Builder
 @AllArgsConstructor
 public class ConnectionInteractor implements IConnectionInteractor {
 
+    private static final List<String> COMPLEX_FIELDS = List.of("points");
+    private static final String ENTITY_CONNECTION = "connections";
     private final IMessageInteractor messageInteractor;
     private final ConnectionRepository connectionRepository;
 
@@ -48,19 +52,25 @@ public class ConnectionInteractor implements IConnectionInteractor {
     }
 
     @Override
-    public ConnectionDao createConnection(@NonNull final ConnectionDao edgeDao, @NonNull final String sessionKey, @NonNull final String username) {
-        return this.connectionRepository.save(edgeDao);
+    public ConnectionDao createConnection(@NonNull final ConnectionDao connectionDao, @NonNull final String sessionKey, @NonNull final String username) {
+        final var result = this.connectionRepository.save(connectionDao);
+        this.messageInteractor.sendUpdate(ENTITY_CONNECTION, requireNonNull(result.getId()), CREATED, sessionKey, username);
+        return result;
     }
 
     @Override
-    public ConnectionDao updateConnection(@NonNull final String id, @NonNull final ConnectionDao updatingEdge, @NonNull final String sessionKey, @NonNull final String username) {
-        final var existingEdge = this.getConnection(id);
-        return this.connectionRepository.save(relationalCopyEntityProperties(updatingEdge, existingEdge, true, List.of()));
+    public ConnectionDao updateConnection(@NonNull final String id, @NonNull final ConnectionDao partial, @NonNull final String sessionKey, @NonNull final String username) {
+        final var connection = this.connectionRepository.findById(id).orElseThrow();
+        deepCopyEntityProperties(partial, connection, true, List.of(), COMPLEX_FIELDS);
+        final var result = this.connectionRepository.save(connection);
+        this.messageInteractor.sendUpdate(ENTITY_CONNECTION, requireNonNull(result.getId()), UPDATED, sessionKey, username);
+        return result;
     }
 
     @Override
     public void deleteConnection(@NonNull final String id, @NonNull final String sessionKey, @NonNull final String username) {
         this.connectionRepository.deleteById(id);
+        this.messageInteractor.sendUpdate(ENTITY_CONNECTION, id, DELETED, sessionKey, username);
     }
 
 }

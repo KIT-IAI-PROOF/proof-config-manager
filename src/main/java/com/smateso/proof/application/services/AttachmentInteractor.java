@@ -1,6 +1,7 @@
 package com.smateso.proof.application.services;
 
 import com.smateso.proof.adapter.boundaries.services.IAttachmentInteractor;
+import com.smateso.proof.adapter.boundaries.services.IMessageInteractor;
 import com.smateso.proof.adapter.exceptions.NotFoundException;
 import com.smateso.proof.adapter.model.Request;
 import com.smateso.proof.adapter.repositories.AttachmentRepository;
@@ -14,16 +15,21 @@ import org.springframework.lang.NonNull;
 
 import java.util.List;
 
+import static com.smateso.proof.adapter.model.Action.*;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createPageable;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createSpecification;
 import static com.smateso.proof.application.utils.LogMessages.ATTACHMENT_DAO_NOT_FOUND_MESSAGE;
-import static com.smateso.proof.application.utils.PropertyCopyHelper.relationalCopyEntityProperties;
+import static com.smateso.proof.application.utils.PropertyCopyHelper.deepCopyEntityProperties;
+import static java.util.Objects.requireNonNull;
 
 @Slf4j
 @Builder
 @AllArgsConstructor
 public class AttachmentInteractor implements IAttachmentInteractor {
 
+    private static final List<String> COMPLEX_FIELDS = List.of();
+    private static final String ENTITY_ATTACHMENT = "attachments";
+    private final IMessageInteractor messageInteractor;
     private final AttachmentRepository attachmentRepository;
 
     @Override
@@ -47,18 +53,24 @@ public class AttachmentInteractor implements IAttachmentInteractor {
 
     @Override
     public AttachmentDao createAttachment(@NonNull final AttachmentDao attachmentDao, @NonNull final String sessionKey, @NonNull final String username) {
-        return this.attachmentRepository.save(attachmentDao);
+        final var result = this.attachmentRepository.save(attachmentDao);
+        this.messageInteractor.sendUpdate(ENTITY_ATTACHMENT, requireNonNull(result.getId()), CREATED, sessionKey, username);
+        return result;
     }
 
     @Override
-    public AttachmentDao updateAttachment(@NonNull final String id, @NonNull final AttachmentDao updatingAttachment, @NonNull final String sessionKey, @NonNull final String username) {
-        final var existingAttachment = this.getAttachment(id);
-        return this.attachmentRepository.save(relationalCopyEntityProperties(updatingAttachment, existingAttachment, true, List.of()));
+    public AttachmentDao updateAttachment(@NonNull final String id, @NonNull final AttachmentDao partial, @NonNull final String sessionKey, @NonNull final String username) {
+        final var attachment = this.attachmentRepository.findById(id).orElseThrow();
+        deepCopyEntityProperties(partial, attachment, true, List.of(), COMPLEX_FIELDS);
+        final var result = this.attachmentRepository.save(attachment);
+        this.messageInteractor.sendUpdate(ENTITY_ATTACHMENT, requireNonNull(result.getId()), UPDATED, sessionKey, username);
+        return result;
     }
 
     @Override
     public void deleteAttachment(@NonNull final String id, @NonNull final String sessionKey, @NonNull final String username) {
         this.attachmentRepository.deleteById(id);
+        this.messageInteractor.sendUpdate(ENTITY_ATTACHMENT, id, DELETED, sessionKey, username);
     }
 
 }

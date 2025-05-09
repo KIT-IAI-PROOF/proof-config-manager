@@ -14,7 +14,6 @@ import org.springframework.security.core.Authentication;
 import java.util.List;
 
 import static com.smateso.proof.adapter.config.AuditorProvider.getUsername;
-import static com.smateso.proof.application.utils.PropertyCopyHelper.relationalCopyEntityProperties;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @Builder
@@ -33,23 +32,23 @@ public class BlockController implements IBlockController {
     @Override
     public ResponseEntity<List<Block>> searchBlocks(@NonNull final Request request) {
         final var blocks = this.blockInteractor.searchBlocks(request);
-        final var result = blocks
+        final var results = blocks
                 .stream()
-                .map((final var block) -> relationalCopyEntityProperties(block, new Block(), false, List.of()))
+                .map(BlockDao::convert)
                 .map(BlockController::attachLinks)
                 .toList();
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(results);
     }
 
     @Override
     public ResponseEntity<List<Block>> getBlocks() {
         final var blocks = this.blockInteractor.getBlocks();
-        final var result = blocks
+        final var results = blocks
                 .stream()
-                .map((final var block) -> relationalCopyEntityProperties(block, new Block(), false, List.of()))
+                .map(BlockDao::convert)
                 .map(BlockController::attachLinks)
                 .toList();
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(results);
     }
 
     @Override
@@ -59,24 +58,21 @@ public class BlockController implements IBlockController {
 
     @Override
     public ResponseEntity<Block> getBlock(final String id) {
-        final var block = this.blockInteractor.getBlock(id);
-        final var result = relationalCopyEntityProperties(block, new Block(), false, List.of());
+        final var block = this.blockInteractor.getBlock(id).convert();
+        return ResponseEntity.ok(block);
+    }
+
+    @Override
+    public ResponseEntity<Block> createBlock(@NonNull final Block block, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
+        final var username = getUsername(authentication);
+        final var result = this.blockInteractor.createBlock(block.convert(), sessionKey, username).convert();
         return ResponseEntity.ok(result);
     }
 
     @Override
-    public ResponseEntity<Block> createBlock(@NonNull final Block update, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
+    public ResponseEntity<Block> updateBlock(@NonNull final String blockId, @NonNull final Block block, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
         final var username = getUsername(authentication);
-        final var block = this.blockInteractor.createBlock(relationalCopyEntityProperties(update, new BlockDao(), false, List.of()), sessionKey, username);
-        final var result = relationalCopyEntityProperties(block, new Block(), false, List.of());
-        return ResponseEntity.ok(result);
-    }
-
-    @Override
-    public ResponseEntity<Block> updateBlock(@NonNull final String blockId, @NonNull final Block update, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
-        final var username = getUsername(authentication);
-        final var block = this.blockInteractor.updateBlock(blockId, relationalCopyEntityProperties(update, new BlockDao(), false, List.of()), sessionKey, username);
-        final var result = relationalCopyEntityProperties(block, new Block(), false, List.of());
+        final var result = this.blockInteractor.updateBlock(blockId, block.convert(), sessionKey, username).convert();
         return ResponseEntity.ok(result);
     }
 

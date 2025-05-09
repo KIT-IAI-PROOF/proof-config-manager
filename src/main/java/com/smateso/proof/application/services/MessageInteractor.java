@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 /**
@@ -24,77 +25,8 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 @AllArgsConstructor
 public class MessageInteractor implements IMessageInteractor {
 
-    private static final String ENTITY_WORKFLOW = "workflows";
-    private static final String ENTITY_EXECUTION = "executions";
-    private static final String ENTITY_TEMPLATE = "templates";
-    private static final String ENTITY_BLOCK = "blocks";
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final AmqpTemplate amqpTemplate;
-
-
-    /**
-     * Publishes an update event for a workflow entity with the specified details.
-     * The method generates a message containing the entity type, identifier, action performed,
-     * session key, and username, and sends this message to the appropriate messaging channels
-     * for further processing and client notifications.
-     *
-     * @param id         The unique identifier of the workflow being updated. Must not be null.
-     * @param action     The action performed on the workflow (e.g., CREATED, UPDATED, DELETED). Must not be null.
-     * @param sessionKey The session key associated with the current update operation. Must not be null.
-     * @param username   The username of the individual performing the update action. Must not be null.
-     */
-    @Override
-    public void workflowUpdate(@NonNull final String id, @NonNull final Action action, @NonNull final String sessionKey, @NonNull final String username) {
-        sendUpdate(ENTITY_WORKFLOW, id, action, sessionKey, username);
-    }
-
-    /**
-     * Publishes an update event for an execution entity with the specified details.
-     * The method generates a message containing the entity type, identifier,
-     * action performed, session key, and username, and sends this message
-     * to the appropriate messaging channels for further processing and client notifications.
-     *
-     * @param id         The unique identifier of the execution entity being updated. Must not be null.
-     * @param action     The action performed on the execution entity (e.g., CREATED, UPDATED, DELETED). Must not be null.
-     * @param sessionKey The session key associated with the current update operation. Must not be null.
-     * @param username   The username of the individual performing the update action. Must not be null.
-     */
-    @Override
-    public void executionUpdate(@NonNull final String id, @NonNull final Action action, @NonNull final String sessionKey, @NonNull final String username) {
-        sendUpdate(ENTITY_EXECUTION, id, action, sessionKey, username);
-    }
-
-    /**
-     * Publishes an update event for a template entity with the specified details.
-     * The method generates a message containing the entity type, identifier,
-     * action performed, session key, and username, and sends this message to
-     * the appropriate messaging channels for further processing and client notifications.
-     *
-     * @param id         The unique identifier of the template being updated. Must not be null.
-     * @param action     The action performed on the template (e.g., CREATED, UPDATED, DELETED). Must not be null.
-     * @param sessionKey The session key associated with the current update operation. Must not be null.
-     * @param username   The username of the individual performing the update action. Must not be null.
-     */
-    @Override
-    public void templateUpdate(@NonNull final String id, @NonNull final Action action, @NonNull final String sessionKey, @NonNull final String username) {
-        sendUpdate(ENTITY_TEMPLATE, id, action, sessionKey, username);
-    }
-
-    /**
-     * Publishes an update event for a block entity with the specified details.
-     * The method generates a message containing the entity type, identifier,
-     * action performed, session key, and username, and sends this message
-     * to the appropriate messaging channels for further processing and client notifications.
-     *
-     * @param id         The unique identifier of the block being updated. Must not be null.
-     * @param action     The action performed on the block (e.g., CREATED, UPDATED, DELETED). Must not be null.
-     * @param sessionKey The session key associated with the current update operation. Must not be null.
-     * @param username   The username of the individual performing the update action. Must not be null.
-     */
-    @Override
-    public void blockUpdate(@NonNull final String id, @NonNull final Action action, @NonNull final String sessionKey, @NonNull final String username) {
-        sendUpdate(ENTITY_BLOCK, id, action, sessionKey, username);
-    }
 
     /**
      * Publishes an update event for a specified entity with the provided details.
@@ -108,7 +40,8 @@ public class MessageInteractor implements IMessageInteractor {
      * @param sessionKey The session key associated with the current update operation. Must not be null.
      * @param username   The username of the individual performing the update action. Must not be null.
      */
-    private void sendUpdate(@NonNull String entity, @NonNull String id, @NonNull Action action, @NonNull String sessionKey, @NonNull String username) {
+    @Override
+    public void sendUpdate(@NonNull final String entity, @NonNull final String id, @NonNull final Action action, @Nullable final String sessionKey, @Nullable final String username) {
         final var message = Message.builder()
                 .id(id)
                 .entity(entity)

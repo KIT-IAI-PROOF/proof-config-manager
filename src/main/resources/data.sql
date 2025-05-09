@@ -57,12 +57,12 @@ VALUES ('2025-04-23 14:59:46.722', '2025-04-23 14:59:46.722', 'anonymous',
 --
 
 INSERT INTO public.block
-VALUES (0, 0, 0, 0, 10, '2025-04-23 15:03:25.743', '2025-05-06 11:00:50.941', '#0D41E1',
+VALUES (0, 0, true, 0, 0, 10, '2025-04-23 15:03:25.743', '2025-05-06 11:00:50.941', '#0D41E1',
         'iai-artifactory.iai.kit.edu/docker-webis/proof-2/proof-standard:latest', 'test', 'Provide lines from a file',
         'bed2ac71-2575-462b-9b73-048e5f60388a', 'File Provider', 'anonymous', '08d4fc61-b9d5-4bd8-9f69-19bff1f33e29',
         '365d5380-54eb-4b40-a377-b4921d7370c6', 'File Provider', 'block', '11f02ad7-08d0-4f92-b911-f70f969a6ba6');
 INSERT INTO public.block
-VALUES (0, 1, 0, 200, 0, '2025-04-23 15:03:25.76', '2025-05-06 11:00:50.941', '#0D41E1',
+VALUES (0, 1, true, 0, 200, 0, '2025-04-23 15:03:25.76', '2025-05-06 11:00:50.941', '#0D41E1',
         'iai-artifactory.iai.kit.edu/docker-webis/proof-2/proof-standard:latest', 'test', 'Write data to a file',
         'da35e3b1-aaea-4ba3-bd27-34c1323dd2af', 'File Writer', 'anonymous', '7554873a-813c-4e00-b8d3-be072f12bea8',
         '4ad32c27-23c5-4e07-9e75-50a6549e82de',

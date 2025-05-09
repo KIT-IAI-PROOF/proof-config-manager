@@ -7,7 +7,6 @@ import edu.kit.iai.webis.proofmodels.dao.AttachmentDao;
 import edu.kit.iai.webis.proofmodels.dto.Attachment;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
@@ -18,10 +17,11 @@ import java.nio.file.Path;
 import java.util.List;
 
 import static com.smateso.proof.adapter.config.AuditorProvider.getUsername;
-import static com.smateso.proof.application.utils.PropertyCopyHelper.relationalCopyEntityProperties;
 import static java.nio.file.Files.copy;
 import static java.util.Objects.requireNonNull;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @Builder
 @AllArgsConstructor
@@ -40,23 +40,23 @@ public class AttachmentController implements IAttachmentController {
     @Override
     public ResponseEntity<List<Attachment>> searchAttachments(@NonNull final Request request) {
         final var attachments = this.attachmentInteractor.searchAttachments(request);
-        final var result = attachments
+        final var results = attachments
                 .stream()
-                .map((final var attachment) -> relationalCopyEntityProperties(attachment, new Attachment(), false, List.of()))
+                .map(AttachmentDao::convert)
                 .map(AttachmentController::attachLinks)
                 .toList();
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(results);
     }
 
     @Override
     public ResponseEntity<List<Attachment>> getAttachments() {
         final var attachments = this.attachmentInteractor.getAttachments();
-        final var result = attachments
+        final var results = attachments
                 .stream()
-                .map((final var attachment) -> relationalCopyEntityProperties(attachment, new Attachment(), false, List.of()))
+                .map(AttachmentDao::convert)
                 .map(AttachmentController::attachLinks)
                 .toList();
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(results);
     }
 
     @Override
@@ -66,24 +66,21 @@ public class AttachmentController implements IAttachmentController {
 
     @Override
     public ResponseEntity<Attachment> getAttachment(final String id) {
-        final var attachment = this.attachmentInteractor.getAttachment(id);
-        final var result = relationalCopyEntityProperties(attachment, new Attachment(), false, List.of());
+        final var attachment = this.attachmentInteractor.getAttachment(id).convert();
+        return ResponseEntity.ok(attachment);
+    }
+
+    @Override
+    public ResponseEntity<Attachment> createAttachment(@NonNull final Attachment attachment, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
+        final var username = getUsername(authentication);
+        final var result = this.attachmentInteractor.createAttachment(attachment.convert(), sessionKey, username).convert();
         return ResponseEntity.ok(result);
     }
 
     @Override
-    public ResponseEntity<Attachment> createAttachment(@NonNull final Attachment update, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
+    public ResponseEntity<Attachment> updateAttachment(@NonNull final String attachmentId, @NonNull final Attachment attachment, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
         final var username = getUsername(authentication);
-        final var attachment = this.attachmentInteractor.createAttachment(relationalCopyEntityProperties(update, new AttachmentDao(), false, List.of()), sessionKey, username);
-        final var result = relationalCopyEntityProperties(attachment, new Attachment(), false, List.of());
-        return ResponseEntity.ok(result);
-    }
-
-    @Override
-    public ResponseEntity<Attachment> updateAttachment(@NonNull final String attachmentId, @NonNull final Attachment update, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
-        final var username = getUsername(authentication);
-        final var attachment = this.attachmentInteractor.updateAttachment(attachmentId, relationalCopyEntityProperties(update, new AttachmentDao(), false, List.of()), sessionKey, username);
-        final var result = relationalCopyEntityProperties(attachment, new Attachment(), false, List.of());
+        final var result = this.attachmentInteractor.updateAttachment(attachmentId, attachment.convert(), sessionKey, username).convert();
         return ResponseEntity.ok(result);
     }
 
@@ -99,12 +96,13 @@ public class AttachmentController implements IAttachmentController {
         final var filename = file.getOriginalFilename();
         try {
             final var filePath = this.fileStorageRoot.resolve(requireNonNull(filename));
-            copy(file.getInputStream(), filePath);
+            final var inputStream = file.getInputStream();
+            copy(inputStream, filePath.normalize().toAbsolutePath());
             return ResponseEntity.ok().build();
         } catch (final FileAlreadyExistsException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("A file of that name already exists.");
+            return ResponseEntity.status(CONFLICT).body("A file of that name already exists.");
         } catch (final Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Could not upload the file");
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body("Could not upload the file");
         }
     }
 

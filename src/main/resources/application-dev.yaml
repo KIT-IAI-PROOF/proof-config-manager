@@ -1,6 +1,7 @@
 server:
   error:
     include-stacktrace: never
+    include-exception: true
   port: 8100
 spring:
   rabbitmq:

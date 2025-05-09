@@ -70,43 +70,56 @@ public class Beans {
     }
 
     @Bean(value = "connectionInteractor", name = "connectionInteractor")
-    public IConnectionInteractor connectionInteractor(@Qualifier("connectionRepository") @NonNull final ConnectionRepository connectionRepository) {
+    public IConnectionInteractor connectionInteractor(
+            @Qualifier("connectionRepository") @NonNull final ConnectionRepository connectionRepository,
+            @Qualifier("messageInteractor") @NonNull final IMessageInteractor messageInteractor) {
         return ConnectionInteractor
                 .builder()
                 .connectionRepository(connectionRepository)
+                .messageInteractor(messageInteractor)
                 .build();
     }
 
     @Bean(value = "templateInteractor", name = "templateInteractor")
-    public ITemplateInteractor templateInteractor(@Qualifier("templateRepository") @NonNull final TemplateRepository templateRepository, @Qualifier("messageInteractor") @NonNull final IMessageInteractor IMessageInteractor) {
+    public ITemplateInteractor templateInteractor(
+            @Qualifier("templateRepository") @NonNull final TemplateRepository templateRepository,
+            @Qualifier("messageInteractor") @NonNull final IMessageInteractor messageInteractor) {
         return TemplateInteractor
                 .builder()
                 .templateRepository(templateRepository)
-                .messageInteractor(IMessageInteractor)
+                .messageInteractor(messageInteractor)
                 .build();
     }
 
     @Bean(value = "executionInteractor", name = "executionInteractor")
-    public IExecutionInteractor executionInteractor(@Qualifier("executionRepository") @NonNull final ExecutionRepository executionRepository, @Qualifier("messageInteractor") @NonNull final IMessageInteractor IMessageInteractor) {
+    public IExecutionInteractor executionInteractor(
+            @Qualifier("executionRepository") @NonNull final ExecutionRepository executionRepository,
+            @Qualifier("messageInteractor") @NonNull final IMessageInteractor messageInteractor) {
         return ExecutionInteractor
                 .builder()
                 .executionRepository(executionRepository)
-                .messageInteractor(IMessageInteractor)
+                .messageInteractor(messageInteractor)
                 .build();
     }
 
     @Bean(value = "attachmentInteractor", name = "attachmentInteractor")
-    public IAttachmentInteractor attachmentInteractor(@Qualifier("attachmentRepository") @NonNull final AttachmentRepository attachmentRepository) {
+    public IAttachmentInteractor attachmentInteractor(
+            @Qualifier("attachmentRepository") @NonNull final AttachmentRepository attachmentRepository,
+            @Qualifier("messageInteractor") @NonNull final IMessageInteractor messageInteractor) {
         return AttachmentInteractor
                 .builder()
+                .messageInteractor(messageInteractor)
                 .attachmentRepository(attachmentRepository)
                 .build();
     }
 
     @Bean(value = "programInteractor", name = "programInteractor")
-    public IProgramInteractor programInteractor(@Qualifier("programRepository") @NonNull final ProgramRepository programRepository) {
+    public IProgramInteractor programInteractor(
+            @Qualifier("programRepository") @NonNull final ProgramRepository programRepository,
+            @Qualifier("messageInteractor") @NonNull final IMessageInteractor messageInteractor) {
         return ProgramInteractor
                 .builder()
+                .messageInteractor(messageInteractor)
                 .programRepository(programRepository)
                 .build();
     }

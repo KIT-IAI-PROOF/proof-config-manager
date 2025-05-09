@@ -1,5 +1,6 @@
 package com.smateso.proof.application.services;
 
+import com.smateso.proof.adapter.boundaries.services.IMessageInteractor;
 import com.smateso.proof.adapter.boundaries.services.IProgramInteractor;
 import com.smateso.proof.adapter.exceptions.NotFoundException;
 import com.smateso.proof.adapter.model.Request;
@@ -14,16 +15,21 @@ import org.springframework.lang.NonNull;
 
 import java.util.List;
 
+import static com.smateso.proof.adapter.model.Action.*;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createPageable;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createSpecification;
 import static com.smateso.proof.application.utils.LogMessages.PROGRAM_DAO_NOT_FOUND_MESSAGE;
-import static com.smateso.proof.application.utils.PropertyCopyHelper.relationalCopyEntityProperties;
+import static com.smateso.proof.application.utils.PropertyCopyHelper.deepCopyEntityProperties;
+import static java.util.Objects.requireNonNull;
 
 @Slf4j
 @Builder
 @AllArgsConstructor
 public class ProgramInteractor implements IProgramInteractor {
 
+    private static final List<String> COMPLEX_FIELDS = List.of();
+    private static final String ENTITY_PROGRAM = "programs";
+    private final IMessageInteractor messageInteractor;
     private final ProgramRepository programRepository;
 
     @Override
@@ -47,18 +53,24 @@ public class ProgramInteractor implements IProgramInteractor {
 
     @Override
     public ProgramDao createProgram(@NonNull final ProgramDao programDao, @NonNull final String sessionKey, @NonNull final String username) {
-        return this.programRepository.save(programDao);
+        final var result = this.programRepository.save(programDao);
+        this.messageInteractor.sendUpdate(ENTITY_PROGRAM, requireNonNull(result.getId()), CREATED, sessionKey, username);
+        return result;
     }
 
     @Override
-    public ProgramDao updateProgram(@NonNull final String id, @NonNull final ProgramDao updatingProgram, @NonNull final String sessionKey, @NonNull final String username) {
-        final var existingProgram = this.getProgram(id);
-        return this.programRepository.save(relationalCopyEntityProperties(updatingProgram, existingProgram, true, List.of()));
+    public ProgramDao updateProgram(@NonNull final String id, @NonNull final ProgramDao partial, @NonNull final String sessionKey, @NonNull final String username) {
+        final var program = this.programRepository.findById(id).orElseThrow();
+        deepCopyEntityProperties(partial, program, true, List.of(), COMPLEX_FIELDS);
+        final var result = this.programRepository.save(program);
+        this.messageInteractor.sendUpdate(ENTITY_PROGRAM, requireNonNull(result.getId()), UPDATED, sessionKey, username);
+        return result;
     }
 
     @Override
     public void deleteProgram(@NonNull final String id, @NonNull final String sessionKey, @NonNull final String username) {
         this.programRepository.deleteById(id);
+        this.messageInteractor.sendUpdate(ENTITY_PROGRAM, id, DELETED, sessionKey, username);
     }
 
 }

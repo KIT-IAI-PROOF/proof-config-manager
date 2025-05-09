@@ -1,6 +1,5 @@
 package com.smateso.proof.application.utils;
 
-import edu.kit.iai.webis.proofmodels.utils.Relational;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import org.springframework.lang.NonNull;
@@ -11,7 +10,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -30,18 +28,6 @@ public class PropertyCopyHelper {
     public static final String SET = "set";
     public static final String GET = "get";
     public static final String LIST = "java.util.List";
-
-    private static HashSet<String> getRelationalFields(@NonNull final Class<?> targetClass) {
-        final var result = new HashSet<String>();
-        stream(targetClass.getDeclaredFields())
-                .forEach((final var field) -> {
-                    final var annotations = field.getDeclaredAnnotations();
-                    if (stream(annotations).anyMatch((final var annotation) -> annotation.annotationType().equals(Relational.class))) {
-                        result.add(field.getName());
-                    }
-                });
-        return result;
-    }
 
     private static Optional<Method> getSourceClassGetter(@NonNull final Class<?> sourceClass, @NonNull final Field relationalField) {
         try {
@@ -62,55 +48,7 @@ public class PropertyCopyHelper {
         return forName(targetClassType.getTypeName()).getDeclaredConstructor().newInstance();
     }
 
-    public static <S, T> T relationalCopyEntityProperties(@Nullable final S source, @Nullable final T target, @NonNull final Boolean ignoreNullProperties, @NonNull final List<String> excludedProperties) {
-        if (source != null) {
-            if (target != null) {
-                copyProperties(source, target, Stream.concat(ignoreNullProperties ? getNullPropertyNames(source) : Stream.of(), excludedProperties.stream()).toArray(String[]::new));
-                final var targetClass = target.getClass();
-                final var sourceClass = source.getClass();
-                final var relationalFieldNames = getRelationalFields(targetClass);
-                relationalFieldNames
-                        .stream()
-                        .filter((final var relationalFieldName) -> !excludedProperties.contains(relationalFieldName))
-                        .forEach((final var relationalFieldName) -> {
-                            try {
-                                final var optionalRelationalField = stream(targetClass.getDeclaredFields()).filter((final Field field) -> field.getName().equals(relationalFieldName)).findFirst();
-                                if (optionalRelationalField.isPresent()) {
-                                    final var relationalField = optionalRelationalField.get();
-                                    final var sourceClassGetter = getSourceClassGetter(sourceClass, relationalField);
-                                    if (relationalField.getType().getTypeName().equals(LIST)) {
-                                        if (sourceClassGetter.isPresent()) {
-                                            final var sourceValue = (List<?>) sourceClassGetter.get().invoke(source);
-                                            if (!isNull(sourceValue)) {
-                                                final var result = new ArrayList<>();
-                                                for (Object sourceInstance : sourceValue) {
-                                                    final var targetSubClassInstance = getTargetSubClassInstanceForList(relationalField);
-                                                    Object o = relationalCopyEntityProperties(sourceInstance, targetSubClassInstance, ignoreNullProperties, relationalFieldNames.stream().toList());
-                                                    result.add(o);
-                                                }
-                                                targetClass.getDeclaredMethod(SET + capitalize(relationalField.getName()), List.class).invoke(target, result);
-                                            }
-                                        }
-                                    } else {
-                                        final var targetSubClassInstance = getTargetSubClassInstance(relationalField);
-                                        if (sourceClassGetter.isPresent()) {
-                                            final var sourceValue = sourceClassGetter.get().invoke(source);
-                                            final var result = relationalCopyEntityProperties(sourceValue, targetSubClassInstance, ignoreNullProperties, relationalFieldNames.stream().toList());
-                                            targetClass.getDeclaredMethod(SET + capitalize(relationalField.getName()), relationalField.getType()).invoke(target, result);
-                                        }
-                                    }
-                                }
-                            } catch (final Exception e) {
-                                throw new RuntimeException(e);
-                            }
-                        });
-                return target;
-            }
-        }
-        return null;
-    }
-
-    public static <S, T> T deepCopyEntityProperties(@Nullable final S source, @Nullable final T target, @NonNull final Boolean ignoreNullProperties, @NonNull final List<String> excludedProperties, @NonNull final List<String> complexFieldNames) {
+    public static <S, T> void deepCopyEntityProperties(@Nullable final S source, @Nullable final T target, @NonNull final Boolean ignoreNullProperties, @NonNull final List<String> excludedProperties, @NonNull final List<String> complexFieldNames) {
         if (source != null) {
             if (target != null) {
                 copyProperties(source, target, Stream.concat(ignoreNullProperties ? getNullPropertyNames(source) : Stream.of(), excludedProperties.stream()).toArray(String[]::new));
@@ -132,8 +70,8 @@ public class PropertyCopyHelper {
                                                 final var result = new ArrayList<>();
                                                 for (Object sourceInstance : sourceValue) {
                                                     final var targetSubClassInstance = getTargetSubClassInstanceForList(complexField);
-                                                    Object o = deepCopyEntityProperties(sourceInstance, targetSubClassInstance, ignoreNullProperties, complexFieldNames, complexFieldNames);
-                                                    result.add(o);
+                                                    deepCopyEntityProperties(sourceInstance, targetSubClassInstance, ignoreNullProperties, excludedProperties, complexFieldNames);
+                                                    result.add(targetSubClassInstance);
                                                 }
                                                 targetClass.getDeclaredMethod(SET + capitalize(complexField.getName()), List.class).invoke(target, result);
                                             }
@@ -142,8 +80,8 @@ public class PropertyCopyHelper {
                                         final var targetSubClassInstance = getTargetSubClassInstance(complexField);
                                         if (sourceClassGetter.isPresent()) {
                                             final var sourceValue = sourceClassGetter.get().invoke(source);
-                                            final var result = deepCopyEntityProperties(sourceValue, targetSubClassInstance, ignoreNullProperties, complexFieldNames, complexFieldNames);
-                                            targetClass.getDeclaredMethod(SET + capitalize(complexField.getName()), complexField.getType()).invoke(target, result);
+                                            deepCopyEntityProperties(sourceValue, targetSubClassInstance, ignoreNullProperties, excludedProperties, complexFieldNames);
+                                            targetClass.getDeclaredMethod(SET + capitalize(complexField.getName()), complexField.getType()).invoke(target, targetSubClassInstance);
                                         }
                                     }
                                 }
@@ -151,10 +89,9 @@ public class PropertyCopyHelper {
                                 throw new RuntimeException(e);
                             }
                         });
-                return target;
             }
         }
-        return null;
     }
+
 
 }

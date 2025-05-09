@@ -19,7 +19,7 @@ import static com.smateso.proof.adapter.model.Action.*;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createPageable;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createSpecification;
 import static com.smateso.proof.application.utils.LogMessages.WORKFLOW_DAO_NOT_FOUND_MESSAGE;
-import static com.smateso.proof.application.utils.PropertyCopyHelper.relationalCopyEntityProperties;
+import static com.smateso.proof.application.utils.PropertyCopyHelper.deepCopyEntityProperties;
 import static java.util.Objects.requireNonNull;
 
 @Slf4j
@@ -27,6 +27,8 @@ import static java.util.Objects.requireNonNull;
 @AllArgsConstructor
 public class WorkflowInteractor implements IWorkflowInteractor {
 
+    private static final List<String> COMPLEX_FIELDS = List.of("stepBasedConfig", "blocks", "executions", "inputs", "outputs", "eventLifeCycles", "blockIODefinitions", "connections", "points");
+    private static final String ENTITY_WORKFLOW = "workflows";
     private final IMessageInteractor messageInteractor;
     private final WorkflowRepository workflowRepository;
 
@@ -52,22 +54,26 @@ public class WorkflowInteractor implements IWorkflowInteractor {
     @Override
     public WorkflowDao createWorkflow(@NonNull final WorkflowDao workflowDao, @NonNull final String sessionKey, @NonNull final String username) {
         final var result = this.workflowRepository.save(workflowDao);
-        this.messageInteractor.workflowUpdate(requireNonNull(result.getId()), CREATED, sessionKey, username);
+        this.messageInteractor.sendUpdate(ENTITY_WORKFLOW, requireNonNull(result.getId()), CREATED, sessionKey, username);
         return result;
     }
 
     @Override
-    public WorkflowDao updateWorkflow(@NonNull final String id, @NonNull final WorkflowDao updatingWorkflow, @NonNull final String sessionKey, @NonNull final String username) {
-        final var existingWorkflow = this.getWorkflow(id);
-        final var result = this.workflowRepository.save(relationalCopyEntityProperties(updatingWorkflow, existingWorkflow, true, List.of()));
-        this.messageInteractor.workflowUpdate(requireNonNull(result.getId()), UPDATED, sessionKey, username);
-        return result;
+    public WorkflowDao updateWorkflow(@NonNull final String id, @NonNull final WorkflowDao partial, @NonNull final String sessionKey, @NonNull final String username) {
+        final var optionalWorkflow = this.workflowRepository.findById(id);
+        if (optionalWorkflow.isPresent()) {
+            final var workflow = optionalWorkflow.get();
+            deepCopyEntityProperties(partial, workflow, true, List.of(), COMPLEX_FIELDS);
+            final var result = this.workflowRepository.save(workflow);
+            this.messageInteractor.sendUpdate(ENTITY_WORKFLOW, requireNonNull(result.getId()), UPDATED, sessionKey, username);
+            return result;
+        } else throw new NotFoundException(WORKFLOW_DAO_NOT_FOUND_MESSAGE.formatted(id));
     }
 
     @Override
     public void deleteWorkflow(@NonNull final String id, @NonNull final String sessionKey, @NonNull final String username) {
         this.workflowRepository.deleteById(id);
-        this.messageInteractor.workflowUpdate(id, DELETED, sessionKey, username);
+        this.messageInteractor.sendUpdate(ENTITY_WORKFLOW, id, DELETED, sessionKey, username);
     }
 
 }

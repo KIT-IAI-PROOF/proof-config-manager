@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.servers.Server;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.hateoas.config.EnableHypermediaSupport;
 
 import static org.springframework.boot.SpringApplication.run;
 
@@ -34,6 +35,7 @@ import static org.springframework.boot.SpringApplication.run;
  */
 @EnableCaching
 @SpringBootApplication
+@EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.COLLECTION_JSON)
 @EntityScan("edu.kit.iai.webis.proofmodels")
 @OpenAPIDefinition(
         info = @Info(

@@ -19,7 +19,7 @@ import static com.smateso.proof.adapter.model.Action.*;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createPageable;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createSpecification;
 import static com.smateso.proof.application.utils.LogMessages.TEMPLATE_DAO_NOT_FOUND_MESSAGE;
-import static com.smateso.proof.application.utils.PropertyCopyHelper.relationalCopyEntityProperties;
+import static com.smateso.proof.application.utils.PropertyCopyHelper.deepCopyEntityProperties;
 import static java.util.Objects.requireNonNull;
 
 @Slf4j
@@ -27,6 +27,8 @@ import static java.util.Objects.requireNonNull;
 @AllArgsConstructor
 public class TemplateInteractor implements ITemplateInteractor {
 
+    private static final List<String> COMPLEX_FIELDS = List.of("inputs", "outputs", "eventLifeCycles", "blockIODefinitions");
+    private static final String ENTITY_TEMPLATE = "templates";
     private final IMessageInteractor messageInteractor;
     private final TemplateRepository templateRepository;
 
@@ -52,22 +54,23 @@ public class TemplateInteractor implements ITemplateInteractor {
     @Override
     public TemplateDao createTemplate(@NonNull final TemplateDao templateDao, @NonNull final String sessionKey, @NonNull final String username) {
         final var result = this.templateRepository.save(templateDao);
-        this.messageInteractor.templateUpdate(requireNonNull(result.getId()), CREATED, sessionKey, username);
+        this.messageInteractor.sendUpdate(ENTITY_TEMPLATE, requireNonNull(result.getId()), CREATED, sessionKey, username);
         return result;
     }
 
     @Override
-    public TemplateDao updateTemplate(@NonNull final String id, @NonNull final TemplateDao updatingTemplate, @NonNull final String sessionKey, @NonNull final String username) {
-        final var existingTemplate = this.getTemplate(id);
-        final var result = this.templateRepository.save(relationalCopyEntityProperties(updatingTemplate, existingTemplate, true, List.of()));
-        this.messageInteractor.templateUpdate(requireNonNull(result.getId()), UPDATED, sessionKey, username);
+    public TemplateDao updateTemplate(@NonNull final String id, @NonNull final TemplateDao partial, @NonNull final String sessionKey, @NonNull final String username) {
+        final var template = this.templateRepository.findById(id).orElseThrow();
+        deepCopyEntityProperties(partial, template, true, List.of(), COMPLEX_FIELDS);
+        final var result = this.templateRepository.save(template);
+        this.messageInteractor.sendUpdate(ENTITY_TEMPLATE, requireNonNull(result.getId()), UPDATED, sessionKey, username);
         return result;
     }
 
     @Override
     public void deleteTemplate(@NonNull final String id, @NonNull final String sessionKey, @NonNull final String username) {
         this.templateRepository.deleteById(id);
-        this.messageInteractor.templateUpdate(id, DELETED, sessionKey, username);
+        this.messageInteractor.sendUpdate(ENTITY_TEMPLATE, id, DELETED, sessionKey, username);
     }
 
 }
