@@ -60,11 +60,18 @@ public class ProgramInteractor implements IProgramInteractor {
 
     @Override
     public ProgramDao updateProgram(@NonNull final String id, @NonNull final ProgramDao partial, @NonNull final String sessionKey, @NonNull final String username) {
-        final var program = this.programRepository.findById(id).orElseThrow();
-        deepCopyEntityProperties(partial, program, true, List.of(), COMPLEX_FIELDS);
-        final var result = this.programRepository.save(program);
-        this.messageInteractor.sendUpdate(ENTITY_PROGRAM, requireNonNull(result.getId()), UPDATED, sessionKey, username);
-        return result;
+        final var optionalProgram = this.programRepository.findById(id);
+        if (optionalProgram.isPresent()) {
+            final var program = optionalProgram.get();
+            deepCopyEntityProperties(partial, program, true, List.of(), COMPLEX_FIELDS);
+            final var result = this.programRepository.save(program);
+            this.messageInteractor.sendUpdate(ENTITY_PROGRAM, requireNonNull(result.getId()), UPDATED, sessionKey, username);
+            return result;
+        } else {
+            final var result = this.programRepository.save(partial);
+            this.messageInteractor.sendUpdate(ENTITY_PROGRAM, requireNonNull(result.getId()), UPDATED, sessionKey, username);
+            return result;
+        }
     }
 
     @Override

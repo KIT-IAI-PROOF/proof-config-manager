@@ -60,11 +60,18 @@ public class ExecutionInteractor implements IExecutionInteractor {
 
     @Override
     public ExecutionDao updateExecution(@NonNull final String id, @NonNull final ExecutionDao partial, @NonNull final String sessionKey, @NonNull final String username) {
-        final var execution = this.executionRepository.findById(id).orElseThrow();
-        deepCopyEntityProperties(partial, execution, true, List.of(), COMPLEX_FIELDS);
-        final var result = this.executionRepository.save(execution);
-        this.messageInteractor.sendUpdate(ENTITY_EXECUTION, requireNonNull(result.getId()), UPDATED, sessionKey, username);
-        return result;
+        final var optionalExecution = this.executionRepository.findById(id);
+        if (optionalExecution.isPresent()) {
+            final var execution = optionalExecution.get();
+            deepCopyEntityProperties(partial, execution, true, List.of(), COMPLEX_FIELDS);
+            final var result = this.executionRepository.save(execution);
+            this.messageInteractor.sendUpdate(ENTITY_EXECUTION, requireNonNull(result.getId()), UPDATED, sessionKey, username);
+            return result;
+        } else {
+            final var result = this.executionRepository.save(partial);
+            this.messageInteractor.sendUpdate(ENTITY_EXECUTION, requireNonNull(result.getId()), UPDATED, sessionKey, username);
+            return result;
+        }
     }
 
     @Override

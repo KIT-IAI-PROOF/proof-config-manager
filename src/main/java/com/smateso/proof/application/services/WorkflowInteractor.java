@@ -67,7 +67,11 @@ public class WorkflowInteractor implements IWorkflowInteractor {
             final var result = this.workflowRepository.save(workflow);
             this.messageInteractor.sendUpdate(ENTITY_WORKFLOW, requireNonNull(result.getId()), UPDATED, sessionKey, username);
             return result;
-        } else throw new NotFoundException(WORKFLOW_DAO_NOT_FOUND_MESSAGE.formatted(id));
+        } else {
+            final var result = this.workflowRepository.save(partial);
+            this.messageInteractor.sendUpdate(ENTITY_WORKFLOW, requireNonNull(result.getId()), UPDATED, sessionKey, username);
+            return result;
+        }
     }
 
     @Override

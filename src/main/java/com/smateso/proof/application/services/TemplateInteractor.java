@@ -60,11 +60,18 @@ public class TemplateInteractor implements ITemplateInteractor {
 
     @Override
     public TemplateDao updateTemplate(@NonNull final String id, @NonNull final TemplateDao partial, @NonNull final String sessionKey, @NonNull final String username) {
-        final var template = this.templateRepository.findById(id).orElseThrow();
-        deepCopyEntityProperties(partial, template, true, List.of(), COMPLEX_FIELDS);
-        final var result = this.templateRepository.save(template);
-        this.messageInteractor.sendUpdate(ENTITY_TEMPLATE, requireNonNull(result.getId()), UPDATED, sessionKey, username);
-        return result;
+        final var optionalTemplate = this.templateRepository.findById(id);
+        if (optionalTemplate.isPresent()) {
+            final var template = optionalTemplate.get();
+            deepCopyEntityProperties(partial, template, true, List.of(), COMPLEX_FIELDS);
+            final var result = this.templateRepository.save(template);
+            this.messageInteractor.sendUpdate(ENTITY_TEMPLATE, requireNonNull(result.getId()), UPDATED, sessionKey, username);
+            return result;
+        } else {
+            final var result = this.templateRepository.save(partial);
+            this.messageInteractor.sendUpdate(ENTITY_TEMPLATE, requireNonNull(result.getId()), UPDATED, sessionKey, username);
+            return result;
+        }
     }
 
     @Override

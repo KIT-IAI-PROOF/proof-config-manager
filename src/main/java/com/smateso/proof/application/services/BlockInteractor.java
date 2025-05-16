@@ -60,11 +60,18 @@ public class BlockInteractor implements IBlockInteractor {
 
     @Override
     public BlockDao updateBlock(@NonNull final String id, @NonNull final BlockDao partial, @NonNull final String sessionKey, @NonNull final String username) {
-        final var block = this.blockRepository.findById(id).orElseThrow();
-        deepCopyEntityProperties(partial, block, true, List.of(), COMPLEX_FIELDS);
-        final var result = this.blockRepository.save(block);
-        this.messageInteractor.sendUpdate(ENTITY_BLOCK, requireNonNull(result.getId()), UPDATED, sessionKey, username);
-        return result;
+        final var optionalBlock = this.blockRepository.findById(id);
+        if (optionalBlock.isPresent()) {
+            final var block = optionalBlock.get();
+            deepCopyEntityProperties(partial, block, true, List.of(), COMPLEX_FIELDS);
+            final var result = this.blockRepository.save(block);
+            this.messageInteractor.sendUpdate(ENTITY_BLOCK, requireNonNull(result.getId()), UPDATED, sessionKey, username);
+            return result;
+        } else {
+            final var result = this.blockRepository.save(partial);
+            this.messageInteractor.sendUpdate(ENTITY_BLOCK, requireNonNull(result.getId()), UPDATED, sessionKey, username);
+            return result;
+        }
     }
 
     @Override

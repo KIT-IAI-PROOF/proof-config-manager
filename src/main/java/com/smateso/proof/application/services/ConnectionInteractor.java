@@ -60,11 +60,18 @@ public class ConnectionInteractor implements IConnectionInteractor {
 
     @Override
     public ConnectionDao updateConnection(@NonNull final String id, @NonNull final ConnectionDao partial, @NonNull final String sessionKey, @NonNull final String username) {
-        final var connection = this.connectionRepository.findById(id).orElseThrow();
-        deepCopyEntityProperties(partial, connection, true, List.of(), COMPLEX_FIELDS);
-        final var result = this.connectionRepository.save(connection);
-        this.messageInteractor.sendUpdate(ENTITY_CONNECTION, requireNonNull(result.getId()), UPDATED, sessionKey, username);
-        return result;
+        final var optionalConnection = this.connectionRepository.findById(id);
+        if (optionalConnection.isPresent()) {
+            final var connection = optionalConnection.get();
+            deepCopyEntityProperties(partial, connection, true, List.of(), COMPLEX_FIELDS);
+            final var result = this.connectionRepository.save(connection);
+            this.messageInteractor.sendUpdate(ENTITY_CONNECTION, requireNonNull(result.getId()), UPDATED, sessionKey, username);
+            return result;
+        } else {
+            final var result = this.connectionRepository.save(partial);
+            this.messageInteractor.sendUpdate(ENTITY_CONNECTION, requireNonNull(result.getId()), UPDATED, sessionKey, username);
+            return result;
+        }
     }
 
     @Override

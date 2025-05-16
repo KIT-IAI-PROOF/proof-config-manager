@@ -60,11 +60,18 @@ public class AttachmentInteractor implements IAttachmentInteractor {
 
     @Override
     public AttachmentDao updateAttachment(@NonNull final String id, @NonNull final AttachmentDao partial, @NonNull final String sessionKey, @NonNull final String username) {
-        final var attachment = this.attachmentRepository.findById(id).orElseThrow();
-        deepCopyEntityProperties(partial, attachment, true, List.of(), COMPLEX_FIELDS);
-        final var result = this.attachmentRepository.save(attachment);
-        this.messageInteractor.sendUpdate(ENTITY_ATTACHMENT, requireNonNull(result.getId()), UPDATED, sessionKey, username);
-        return result;
+        final var optionalAttachment = this.attachmentRepository.findById(id);
+        if (optionalAttachment.isPresent()) {
+            final var attachment = optionalAttachment.get();
+            deepCopyEntityProperties(partial, attachment, true, List.of(), COMPLEX_FIELDS);
+            final var result = this.attachmentRepository.save(attachment);
+            this.messageInteractor.sendUpdate(ENTITY_ATTACHMENT, requireNonNull(result.getId()), UPDATED, sessionKey, username);
+            return result;
+        } else {
+            final var result = this.attachmentRepository.save(partial);
+            this.messageInteractor.sendUpdate(ENTITY_ATTACHMENT, requireNonNull(result.getId()), UPDATED, sessionKey, username);
+            return result;
+        }
     }
 
     @Override
