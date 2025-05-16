@@ -2,6 +2,7 @@ package com.smateso.proof.application.services;
 
 import com.smateso.proof.adapter.boundaries.services.IMessageInteractor;
 import com.smateso.proof.adapter.boundaries.services.IProgramInteractor;
+import com.smateso.proof.adapter.exceptions.InUseException;
 import com.smateso.proof.adapter.exceptions.NotFoundException;
 import com.smateso.proof.adapter.model.Request;
 import com.smateso.proof.adapter.repositories.ProgramRepository;
@@ -9,6 +10,7 @@ import edu.kit.iai.webis.proofmodels.dao.ProgramDao;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
@@ -18,6 +20,7 @@ import java.util.List;
 import static com.smateso.proof.adapter.model.Action.*;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createPageable;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createSpecification;
+import static com.smateso.proof.application.utils.LogMessages.PROGRAM_DAO_IN_USE_MESSAGE;
 import static com.smateso.proof.application.utils.LogMessages.PROGRAM_DAO_NOT_FOUND_MESSAGE;
 import static com.smateso.proof.application.utils.PropertyCopyHelper.deepCopyEntityProperties;
 import static java.util.Objects.requireNonNull;
@@ -76,8 +79,12 @@ public class ProgramInteractor implements IProgramInteractor {
 
     @Override
     public void deleteProgram(@NonNull final String id, @NonNull final String sessionKey, @NonNull final String username) {
-        this.programRepository.deleteById(id);
-        this.messageInteractor.sendUpdate(ENTITY_PROGRAM, id, DELETED, sessionKey, username);
+        try {
+            this.programRepository.deleteById(id);
+            this.messageInteractor.sendUpdate(ENTITY_PROGRAM, id, DELETED, sessionKey, username);
+        } catch (final DataIntegrityViolationException e) {
+            throw new InUseException(PROGRAM_DAO_IN_USE_MESSAGE.formatted(id));
+        }
     }
 
 }
