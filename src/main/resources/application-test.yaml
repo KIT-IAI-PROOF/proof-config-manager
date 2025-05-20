@@ -10,11 +10,11 @@ spring:
       - org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
   sql:
     init:
-      mode: always
+      mode: never
       platform: all
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: create-drop
     defer-datasource-initialization: true
     open-in-view: false
     show-sql: false
