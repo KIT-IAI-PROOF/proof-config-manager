@@ -19,7 +19,7 @@ spring:
       platform: all
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     defer-datasource-initialization: true
     open-in-view: false
     show-sql: false

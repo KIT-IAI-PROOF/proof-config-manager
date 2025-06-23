@@ -1,9 +1,15 @@
 package com.smateso.proof.adapter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.smateso.proof.adapter.repositories.WorkflowRepository;
+import edu.kit.iai.webis.proofmodels.dao.WorkflowDao;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * The DataImporter class is a Spring Component that implements the CommandLineRunner interface.
@@ -13,6 +19,14 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class DataImporter implements CommandLineRunner {
+
+    private final WorkflowRepository workflowRepository;
+    private final ObjectMapper objectMapper;
+
+    public DataImporter(final WorkflowRepository workflowRepository, final ObjectMapper objectMapper) {
+        this.workflowRepository = workflowRepository;
+        this.objectMapper = objectMapper;
+    }
 
     @Override
     @Caching(
@@ -25,7 +39,14 @@ public class DataImporter implements CommandLineRunner {
             }
     )
     public void run(final String... args) {
-
+        try {
+            final var resource = new ClassPathResource("import.json");
+            final var inputStream = resource.getInputStream();
+            final var workflow = objectMapper.readValue(inputStream, WorkflowDao.class);
+            workflowRepository.saveAll(List.of(workflow));
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to import workflow data", e);
+        }
     }
 
 }
