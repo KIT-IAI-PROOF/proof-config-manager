@@ -12,7 +12,7 @@
 
     <groupId>edu.kit.iai.webis</groupId>
     <artifactId>proof-config-manager</artifactId>
-    <version>1.1.1</version>
+    <version>1.1.2</version>
     <name>PROOF Config Manager</name>
     <description>PROOF Config Manager</description>
     <packaging>jar</packaging>
@@ -31,7 +31,7 @@
         <dependency>
             <groupId>edu.kit.iai.webis</groupId>
             <artifactId>proof-models</artifactId>
-            <version>3.1.5</version>
+            <version>3.1.6</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
