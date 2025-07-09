@@ -116,7 +116,7 @@ ON CONFLICT DO NOTHING;
 --
 
 INSERT INTO public.connection (id, created_by, creation_date, last_modified_by, last_modified_date, algorithm, animated, connection_type, input, output, source, target, type, workflow_id)
-VALUES ( 'e0ed360f-9038-4926-a3a1-5cfee9834c9f', 'test', '2025-04-23 15:03:25.769', 'test', '2025-04-23 15:03:25.772', 'bezier-catmull-rom', NULL, NULL, 'b3d6434d-dd6d-49ca-ab1c-742c0bcdab3c', '189208ed-769f-42b3-9778-2f38141702c8', 'bed2ac71-2575-462b-9b73-048e5f60388a', 'da35e3b1-aaea-4ba3-bd27-34c1323dd2af', 'block', '11f02ad7-08d0-4f92-b911-f70f969a6ba6')
+VALUES ( 'e0ed360f-9038-4926-a3a1-5cfee9834c9f', 'test', '2025-04-23 15:03:25.769', 'test', '2025-04-23 15:03:25.772', 'bezier-catmull-rom', NULL, NULL, 'f71ba36a-cb03-4353-adeb-a2d6985932e0', '7000cc5d-637d-4c7f-b961-a9c9e797c50b', 'bed2ac71-2575-462b-9b73-048e5f60388a', 'da35e3b1-aaea-4ba3-bd27-34c1323dd2af', 'block', '11f02ad7-08d0-4f92-b911-f70f969a6ba6')
 ON CONFLICT DO NOTHING;
 
 
@@ -158,7 +158,7 @@ VALUES ('1ad1aea4-e255-4324-9809-6923f537ec23', 'anonymous', '2025-04-23 14:59:4
 ON CONFLICT DO NOTHING;
 
 INSERT INTO public.input (id, created_by, creation_date, last_modified_by, last_modified_date, communication_type, description, label, phase, type, unit, model_var_name, required, block_id, template_id)
-VALUES ('f71ba36a-cb03-4353-adeb-a2d6985932e0', 'anonymous', '2025-04-23 14:59:46.731', 'anonymous', '2025-04-23 14:59:46.731', 3, 'Input: data', 'data', 2, 0, NULL, 'data', false, 'da35e3b1-aaea-4ba3-bd27-34c1323dd2af', '4ad32c27-23c5-4e07-9e75-50a6549e82de')
+VALUES ('f71ba36a-cb03-4353-adeb-a2d6985932e0', 'anonymous', '2025-04-23 14:59:46.731', 'anonymous', '2025-04-23 14:59:46.731', 0, 'Input: data', 'data', 2, 0, NULL, 'data', false, 'da35e3b1-aaea-4ba3-bd27-34c1323dd2af', '4ad32c27-23c5-4e07-9e75-50a6549e82de')
 ON CONFLICT DO NOTHING;
 
 
