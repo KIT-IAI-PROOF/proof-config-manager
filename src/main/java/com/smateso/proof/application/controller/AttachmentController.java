@@ -92,13 +92,13 @@ public class AttachmentController implements IAttachmentController {
     }
 
     @Override
-    public ResponseEntity<?> uploadFile(@NonNull final MultipartFile file) {
+    public ResponseEntity<String> uploadFile(@NonNull final MultipartFile file) {
         final var filename = file.getOriginalFilename();
         try {
             final var filePath = this.fileStorageRoot.resolve(requireNonNull(filename));
             final var inputStream = file.getInputStream();
             copy(inputStream, filePath.normalize().toAbsolutePath());
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok(filePath.normalize().toAbsolutePath().toString());
         } catch (final FileAlreadyExistsException e) {
             return ResponseEntity.status(CONFLICT).body("A file of that name already exists.");
         } catch (final Exception e) {
