@@ -18,8 +18,7 @@ import java.util.List;
 
 import static edu.kit.iai.webis.proofmodels.utils.Views.Detail;
 import static edu.kit.iai.webis.proofmodels.utils.Views.Listing;
-import static org.springframework.http.MediaType.ALL_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.*;
 
 @Tag(name = "Attachment Controller")
 @RestController
@@ -110,7 +109,7 @@ public interface IAttachmentController {
     @DeleteMapping(value = "{id}", consumes = ALL_VALUE, produces = ALL_VALUE)
     ResponseEntity<Void> deleteAttachment(@PathVariable(value = "id") final String id, @RequestParam final String sessionKey, final Authentication authentication);
 
-    @PostMapping(value = "upload", name = "upload")
-    ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file);
+    @PostMapping(value = "upload", name = "upload", consumes = MULTIPART_FORM_DATA_VALUE)
+    ResponseEntity<?> uploadFile(@RequestPart(value = "file", required = true) final MultipartFile file);
 
 }
