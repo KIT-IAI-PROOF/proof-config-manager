@@ -21,7 +21,6 @@ import static java.nio.file.Files.copy;
 import static java.util.Objects.requireNonNull;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.http.HttpStatus.CONFLICT;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @Builder
 @AllArgsConstructor
@@ -102,7 +101,7 @@ public class AttachmentController implements IAttachmentController {
         } catch (final FileAlreadyExistsException e) {
             return ResponseEntity.status(CONFLICT).body("A file of that name already exists.");
         } catch (final Exception e) {
-            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body("Could not upload the file");
+            throw new RuntimeException(e);
         }
     }
 

@@ -109,7 +109,7 @@ public interface IAttachmentController {
     @DeleteMapping(value = "{id}", consumes = ALL_VALUE, produces = ALL_VALUE)
     ResponseEntity<Void> deleteAttachment(@PathVariable(value = "id") final String id, @RequestParam final String sessionKey, final Authentication authentication);
 
-    @PostMapping(value = "upload", name = "upload", consumes = MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "upload", name = "upload", consumes = MULTIPART_FORM_DATA_VALUE, produces = TEXT_PLAIN_VALUE)
     ResponseEntity<String> uploadFile(@RequestPart(value = "file") final MultipartFile file);
 
 }
