@@ -112,4 +112,7 @@ public interface IAttachmentController {
     @PostMapping(value = "upload", name = "upload", consumes = MULTIPART_FORM_DATA_VALUE, produces = TEXT_PLAIN_VALUE)
     ResponseEntity<String> uploadFile(@RequestPart(value = "file") final MultipartFile file);
 
+    @GetMapping(value = "download", name = "download", consumes = ALL_VALUE)
+    ResponseEntity<?> downloadFile(@RequestParam(value = "path") final String path);
+
 }

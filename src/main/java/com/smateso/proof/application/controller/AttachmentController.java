@@ -7,12 +7,17 @@ import edu.kit.iai.webis.proofmodels.dao.AttachmentDao;
 import edu.kit.iai.webis.proofmodels.dto.Attachment;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -102,6 +107,27 @@ public class AttachmentController implements IAttachmentController {
             return ResponseEntity.status(CONFLICT).body("A file of that name already exists.");
         } catch (final Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> downloadFile(final String path) {
+        try {
+            final var filePath = this.fileStorageRoot.resolve(path).normalize();
+            final Resource resource = new UrlResource(filePath.toUri());
+
+            if (resource.exists()) {
+                String mimeType = Files.probeContentType(filePath);
+                MediaType mediaType = mimeType != null ? MediaType.parseMediaType(mimeType) : MediaType.APPLICATION_OCTET_STREAM;
+                return ResponseEntity.ok()
+                        .contentType(mediaType)
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                        .body(resource);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (final Exception e) {
+            return ResponseEntity.internalServerError().build();
         }
     }
 
