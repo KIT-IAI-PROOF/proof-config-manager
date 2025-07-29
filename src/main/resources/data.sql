@@ -139,7 +139,7 @@ INSERT INTO public.connection (id, created_by, creation_date, last_modified_by, 
                                connection_type, input, output, source, target, type, workflow_id)
 VALUES ('43179bda-c044-4ab9-9e68-fbfa8602a79e', 'test', '2025-07-15 12:19:15.906', 'test', '2025-07-15 12:19:15.92',
         'bezier-catmull-rom', NULL, NULL, 'f71ba36a-cb03-4353-adeb-a2d6985932e0',
-        '7000cc5d-637d-4c7f-b961-a9c9e797c50b', 'bed2ac71-2575-462b-9b73-048e5f60388a',
+        '7100cc5d-637d-4c7f-b961-a9c9e797c50c', 'bed2ac71-2575-462b-9b73-048e5f60388a',
         'da35e3b1-aaea-4ba3-bd27-34c1323dd2af', 'block', '11f02ad7-08d0-4f92-b911-f70f969a6ba6')
 ON CONFLICT DO NOTHING;
 
@@ -161,49 +161,101 @@ INSERT INTO public.input (id, created_by, creation_date, last_modified_by, last_
                           description, label, phase, type, unit, model_var_name, required, block_id, template_id)
 VALUES ('689eef18-1189-4538-9019-7d7a646d9af4', 'anonymous', '2025-04-23 14:59:46.731', 'anonymous',
         '2025-04-23 14:59:46.731', 3, 'Input: file_name', 'file_name', 1, 0, NULL, 'file_name', true,
-        'bed2ac71-2575-462b-9b73-048e5f60388a', '365d5380-54eb-4b40-a377-b4921d7370c6')
+        'bed2ac71-2575-462b-9b73-048e5f60388a', NULL)
 ON CONFLICT DO NOTHING;
 
 INSERT INTO public.input (id, created_by, creation_date, last_modified_by, last_modified_date, communication_type,
                           description, label, phase, type, unit, model_var_name, required, block_id, template_id)
 VALUES ('e2063aa3-e694-4593-8f54-d322b977971e', 'anonymous', '2025-04-23 14:59:46.731', 'anonymous',
         '2025-04-23 14:59:46.731', 3, 'Input: num_steps', 'num_steps', 1, 1, NULL, 'num_steps', false,
-        'bed2ac71-2575-462b-9b73-048e5f60388a', '365d5380-54eb-4b40-a377-b4921d7370c6')
+        'bed2ac71-2575-462b-9b73-048e5f60388a', NULL)
 ON CONFLICT DO NOTHING;
 
 INSERT INTO public.input (id, created_by, creation_date, last_modified_by, last_modified_date, communication_type,
                           description, label, phase, type, unit, model_var_name, required, block_id, template_id)
 VALUES ('509cea6d-dc33-4e2a-af9d-b8b0475d8c46', 'anonymous', '2025-04-23 14:59:46.731', 'anonymous',
         '2025-04-23 14:59:46.731', 3, 'Input: ignore_first_line', 'ignore_first_line', 1, 0, NULL, 'ignore_first_line',
-        false, 'bed2ac71-2575-462b-9b73-048e5f60388a', '365d5380-54eb-4b40-a377-b4921d7370c6')
+        false, 'bed2ac71-2575-462b-9b73-048e5f60388a', NULL)
 ON CONFLICT DO NOTHING;
 
 INSERT INTO public.input (id, created_by, creation_date, last_modified_by, last_modified_date, communication_type,
                           description, label, phase, type, unit, model_var_name, required, block_id, template_id)
 VALUES ('cd25d323-9544-4236-91a5-963e68dc3620', 'anonymous', '2025-04-23 14:59:46.731', 'anonymous',
         '2025-04-23 14:59:46.731', 3, 'Input: file_name', 'file_name', 1, 0, NULL, 'file_name', true,
-        'da35e3b1-aaea-4ba3-bd27-34c1323dd2af', '4ad32c27-23c5-4e07-9e75-50a6549e82de')
+        'da35e3b1-aaea-4ba3-bd27-34c1323dd2af', NULL)
 ON CONFLICT DO NOTHING;
 
 INSERT INTO public.input (id, created_by, creation_date, last_modified_by, last_modified_date, communication_type,
                           description, label, phase, type, unit, model_var_name, required, block_id, template_id)
 VALUES ('ca76bf1a-6f3a-4754-87d8-924c8a9ac1d0', 'anonymous', '2025-04-23 14:59:46.731', 'anonymous',
         '2025-04-23 14:59:46.731', 3, 'Input: mode', 'mode', 1, 0, NULL, 'mode', false,
-        'da35e3b1-aaea-4ba3-bd27-34c1323dd2af', '4ad32c27-23c5-4e07-9e75-50a6549e82de')
+        'da35e3b1-aaea-4ba3-bd27-34c1323dd2af', NULL)
 ON CONFLICT DO NOTHING;
 
 INSERT INTO public.input (id, created_by, creation_date, last_modified_by, last_modified_date, communication_type,
                           description, label, phase, type, unit, model_var_name, required, block_id, template_id)
 VALUES ('1ad1aea4-e255-4324-9809-6923f537ec23', 'anonymous', '2025-04-23 14:59:46.731', 'anonymous',
         '2025-04-23 14:59:46.731', 3, 'Input: waitForSync', 'waitForSync', 1, 0, NULL, 'waitForSync', false,
-        'da35e3b1-aaea-4ba3-bd27-34c1323dd2af', '4ad32c27-23c5-4e07-9e75-50a6549e82de')
+        'da35e3b1-aaea-4ba3-bd27-34c1323dd2af', NULL)
 ON CONFLICT DO NOTHING;
 
 INSERT INTO public.input (id, created_by, creation_date, last_modified_by, last_modified_date, communication_type,
                           description, label, phase, type, unit, model_var_name, required, block_id, template_id)
 VALUES ('f71ba36a-cb03-4353-adeb-a2d6985932e0', 'anonymous', '2025-04-23 14:59:46.731', 'anonymous',
         '2025-04-23 14:59:46.731', 0, 'Input: data', 'data', 2, 0, NULL, 'data', false,
-        'da35e3b1-aaea-4ba3-bd27-34c1323dd2af', '4ad32c27-23c5-4e07-9e75-50a6549e82de')
+        'da35e3b1-aaea-4ba3-bd27-34c1323dd2af', NULL)
+ON CONFLICT DO NOTHING;
+
+
+---
+
+INSERT INTO public.input (id, created_by, creation_date, last_modified_by, last_modified_date, communication_type,
+                          description, label, phase, type, unit, model_var_name, required, block_id, template_id)
+VALUES ('a89eef18-1189-4538-9019-7d7a646d9af4', 'anonymous', '2025-04-23 14:59:46.731', 'anonymous',
+        '2025-04-23 14:59:46.731', 3, 'Input: file_name', 'file_name', 1, 0, NULL, 'file_name', true,
+        NULL, '365d5380-54eb-4b40-a377-b4921d7370c6')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.input (id, created_by, creation_date, last_modified_by, last_modified_date, communication_type,
+                          description, label, phase, type, unit, model_var_name, required, block_id, template_id)
+VALUES ('v2063aa3-e694-4593-8f54-d322b977971e', 'anonymous', '2025-04-23 14:59:46.731', 'anonymous',
+        '2025-04-23 14:59:46.731', 3, 'Input: num_steps', 'num_steps', 1, 1, NULL, 'num_steps', false,
+        NULL, '365d5380-54eb-4b40-a377-b4921d7370c6')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.input (id, created_by, creation_date, last_modified_by, last_modified_date, communication_type,
+                          description, label, phase, type, unit, model_var_name, required, block_id, template_id)
+VALUES ('109cea6d-dc33-4e2a-af9d-b8b0475d8c46', 'anonymous', '2025-04-23 14:59:46.731', 'anonymous',
+        '2025-04-23 14:59:46.731', 3, 'Input: ignore_first_line', 'ignore_first_line', 1, 0, NULL, 'ignore_first_line',
+        false, NULL, '365d5380-54eb-4b40-a377-b4921d7370c6')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.input (id, created_by, creation_date, last_modified_by, last_modified_date, communication_type,
+                          description, label, phase, type, unit, model_var_name, required, block_id, template_id)
+VALUES ('ed25d323-9544-4236-91a5-963e68dc3620', 'anonymous', '2025-04-23 14:59:46.731', 'anonymous',
+        '2025-04-23 14:59:46.731', 3, 'Input: file_name', 'file_name', 1, 0, NULL, 'file_name', true,
+        NULL, '4ad32c27-23c5-4e07-9e75-50a6549e82de')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.input (id, created_by, creation_date, last_modified_by, last_modified_date, communication_type,
+                          description, label, phase, type, unit, model_var_name, required, block_id, template_id)
+VALUES ('ra76bf1a-6f3a-4754-87d8-924c8a9ac1d0', 'anonymous', '2025-04-23 14:59:46.731', 'anonymous',
+        '2025-04-23 14:59:46.731', 3, 'Input: mode', 'mode', 1, 0, NULL, 'mode', false,
+        NULL, '4ad32c27-23c5-4e07-9e75-50a6549e82de')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.input (id, created_by, creation_date, last_modified_by, last_modified_date, communication_type,
+                          description, label, phase, type, unit, model_var_name, required, block_id, template_id)
+VALUES ('bad1aea4-e255-4324-9809-6923f537ec23', 'anonymous', '2025-04-23 14:59:46.731', 'anonymous',
+        '2025-04-23 14:59:46.731', 3, 'Input: waitForSync', 'waitForSync', 1, 0, NULL, 'waitForSync', false,
+        NULL, '4ad32c27-23c5-4e07-9e75-50a6549e82de')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.input (id, created_by, creation_date, last_modified_by, last_modified_date, communication_type,
+                          description, label, phase, type, unit, model_var_name, required, block_id, template_id)
+VALUES ('l71ba36a-cb03-4353-adeb-a2d6985932e0', 'anonymous', '2025-04-23 14:59:46.731', 'anonymous',
+        '2025-04-23 14:59:46.731', 0, 'Input: data', 'data', 2, 0, NULL, 'data', false,
+        NULL, '4ad32c27-23c5-4e07-9e75-50a6549e82de')
 ON CONFLICT DO NOTHING;
 
 
@@ -244,10 +296,16 @@ ON CONFLICT DO NOTHING;
 INSERT INTO public.output (id, created_by, creation_date, last_modified_by, last_modified_date, communication_type,
                            description, label, phase, type, unit, block_id, template_id)
 VALUES ('7000cc5d-637d-4c7f-b961-a9c9e797c50b', 'anonymous', '2025-04-23 14:59:46.738', 'anonymous',
-        '2025-04-23 14:59:46.738', 0, 'Output: line', 'line', 2, 0, NULL, 'bed2ac71-2575-462b-9b73-048e5f60388a',
+        '2025-04-23 14:59:46.738', 0, 'Output: line', 'line', 2, 0, NULL, NULL,
         '365d5380-54eb-4b40-a377-b4921d7370c6')
 ON CONFLICT DO NOTHING;
 
+INSERT INTO public.output (id, created_by, creation_date, last_modified_by, last_modified_date, communication_type,
+                           description, label, phase, type, unit, block_id, template_id)
+VALUES ('7100cc5d-637d-4c7f-b961-a9c9e797c50c', 'anonymous', '2025-04-23 14:59:46.738', 'anonymous',
+        '2025-04-23 14:59:46.738', 0, 'Output: line', 'line', 2, 0, NULL, 'bed2ac71-2575-462b-9b73-048e5f60388a',
+        NULL)
+ON CONFLICT DO NOTHING;
 
 
 --
