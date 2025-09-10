@@ -47,7 +47,7 @@ public class DataImporter implements CommandLineRunner {
             final var workflow = objectMapper.readValue(inputStream, WorkflowDao.class);
             workflowRepository.saveAll(List.of(workflow));
         } catch (Exception e) {
-            log.error("Failed to auto import: %s".formatted(e.getMessage()));
+            log.warn("Failed to auto import: %s".formatted(e.getMessage()));
         }
     }
 

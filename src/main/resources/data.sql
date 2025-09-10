@@ -78,7 +78,7 @@ VALUES ('bed2ac71-2575-462b-9b73-048e5f60388a', 0, 0, true, 0, 0, 10, '2025-04-2
         '2025-05-06 11:00:50.941', '#0D41E1',
         'iai-artifactory.iai.kit.edu/docker-webis/proof-2/proof-standard:latest', 'test', 'Provide lines from a file',
         'File Provider', 'anonymous', '08d4fc61-b9d5-4bd8-9f69-19bff1f33e29',
-        '365d5380-54eb-4b40-a377-b4921d7370c6', 'File Provider', 'block', 1, '11f02ad7-08d0-4f92-b911-f70f969a6ba6')
+        '365d5380-54eb-4b40-a377-b4921d7370c6', 'File Provider', 0, 1, '11f02ad7-08d0-4f92-b911-f70f969a6ba6')
 ON CONFLICT DO NOTHING;
 INSERT INTO public.block (id, communication_paradigm, index, shutdown_relevant, status, x, y, creation_date,
                           last_modified_date, color, container_image, created_by, description, label, last_modified_by,
@@ -88,7 +88,7 @@ VALUES ('da35e3b1-aaea-4ba3-bd27-34c1323dd2af', 0, 1, true, 0, 200, 0, '2025-04-
         'iai-artifactory.iai.kit.edu/docker-webis/proof-2/proof-standard:latest', 'test', 'Write data to a file',
         'File Writer', 'anonymous', '7554873a-813c-4e00-b8d3-be072f12bea8',
         '4ad32c27-23c5-4e07-9e75-50a6549e82de',
-        'File Writer', 'block', 1, '11f02ad7-08d0-4f92-b911-f70f969a6ba6')
+        'File Writer', 0, 1, '11f02ad7-08d0-4f92-b911-f70f969a6ba6')
 ON CONFLICT DO NOTHING;
 
 
@@ -108,7 +108,7 @@ VALUES ('365d5380-54eb-4b40-a377-b4921d7370c6', 0, NULL, '2025-04-23 14:59:46.72
         '#0D41E1',
         'iai-artifactory.iai.kit.edu/docker-webis/proof-2/proof-standard:latest', 'anonymous',
         'Provide lines from a file', 'anonymous', 'File Provider',
-        '08d4fc61-b9d5-4bd8-9f69-19bff1f33e29', 'block', 1)
+        '08d4fc61-b9d5-4bd8-9f69-19bff1f33e29', 0, 1)
 ON CONFLICT DO NOTHING;
 INSERT INTO public.template (id, communication_paradigm, status, creation_date, last_modified_date, color,
                              container_image, created_by, description, last_modified_by, name, program_id, type,
@@ -117,7 +117,7 @@ VALUES ('4ad32c27-23c5-4e07-9e75-50a6549e82de', 0, NULL, '2025-04-23 14:59:49.85
         '#0D41E1',
         'iai-artifactory.iai.kit.edu/docker-webis/proof-2/proof-standard:latest', 'anonymous', 'Write data to a file',
         'anonymous', 'File Writer', '7554873a-813c-4e00-b8d3-be072f12bea8',
-        'block', 1)
+        0, 1)
 ON CONFLICT DO NOTHING;
 
 
