@@ -16,6 +16,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.CopyOption;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,6 +24,7 @@ import java.util.List;
 
 import static com.smateso.proof.adapter.config.AuditorProvider.getUsername;
 import static java.nio.file.Files.copy;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static java.util.Objects.requireNonNull;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.http.HttpStatus.CONFLICT;
@@ -101,7 +103,8 @@ public class AttachmentController implements IAttachmentController {
         try {
             final var filePath = this.fileStorageRoot.resolve(requireNonNull(filename));
             final var inputStream = file.getInputStream();
-            copy(inputStream, filePath.normalize().toAbsolutePath());
+            Files.createDirectories(this.fileStorageRoot);
+            copy(inputStream, filePath.normalize().toAbsolutePath(), REPLACE_EXISTING);
             return ResponseEntity.ok(filePath.normalize().toAbsolutePath().toString());
         } catch (final FileAlreadyExistsException e) {
             return ResponseEntity.status(CONFLICT).body("A file of that name already exists.");
