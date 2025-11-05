@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.security.authorization.AuthorizationManager;
@@ -49,6 +50,7 @@ public class ServerSecurityConfig {
      * @throws Exception On failure to configure filter chain.
      */
     @Bean
+    @Profile(value = {"prod"})
     public SecurityFilterChain filterChain(final HttpSecurity http, @Qualifier("corsProperties") final CorsProperties corsProperties) throws Exception {
         http
                 .cors((final var cors) -> {
@@ -98,9 +100,26 @@ public class ServerSecurityConfig {
     }
 
     @Bean
-    AuthorizationManager<Message<?>> messageAuthorizationManager(final Builder messages) {
-        messages.anyMessage().permitAll().build();
-        return messages.build();
+    @Profile(value = {"dev", "test"})
+    public SecurityFilterChain filterChainDev(final HttpSecurity http, @Qualifier("corsProperties") final CorsProperties corsProperties) throws Exception {
+        http
+                .cors((final var cors) -> {
+                    final var configuration = new CorsConfiguration();
+                    final var source = new UrlBasedCorsConfigurationSource();
+                    configuration.setAllowedOriginPatterns(corsProperties.getOrigins());
+                    configuration.setAllowedMethods(corsProperties.getMethods());
+                    configuration.setAllowedHeaders(corsProperties.getHeaders());
+                    configuration.setAllowCredentials(true);
+                    source.registerCorsConfiguration("/**", configuration);
+                    cors.configurationSource(source);
+                })
+                .csrf(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
+                .sessionManagement(AbstractHttpConfigurer::disable)
+                .logout(AbstractHttpConfigurer::disable)
+                .oauth2ResourceServer(AbstractHttpConfigurer::disable);
+        return http.build();
     }
 
     @Bean
@@ -108,6 +127,12 @@ public class ServerSecurityConfig {
         final var resolver = new DefaultBearerTokenResolver();
         resolver.setAllowUriQueryParameter(true);
         return resolver;
+    }
+
+    @Bean
+    AuthorizationManager<Message<?>> messageAuthorizationManager(final Builder messages) {
+        messages.anyMessage().permitAll().build();
+        return messages.build();
     }
 
     @Bean
