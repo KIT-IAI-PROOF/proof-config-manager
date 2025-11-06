@@ -109,9 +109,27 @@ public interface IAttachmentController {
     @DeleteMapping(value = "{id}", consumes = ALL_VALUE, produces = ALL_VALUE)
     ResponseEntity<Void> deleteAttachment(@PathVariable(value = "id") final String id, @RequestParam final String sessionKey, final Authentication authentication);
 
+    @JsonView(Detail.class)
+    @Operation(
+            summary = "Upload attachment",
+            description = "Upload attachment",
+            security = @SecurityRequirement(name = "oauth2"),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Upload successful", useReturnTypeSchema = true),
+                    @ApiResponse(responseCode = "500", description = "Upload incomplete", content = @Content(schema = @Schema(hidden = true))),
+            })
     @PostMapping(value = "upload", name = "upload", consumes = MULTIPART_FORM_DATA_VALUE, produces = TEXT_PLAIN_VALUE)
     ResponseEntity<String> uploadFile(@RequestPart(value = "file") final MultipartFile file);
 
+    @JsonView(Detail.class)
+    @Operation(
+            summary = "Download attachment",
+            description = "Download attachment",
+            security = @SecurityRequirement(name = "oauth2"),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Download successful", useReturnTypeSchema = true),
+                    @ApiResponse(responseCode = "500", description = "Download incomplete", content = @Content(schema = @Schema(hidden = true))),
+            })
     @GetMapping(value = "download", name = "download", consumes = ALL_VALUE)
     ResponseEntity<?> downloadFile(@RequestParam(value = "path") final String path);
 

@@ -53,18 +53,26 @@ ON CONFLICT DO NOTHING;
 --
 
 INSERT INTO public.attachment (id, created_by, creation_date, last_modified_by, last_modified_date, description, label,
-                               path, program_id)
+                               path)
 VALUES ('attachment_file_writer', 'anonymous', '2025-04-23 14:59:49.855', 'anonymous', '2025-04-23 14:59:49.855',
         'Write data to a file',
-        'file_writer.py', '/proof/latest:file_writer.py', '7554873a-813c-4e00-b8d3-be072f12bea8')
+        'file_writer.py', '/proof/latest:file_writer.py')
 ON CONFLICT DO NOTHING;
 INSERT INTO public.attachment (id, created_by, creation_date, last_modified_by, last_modified_date, description, label,
-                               path, program_id)
+                               path)
 VALUES ('attachment_file_line_provider', 'anonymous', '2025-04-23 14:59:46.722', 'anonymous', '2025-04-23 14:59:46.722',
         'Provide other blocks with one line per SYNC from a given file',
-        'file_line_provider.py', '/proof/latest:file_line_provider.py',
-        '08d4fc61-b9d5-4bd8-9f69-19bff1f33e29')
+        'file_line_provider.py', '/proof/latest:file_line_provider.py'
+       )
 ON CONFLICT DO NOTHING;
+
+INSERT INTO public.program_attached (program_id, attachment_id)
+VALUES ('7554873a-813c-4e00-b8d3-be072f12bea8', 'attachment_file_writer')
+ON CONFLICT DO NOTHING;
+INSERT INTO public.program_attached (program_id, attachment_id)
+VALUES ('08d4fc61-b9d5-4bd8-9f69-19bff1f33e29', 'attachment_file_line_provider')
+ON CONFLICT DO NOTHING;
+
 
 
 --
