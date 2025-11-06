@@ -25,13 +25,14 @@
         <gitHost>gitlab.kit.edu/</gitHost>
         <gitUserId>kit/iai/webis/proof2</gitUserId>
         <gitRepoId>proof-config-manager</gitRepoId>
+        <lombok.version>1.18.38</lombok.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>edu.kit.iai.webis</groupId>
             <artifactId>proof-models</artifactId>
-            <version>3.1.11</version>
+            <version>3.2.0</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -79,7 +80,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.36</version>
+            <version>${lombok.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springdoc</groupId>
