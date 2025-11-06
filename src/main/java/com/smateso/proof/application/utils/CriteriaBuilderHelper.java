@@ -33,18 +33,12 @@ public class CriteriaBuilderHelper {
                                 .getItems()
                                 .stream()
                                 .map((final var item) -> switch (item.getOperator()) {
-                                    case LIKE ->
-                                            builder.like(getPath(root, item.getField()).as(String.class), "%" + item.getValue() + "%");
-                                    case NOT_LIKE ->
-                                            builder.notLike(getPath(root, item.getField()).as(String.class), "%" + item.getValue() + "%");
-                                    case GT ->
-                                            builder.greaterThan(getPath(root, item.getField()).as(String.class), item.getValue());
-                                    case GTE ->
-                                            builder.greaterThanOrEqualTo(getPath(root, item.getField()).as(String.class), item.getValue());
-                                    case LT ->
-                                            builder.lessThan(getPath(root, item.getField()).as(String.class), item.getValue());
-                                    case LTE ->
-                                            builder.lessThanOrEqualTo(getPath(root, item.getField()).as(String.class), item.getValue());
+                                    case LIKE -> builder.like(getPath(root, item.getField()).as(String.class), "%" + item.getValue() + "%");
+                                    case NOT_LIKE -> builder.notLike(getPath(root, item.getField()).as(String.class), "%" + item.getValue() + "%");
+                                    case GT -> builder.greaterThan(getPath(root, item.getField()).as(String.class), item.getValue());
+                                    case GTE -> builder.greaterThanOrEqualTo(getPath(root, item.getField()).as(String.class), item.getValue());
+                                    case LT -> builder.lessThan(getPath(root, item.getField()).as(String.class), item.getValue());
+                                    case LTE -> builder.lessThanOrEqualTo(getPath(root, item.getField()).as(String.class), item.getValue());
                                     default -> builder.equal(getPath(root, item.getField()), item.getValue());
                                 })
                                 .toArray(Predicate[]::new));

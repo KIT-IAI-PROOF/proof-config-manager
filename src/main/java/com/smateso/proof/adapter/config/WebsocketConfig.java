@@ -1,12 +1,15 @@
 package com.smateso.proof.adapter.config;
 
-import com.smateso.proof.adapter.model.CorsProperties;
-import org.springframework.beans.factory.annotation.Qualifier;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.core.env.Environment;
 import org.springframework.lang.NonNull;
+import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
@@ -23,18 +26,21 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
  * - {@link #registerStompEndpoints(StompEndpointRegistry)}: Registers STOMP endpoints
  * for WebSocket communication.
  */
+@Slf4j
 @Configuration
+@Order(Ordered.HIGHEST_PRECEDENCE + 99)
 @EnableWebSocketMessageBroker
-@Profile("!test")
 public class WebsocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    private final CorsProperties corsProperties;
+    private final Environment environment;
+    private final AuthenticationManager authenticationManager;
 
     @Value("${websocket.broker.relayHost}")
     private String relayHost;
 
-    public WebsocketConfig(@Qualifier("corsProperties") @NonNull final CorsProperties corsProperties) {
-        this.corsProperties = corsProperties;
+    public WebsocketConfig(@NonNull final Environment environment, @NonNull final AuthenticationManager authenticationManager) {
+        this.environment = environment;
+        this.authenticationManager = authenticationManager;
     }
 
     /**
@@ -47,15 +53,17 @@ public class WebsocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureMessageBroker(@NonNull final MessageBrokerRegistry registry) {
         registry.setApplicationDestinationPrefixes("/app");
-        registry
-                .enableStompBrokerRelay("/topic/", "/queue/", "/exchange/", "/amq/queue/")
-                .setAutoStartup(true)
-                .setRelayHost(relayHost)
-                .setSystemLogin("admin")
-                .setSystemPasscode("admin")
-                .setClientLogin("admin")
-                .setClientPasscode("admin")
-                .setRelayPort(61613);
+        if (environment.matchesProfiles("prod", "dev")) {
+            registry
+                    .enableStompBrokerRelay("/topic/", "/queue/", "/exchange/", "/amq/queue/")
+                    .setAutoStartup(true)
+                    .setRelayHost(relayHost)
+                    .setSystemLogin("admin")
+                    .setSystemPasscode("admin")
+                    .setClientLogin("admin")
+                    .setClientPasscode("admin")
+                    .setRelayPort(61613);
+        }
     }
 
     /**
@@ -68,6 +76,12 @@ public class WebsocketConfig implements WebSocketMessageBrokerConfigurer {
      */
     @Override
     public void registerStompEndpoints(@NonNull final StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws").setAllowedOrigins(corsProperties.getOrigins().toArray(String[]::new));
+        registry.addEndpoint("/ws").setAllowedOrigins("*");
     }
+
+    @Override
+    public void configureClientInboundChannel(@NonNull final ChannelRegistration registration) {
+        registration.interceptors(new CustomInterceptor(this.authenticationManager));
+    }
+
 }

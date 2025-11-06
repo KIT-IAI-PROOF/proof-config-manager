@@ -6,8 +6,11 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.lang.NonNull;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -16,9 +19,9 @@ import org.springframework.security.config.annotation.web.socket.EnableWebSocket
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.messaging.web.csrf.CsrfChannelInterceptor;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
-import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
@@ -42,6 +45,19 @@ public class ServerSecurityConfig {
     public static final String ROLES = "roles";
     public static final String GROUPS = "groups";
 
+    @Bean
+    public AuthenticationManager authenticationManager(JwtDecoder jwtDecoder) {
+        JwtAuthenticationProvider jwtAuthenticationProvider = new JwtAuthenticationProvider(jwtDecoder);
+        return new ProviderManager(jwtAuthenticationProvider);
+    }
+
+
+    @Bean
+    AuthorizationManager<Message<?>> messageAuthorizationManager(final Builder messages) {
+        messages.anyMessage().authenticated().build();
+        return messages.build();
+    }
+
     /**
      * Configure the server security filter chain.
      *
@@ -50,8 +66,8 @@ public class ServerSecurityConfig {
      * @throws Exception On failure to configure filter chain.
      */
     @Bean
-    @Profile(value = {"prod"})
-    public SecurityFilterChain filterChain(final HttpSecurity http, @Qualifier("corsProperties") final CorsProperties corsProperties) throws Exception {
+    @Profile(value = {"prod", "dev"})
+    public SecurityFilterChain filterChain(@NonNull final HttpSecurity http, @Qualifier("corsProperties") final CorsProperties corsProperties) throws Exception {
         http
                 .cors((final var cors) -> {
                     final var configuration = new CorsConfiguration();
@@ -70,7 +86,8 @@ public class ServerSecurityConfig {
                 .authorizeHttpRequests((final var authorize) -> {
                     authorize.requestMatchers("/swagger-ui/**").permitAll();
                     authorize.requestMatchers("/v3/api-docs/**").permitAll();
-                    authorize.anyRequest().permitAll();
+                    authorize.requestMatchers("/ws/**").permitAll();
+                    authorize.anyRequest().authenticated();
                 })
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
@@ -100,19 +117,10 @@ public class ServerSecurityConfig {
     }
 
     @Bean
-    @Profile(value = {"dev", "test"})
-    public SecurityFilterChain filterChainDev(final HttpSecurity http, @Qualifier("corsProperties") final CorsProperties corsProperties) throws Exception {
+    @Profile(value = {"test"})
+    public SecurityFilterChain filterChainDev(@NonNull final HttpSecurity http) throws Exception {
         http
-                .cors((final var cors) -> {
-                    final var configuration = new CorsConfiguration();
-                    final var source = new UrlBasedCorsConfigurationSource();
-                    configuration.setAllowedOriginPatterns(corsProperties.getOrigins());
-                    configuration.setAllowedMethods(corsProperties.getMethods());
-                    configuration.setAllowedHeaders(corsProperties.getHeaders());
-                    configuration.setAllowCredentials(true);
-                    source.registerCorsConfiguration("/**", configuration);
-                    cors.configurationSource(source);
-                })
+                .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
@@ -120,19 +128,6 @@ public class ServerSecurityConfig {
                 .logout(AbstractHttpConfigurer::disable)
                 .oauth2ResourceServer(AbstractHttpConfigurer::disable);
         return http.build();
-    }
-
-    @Bean
-    public BearerTokenResolver bearerTokenResolver() {
-        final var resolver = new DefaultBearerTokenResolver();
-        resolver.setAllowUriQueryParameter(true);
-        return resolver;
-    }
-
-    @Bean
-    AuthorizationManager<Message<?>> messageAuthorizationManager(final Builder messages) {
-        messages.anyMessage().permitAll().build();
-        return messages.build();
     }
 
     @Bean
