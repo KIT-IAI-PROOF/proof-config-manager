@@ -14,7 +14,7 @@ stages:
 deploy:jib:
   stage: deploy
   image:
-    name: iai-artifactory.iai.kit.edu/docker-webis/ci-build/jdk21-maven-node18:latest
+    name: iai-artifactory.iai.kit.edu/docker-webis/ci-build/jdk21-maven-node18@${JDK21_MAVEN_NODE18_IMG_VERSION}
   rules:
     - if: '$CI_COMMIT_TAG != null'
   script:
@@ -30,7 +30,7 @@ deploy:jib:
 
 deploy:client:npm:
   stage: post-deploy
-  image: iai-artifactory.iai.kit.edu/docker-webis/ci-build/jdk21-maven-node18:latest
+  image: iai-artifactory.iai.kit.edu/docker-webis/ci-build/jdk21-maven-node18@${JDK21_MAVEN_NODE18_IMG_VERSION}
   rules:
     - if: '$CI_COMMIT_TAG != null'
   script:
@@ -43,7 +43,7 @@ deploy:client:npm:
 deploy:client:maven:
   stage: post-deploy
   image:
-    name: iai-artifactory.iai.kit.edu/docker-webis/ci-build/jdk21-maven-node18:latest
+    name: iai-artifactory.iai.kit.edu/docker-webis/ci-build/jdk21-maven-node18@${JDK21_MAVEN_NODE18_IMG_VERSION}
   rules:
     - if: '$CI_COMMIT_TAG != null'
   script:
