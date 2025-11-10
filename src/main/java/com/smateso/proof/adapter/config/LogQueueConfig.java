@@ -1,16 +1,13 @@
 package com.smateso.proof.adapter.config;
 
-import jakarta.annotation.PreDestroy;
 import org.springframework.amqp.core.*;
-import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-@Profile("!test")
 @Configuration
+@Profile("!test")
 public class LogQueueConfig {
 
     @Value("${app.name}")
@@ -24,19 +21,9 @@ public class LogQueueConfig {
     @Bean
     public Binding durableLogBinding(final Queue durableLogQueue) {
         return BindingBuilder
-            .bind(durableLogQueue)
-            .to(new TopicExchange("logs"))
-            .with("logs." + appName);
-    }
-
-    @Bean
-    public RabbitAdmin rabbitAdmin(final ConnectionFactory connectionFactory) {
-        return new RabbitAdmin(connectionFactory);
-    }
-
-    @PreDestroy
-    public void deleteQueue(final RabbitAdmin rabbitAdmin) {
-        rabbitAdmin.deleteQueue("logs." + appName);
+                .bind(durableLogQueue)
+                .to(new TopicExchange("logs"))
+                .with("logs." + appName);
     }
 
 }
