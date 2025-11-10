@@ -4,3 +4,11 @@
 |  ____/  __  / |   | | |   | |  ___)
 | |    | |  \ \ |___| | |___| | |
 |_|    |_|   |_\_____/ \_____/|_|
+
+${AnsiStyle.BOLD}${AnsiColor.BLUE}––––––––––––––––––––––––––––––––––––––––––––––––––
+${AnsiColor.BLUE}${spring.application.name}
+${AnsiColor.BLUE}INSTITUTE FOR AUTOMATION AND APPLIED INFORMATICS
+${AnsiColor.BLUE}© KARLSRUHE INSTITUTE OF TECHNOLOGY
+${AnsiStyle.BOLD}${AnsiColor.BLUE}––––––––––––––––––––––––––––––––––––––––––––––––––
+${AnsiColor.GREEN}Spring Boot ${spring-boot.formatted-version} ${AnsiColor.GREEN}
+${AnsiStyle.NORMAL}${AnsiColor.DEFAULT}

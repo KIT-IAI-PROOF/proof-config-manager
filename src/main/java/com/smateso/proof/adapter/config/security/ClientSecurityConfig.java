@@ -4,6 +4,7 @@ import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.lang.NonNull;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.InMemoryReactiveClientRegistrationRepository;
@@ -26,6 +27,7 @@ public class ClientSecurityConfig {
      * @return Configured registration repository.
      */
     @Bean
+    @Profile(value = {"prod", "dev"})
     public ReactiveClientRegistrationRepository getRegistration(
             @Value("${spring.security.oauth2.client.provider.keycloak.token-uri}") @NonNull final String token_uri,
             @Value("${spring.security.oauth2.client.registration.keycloak.client-id}") @NonNull final String client_id,

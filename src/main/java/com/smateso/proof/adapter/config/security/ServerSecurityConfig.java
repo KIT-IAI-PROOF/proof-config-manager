@@ -46,7 +46,7 @@ public class ServerSecurityConfig {
     public static final String GROUPS = "groups";
 
     @Bean
-    public AuthenticationManager authenticationManager(JwtDecoder jwtDecoder) {
+    public AuthenticationManager authenticationManager(final JwtDecoder jwtDecoder) {
         JwtAuthenticationProvider jwtAuthenticationProvider = new JwtAuthenticationProvider(jwtDecoder);
         return new ProviderManager(jwtAuthenticationProvider);
     }
