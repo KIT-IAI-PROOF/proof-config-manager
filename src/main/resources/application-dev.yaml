@@ -11,6 +11,8 @@ spring:
   rabbitmq:
     password: admin
     username: admin
+    host: localhost
+    port: 5672
   data:
     redis:
       repositories:

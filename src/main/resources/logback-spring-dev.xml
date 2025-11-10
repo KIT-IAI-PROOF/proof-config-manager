@@ -12,10 +12,10 @@
         <layout>
             <pattern><![CDATA[ %d %p %t [%c] - <%m>%n ]]></pattern>
         </layout>
-        <host>localhost</host>
-        <port>5672</port>
-        <username>admin</username>
-        <password>admin</password>
+        <host>${RABBITMQ_HOST:localhost}</host>
+        <port>${RABBITMQ_PORT:5672}</port>
+        <username>${RABBITMQ_USER:admin}</username>
+        <password>${RABBITMQ_PASS:admin}</password>
         <applicationId>config-manager</applicationId>
         <routingKeyPattern>logs</routingKeyPattern>
         <generateId>true</generateId>
