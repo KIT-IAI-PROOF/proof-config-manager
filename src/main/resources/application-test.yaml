@@ -1,3 +1,5 @@
+app:
+  name: "config-manager"
 server:
   error:
     include-stacktrace: never
