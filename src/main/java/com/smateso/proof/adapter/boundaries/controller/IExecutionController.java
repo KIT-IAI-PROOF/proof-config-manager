@@ -71,7 +71,7 @@ public interface IExecutionController {
                     @ApiResponse(responseCode = "500", description = "Create incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<Execution> createExecution(@RequestBody final Execution execution, @RequestParam final String sessionKey, final Authentication authentication);
+    ResponseEntity<Execution> createExecution(@RequestBody final Execution execution, @RequestParam(required = false, defaultValue = "0") final String sessionKey, final Authentication authentication);
 
     @JsonView(Detail.class)
     @Operation(
@@ -83,7 +83,7 @@ public interface IExecutionController {
                     @ApiResponse(responseCode = "500", description = "Update incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @PostMapping(value = "{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<Execution> updateExecution(@PathVariable(value = "id") final String id, @RequestBody final Execution execution, @RequestParam final String sessionKey, final Authentication authentication);
+    ResponseEntity<Execution> updateExecution(@PathVariable(value = "id") final String id, @RequestBody final Execution execution, @RequestParam(required = false, defaultValue = "0") final String sessionKey, final Authentication authentication);
 
     @JsonView(Detail.class)
     @Operation(
@@ -95,6 +95,6 @@ public interface IExecutionController {
                     @ApiResponse(responseCode = "500", description = "Delete incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @DeleteMapping(value = "{id}", consumes = ALL_VALUE, produces = ALL_VALUE)
-    ResponseEntity<Void> deleteExecution(@PathVariable(value = "id") final String id, @RequestParam final String sessionKey, final Authentication authentication);
+    ResponseEntity<Void> deleteExecution(@PathVariable(value = "id") final String id, @RequestParam(required = false, defaultValue = "0") final String sessionKey, final Authentication authentication);
 
 }

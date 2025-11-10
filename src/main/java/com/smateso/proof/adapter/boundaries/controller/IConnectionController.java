@@ -71,7 +71,7 @@ public interface IConnectionController {
                     @ApiResponse(responseCode = "500", description = "Create incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<Connection> createConnection(@RequestBody final Connection connection, @RequestParam final String sessionKey, final Authentication authentication);
+    ResponseEntity<Connection> createConnection(@RequestBody final Connection connection, @RequestParam(required = false, defaultValue = "0") final String sessionKey, final Authentication authentication);
 
     @JsonView(Detail.class)
     @Operation(
@@ -83,7 +83,7 @@ public interface IConnectionController {
                     @ApiResponse(responseCode = "500", description = "Update incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @PostMapping(value = "{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<Connection> updateConnection(@PathVariable(value = "id") final String id, @RequestBody final Connection connection, @RequestParam final String sessionKey, final Authentication authentication);
+    ResponseEntity<Connection> updateConnection(@PathVariable(value = "id") final String id, @RequestBody final Connection connection, @RequestParam(required = false, defaultValue = "0") final String sessionKey, final Authentication authentication);
 
     @JsonView(Detail.class)
     @Operation(
@@ -95,6 +95,6 @@ public interface IConnectionController {
                     @ApiResponse(responseCode = "500", description = "Delete incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @DeleteMapping(value = "{id}", consumes = ALL_VALUE, produces = ALL_VALUE)
-    ResponseEntity<Void> deleteConnection(@PathVariable(value = "id") final String id, @RequestParam final String sessionKey, final Authentication authentication);
+    ResponseEntity<Void> deleteConnection(@PathVariable(value = "id") final String id, @RequestParam(required = false, defaultValue = "0") final String sessionKey, final Authentication authentication);
 
 }
