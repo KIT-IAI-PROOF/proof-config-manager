@@ -60,7 +60,7 @@ public class WebsocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.setApplicationDestinationPrefixes("/app");
         if (environment.matchesProfiles("prod", "dev")) {
             registry
-                    .enableStompBrokerRelay("/topic/", "/queue/", "/exchange/", "/amq/queue/")
+                    .enableStompBrokerRelay("/topic", "/queue")
                     .setAutoStartup(true)
                     .setRelayHost(relayHost)
                     .setSystemLogin("admin")

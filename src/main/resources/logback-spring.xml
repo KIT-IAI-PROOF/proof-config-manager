@@ -4,6 +4,7 @@
     <springProperty scope="context" name="PORT" source="spring.rabbitmq.port"/>
     <springProperty scope="context" name="USER" source="spring.rabbitmq.username"/>
     <springProperty scope="context" name="PASS" source="spring.rabbitmq.password"/>
+    <springProperty scope="context" name="NAME" source="app.name"/>
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>
@@ -20,14 +21,14 @@
         <port>${PORT}</port>
         <username>${USER}</username>
         <password>${PASS}</password>
-        <applicationId>config-manager</applicationId>
-        <routingKeyPattern>logs</routingKeyPattern>
+        <applicationId>${NAME}</applicationId>
+        <routingKeyPattern>logs.${NAME}</routingKeyPattern>
+        <exchangeName>logs</exchangeName>
+        <exchangeType>topic</exchangeType>
+        <declareExchange>true</declareExchange>
         <generateId>true</generateId>
         <charset>UTF-8</charset>
         <durable>true</durable>
-        <declareExchange>true</declareExchange>
-        <exchangeType>topic</exchangeType>
-        <exchangeName>logs</exchangeName>
         <deliveryMode>PERSISTENT</deliveryMode>
     </appender>
     <springProfile name="!test">
