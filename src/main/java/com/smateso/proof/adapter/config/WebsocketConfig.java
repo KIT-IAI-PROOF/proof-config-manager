@@ -1,7 +1,12 @@
 package com.smateso.proof.adapter.config;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.TopicExchange;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -82,6 +87,21 @@ public class WebsocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureClientInboundChannel(@NonNull final ChannelRegistration registration) {
         registration.interceptors(new CustomInterceptor(this.authenticationManager));
+    }
+
+    @Bean
+    public TopicExchange logExchange() {
+        return new TopicExchange("logs", true, false);
+    }
+
+    @Bean
+    public Queue logQueue() {
+        return new Queue("logs", true);
+    }
+
+    @Bean
+    public Binding logBinding(Queue logQueue, TopicExchange logExchange) {
+        return BindingBuilder.bind(logQueue).to(logExchange).with("#");
     }
 
 }
