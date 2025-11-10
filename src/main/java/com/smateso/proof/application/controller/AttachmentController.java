@@ -21,7 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-import static com.smateso.proof.adapter.config.AuditorProvider.getUsername;
+import static com.smateso.proof.adapter.config.audit.AuditorProvider.getUsername;
 import static java.nio.file.Files.copy;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static java.util.Objects.requireNonNull;

@@ -61,6 +61,7 @@ springdoc:
 logging:
   level:
     root: off
+  config: classpath:logback-spring-test.xml
 file:
   storage:
     root: "/tmp/proof"

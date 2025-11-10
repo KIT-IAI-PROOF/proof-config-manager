@@ -1,4 +1,4 @@
-package com.smateso.proof.adapter.config;
+package com.smateso.proof.adapter.config.audit;
 
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.lang.NonNull;

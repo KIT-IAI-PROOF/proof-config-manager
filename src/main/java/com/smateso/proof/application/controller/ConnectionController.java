@@ -13,7 +13,7 @@ import org.springframework.security.core.Authentication;
 
 import java.util.List;
 
-import static com.smateso.proof.adapter.config.AuditorProvider.getUsername;
+import static com.smateso.proof.adapter.config.audit.AuditorProvider.getUsername;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @Builder

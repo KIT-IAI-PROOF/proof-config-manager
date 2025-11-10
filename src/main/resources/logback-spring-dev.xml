@@ -31,15 +31,8 @@
         <durable>true</durable>
         <deliveryMode>PERSISTENT</deliveryMode>
     </appender>
-    <springProfile name="!test">
-        <root level="info">
-            <appender-ref ref="CONSOLE"/>
-            <appender-ref ref="AMQP"/>
-        </root>
-    </springProfile>
-    <springProfile name="test">
-        <root level="INFO">
-            <appender-ref ref="CONSOLE"/>
-        </root>
-    </springProfile>
+    <root level="info">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="AMQP"/>
+    </root>
 </configuration>

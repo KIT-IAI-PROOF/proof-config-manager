@@ -1,4 +1,4 @@
-package com.smateso.proof.adapter.config;
+package com.smateso.proof.adapter.config.messaging;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -81,7 +81,7 @@ public class WebsocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureClientInboundChannel(@NonNull final ChannelRegistration registration) {
-        registration.interceptors(new CustomInterceptor(this.authenticationManager));
+        registration.interceptors(new SecurityInterceptor(this.authenticationManager));
     }
 
 }

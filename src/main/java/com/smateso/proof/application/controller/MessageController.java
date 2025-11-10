@@ -5,7 +5,7 @@ import com.smateso.proof.adapter.model.Message;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
 
-import static com.smateso.proof.adapter.config.AuditorProvider.getUsername;
+import static com.smateso.proof.adapter.config.audit.AuditorProvider.getUsername;
 
 public class MessageController implements IMessageController {
 

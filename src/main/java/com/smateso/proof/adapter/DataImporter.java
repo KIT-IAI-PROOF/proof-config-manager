@@ -4,13 +4,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smateso.proof.adapter.repositories.WorkflowRepository;
 import edu.kit.iai.webis.proofmodels.dao.WorkflowDao;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.core.*;
+import org.springframework.amqp.core.AmqpAdmin;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.QueueBuilder;
+import org.springframework.amqp.core.TopicExchange;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.context.annotation.Profile;
-import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
@@ -27,16 +29,13 @@ import java.util.List;
 @Profile({"dev", "prod"})
 public class DataImporter implements CommandLineRunner {
 
-    @Value("${app.name}")
-    private String appName;
-
-    private final Environment environment;
     private final AmqpAdmin amqpAdmin;
     private final WorkflowRepository workflowRepository;
     private final ObjectMapper objectMapper;
+    @Value("${app.name}")
+    private String appName;
 
-    public DataImporter(Environment environment, final AmqpAdmin amqpAdmin, final WorkflowRepository workflowRepository, final ObjectMapper objectMapper) {
-        this.environment = environment;
+    public DataImporter(final AmqpAdmin amqpAdmin, final WorkflowRepository workflowRepository, final ObjectMapper objectMapper) {
         this.amqpAdmin = amqpAdmin;
         this.workflowRepository = workflowRepository;
         this.objectMapper = objectMapper;

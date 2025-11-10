@@ -20,7 +20,8 @@ import java.util.List;
 import static com.smateso.proof.adapter.model.Action.*;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createPageable;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createSpecification;
-import static com.smateso.proof.application.utils.LogMessages.*;
+import static com.smateso.proof.application.utils.LogMessages.ATTACHMENT_DAO_IN_USE_MESSAGE;
+import static com.smateso.proof.application.utils.LogMessages.ATTACHMENT_DAO_NOT_FOUND_MESSAGE;
 import static com.smateso.proof.application.utils.PropertyCopyHelper.deepCopyEntityProperties;
 import static java.util.Objects.requireNonNull;
 

@@ -1,20 +1,11 @@
 package com.smateso.proof.adapter.config;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.smateso.proof.adapter.boundaries.controller.*;
 import com.smateso.proof.adapter.boundaries.services.*;
-import com.smateso.proof.adapter.helper.LocalDateTimeTypeAdapter;
-import com.smateso.proof.adapter.helper.LocalDateTypeAdapter;
-import com.smateso.proof.adapter.helper.OffsetDateTimeTypeAdapter;
 import com.smateso.proof.adapter.repositories.*;
 import com.smateso.proof.application.controller.*;
 import com.smateso.proof.application.services.*;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -23,9 +14,6 @@ import org.springframework.lang.NonNull;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 
 /**
  * Configuration class responsible for defining and managing beans used throughout the app.
@@ -35,23 +23,8 @@ import java.time.OffsetDateTime;
 @Configuration
 public class Beans {
 
-    @Value("${timezone}")
-    private String timezone;
-
     @Value("${file.storage.root}")
     private String fileStorageRoot;
-
-    @Bean(value = "gson", name = "gson")
-    public Gson gson() {
-        final var builder = new GsonBuilder();
-        return builder
-                .serializeSpecialFloatingPointValues()
-                .registerTypeAdapter(LocalDate.class, new LocalDateTypeAdapter())
-                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter(this.timezone))
-                .registerTypeAdapter(OffsetDateTime.class, new OffsetDateTimeTypeAdapter(this.timezone))
-                .setPrettyPrinting()
-                .create();
-    }
 
     @Bean(value = "workflowInteractor", name = "workflowInteractor")
     public IWorkflowInteractor workflowInteractor(

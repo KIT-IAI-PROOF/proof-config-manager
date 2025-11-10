@@ -1,4 +1,4 @@
-package com.smateso.proof.adapter.config;
+package com.smateso.proof.adapter.config.cache;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
