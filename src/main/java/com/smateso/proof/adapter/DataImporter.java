@@ -4,9 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smateso.proof.adapter.repositories.WorkflowRepository;
 import edu.kit.iai.webis.proofmodels.dao.WorkflowDao;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.context.annotation.Profile;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
@@ -20,14 +24,29 @@ import java.util.List;
  */
 @Slf4j
 @Component
+@Profile({"dev", "prod"})
 public class DataImporter implements CommandLineRunner {
 
+    @Value("${app.name}")
+    private String appName;
+
+    private final Environment environment;
+    private final AmqpAdmin amqpAdmin;
     private final WorkflowRepository workflowRepository;
     private final ObjectMapper objectMapper;
 
-    public DataImporter(final WorkflowRepository workflowRepository, final ObjectMapper objectMapper) {
+    public DataImporter(Environment environment, final AmqpAdmin amqpAdmin, final WorkflowRepository workflowRepository, final ObjectMapper objectMapper) {
+        this.environment = environment;
+        this.amqpAdmin = amqpAdmin;
         this.workflowRepository = workflowRepository;
         this.objectMapper = objectMapper;
+    }
+
+    public void declareLogQueue() {
+        final var queue = QueueBuilder.durable("logs." + appName).build();
+        final var binding = BindingBuilder.bind(queue).to(new TopicExchange("logs")).with("logs." + appName);
+        this.amqpAdmin.declareQueue(queue);
+        this.amqpAdmin.declareBinding(binding);
     }
 
     @Override
@@ -42,6 +61,7 @@ public class DataImporter implements CommandLineRunner {
     )
     public void run(final String... args) {
         try {
+            this.declareLogQueue();
             final var resource = new ClassPathResource("import.json");
             final var inputStream = resource.getInputStream();
             final var workflow = objectMapper.readValue(inputStream, WorkflowDao.class);
