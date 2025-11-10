@@ -41,24 +41,6 @@ public class Beans {
     @Value("${file.storage.root}")
     private String fileStorageRoot;
 
-    @Bean
-    public TopicExchange logExchange() {
-        log.info("Creating exchange logs");
-        return new TopicExchange("logs", true, false);
-    }
-
-    @Bean
-    public Queue logQueue() {
-        log.info("Creating queue logs");
-        return new Queue("logs", true);
-    }
-
-    @Bean
-    public Binding logBinding(Queue logQueue, TopicExchange logExchange) {
-        log.info("Creating binding logs -> logs");
-        return BindingBuilder.bind(logQueue).to(logExchange).with("#");
-    }
-
     @Bean(value = "gson", name = "gson")
     public Gson gson() {
         final var builder = new GsonBuilder();
