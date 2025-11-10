@@ -10,6 +10,7 @@ import com.smateso.proof.adapter.helper.OffsetDateTimeTypeAdapter;
 import com.smateso.proof.adapter.repositories.*;
 import com.smateso.proof.application.controller.*;
 import com.smateso.proof.application.services.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
@@ -30,6 +31,7 @@ import java.time.OffsetDateTime;
  * Configuration class responsible for defining and managing beans used throughout the app.
  * This class centralizes the creation and configuration of various app components.
  */
+@Slf4j
 @Configuration
 public class Beans {
 
@@ -41,16 +43,19 @@ public class Beans {
 
     @Bean
     public TopicExchange logExchange() {
+        log.info("Creating exchange logs");
         return new TopicExchange("logs", true, false);
     }
 
     @Bean
     public Queue logQueue() {
+        log.info("Creating queue logs");
         return new Queue("logs", true);
     }
 
     @Bean
     public Binding logBinding(Queue logQueue, TopicExchange logExchange) {
+        log.info("Creating binding logs -> logs");
         return BindingBuilder.bind(logQueue).to(logExchange).with("#");
     }
 

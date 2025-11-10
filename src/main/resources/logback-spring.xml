@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+    <springProperty scope="context" name="HOST" source="spring.rabbitmq.host"/>
+    <springProperty scope="context" name="PORT" source="spring.rabbitmq.port"/>
+    <springProperty scope="context" name="USER" source="spring.rabbitmq.username"/>
+    <springProperty scope="context" name="PASS" source="spring.rabbitmq.password"/>
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>
@@ -12,10 +16,10 @@
         <layout>
             <pattern><![CDATA[ %d %p %t [%c] - <%m>%n ]]></pattern>
         </layout>
-        <host>${SPRING_RABBITMQ_HOST:localhost}</host>
-        <port>${SPRING_RABBITMQ_PORT:5672}</port>
-        <username>${SPRING_RABBITMQ_USER:admin}</username>
-        <password>${SPRING_RABBITMQ_PASS:admin}</password>
+        <host>${HOST}</host>
+        <port>${PORT}</port>
+        <username>${USER}</username>
+        <password>${PASS}</password>
         <applicationId>config-manager</applicationId>
         <routingKeyPattern>logs</routingKeyPattern>
         <generateId>true</generateId>
@@ -26,8 +30,15 @@
         <exchangeName>logs</exchangeName>
         <deliveryMode>PERSISTENT</deliveryMode>
     </appender>
-    <root level="info">
-        <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="AMQP"/>
-    </root>
+    <springProfile name="!test">
+        <root level="info">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="AMQP"/>
+        </root>
+    </springProfile>
+    <springProfile name="test">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
 </configuration>
