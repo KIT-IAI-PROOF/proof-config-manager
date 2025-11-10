@@ -10,6 +10,10 @@ import com.smateso.proof.adapter.helper.OffsetDateTimeTypeAdapter;
 import com.smateso.proof.adapter.repositories.*;
 import com.smateso.proof.application.controller.*;
 import com.smateso.proof.application.services.*;
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.TopicExchange;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -34,6 +38,21 @@ public class Beans {
 
     @Value("${file.storage.root}")
     private String fileStorageRoot;
+
+    @Bean
+    public TopicExchange logExchange() {
+        return new TopicExchange("logs", true, false);
+    }
+
+    @Bean
+    public Queue logQueue() {
+        return new Queue("logs", true);
+    }
+
+    @Bean
+    public Binding logBinding(Queue logQueue, TopicExchange logExchange) {
+        return BindingBuilder.bind(logQueue).to(logExchange).with("#");
+    }
 
     @Bean(value = "gson", name = "gson")
     public Gson gson() {

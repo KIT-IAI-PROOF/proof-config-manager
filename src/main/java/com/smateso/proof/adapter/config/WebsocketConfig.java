@@ -89,19 +89,4 @@ public class WebsocketConfig implements WebSocketMessageBrokerConfigurer {
         registration.interceptors(new CustomInterceptor(this.authenticationManager));
     }
 
-    @Bean
-    public TopicExchange logExchange() {
-        return new TopicExchange("logs", true, false);
-    }
-
-    @Bean
-    public Queue logQueue() {
-        return new Queue("logs", true);
-    }
-
-    @Bean
-    public Binding logBinding(Queue logQueue, TopicExchange logExchange) {
-        return BindingBuilder.bind(logQueue).to(logExchange).with("#");
-    }
-
 }
