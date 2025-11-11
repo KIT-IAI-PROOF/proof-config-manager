@@ -4,10 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smateso.proof.adapter.repositories.WorkflowRepository;
 import edu.kit.iai.webis.proofmodels.dao.WorkflowDao;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.core.AmqpAdmin;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.QueueBuilder;
-import org.springframework.amqp.core.TopicExchange;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.cache.annotation.CacheEvict;
@@ -29,23 +25,12 @@ import java.util.List;
 @Profile({"dev", "prod"})
 public class DataImporter implements CommandLineRunner {
 
-    private final AmqpAdmin amqpAdmin;
     private final WorkflowRepository workflowRepository;
     private final ObjectMapper objectMapper;
-    @Value("${app.name}")
-    private String appName;
 
-    public DataImporter(final AmqpAdmin amqpAdmin, final WorkflowRepository workflowRepository, final ObjectMapper objectMapper) {
-        this.amqpAdmin = amqpAdmin;
+    public DataImporter(final WorkflowRepository workflowRepository, final ObjectMapper objectMapper) {
         this.workflowRepository = workflowRepository;
         this.objectMapper = objectMapper;
-    }
-
-    public void declareLogQueue() {
-        final var queue = QueueBuilder.durable("logs." + appName).build();
-        final var binding = BindingBuilder.bind(queue).to(new TopicExchange("logs")).with("logs." + appName);
-        this.amqpAdmin.declareQueue(queue);
-        this.amqpAdmin.declareBinding(binding);
     }
 
     @Override
@@ -60,7 +45,6 @@ public class DataImporter implements CommandLineRunner {
     )
     public void run(final String... args) {
         try {
-            this.declareLogQueue();
             final var resource = new ClassPathResource("import.json");
             final var inputStream = resource.getInputStream();
             final var workflow = objectMapper.readValue(inputStream, WorkflowDao.class);
