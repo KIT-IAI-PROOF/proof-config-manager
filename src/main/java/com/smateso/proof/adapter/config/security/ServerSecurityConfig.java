@@ -66,7 +66,7 @@ public class ServerSecurityConfig {
      * @throws Exception On failure to configure filter chain.
      */
     @Bean
-    @Profile(value = {"prod", "dev"})
+    @Profile(value = {"prod", "dev", "debug"})
     public SecurityFilterChain filterChain(@NonNull final HttpSecurity http, @Qualifier("corsProperties") final CorsProperties corsProperties) throws Exception {
         http
                 .cors((final var cors) -> {
