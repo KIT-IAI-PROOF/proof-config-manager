@@ -1,9 +1,11 @@
 app:
   name: "config-manager"
 server:
-  error:
-    include-stacktrace: never
   port: 8100
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-exception: true
 spring:
   autoconfigure:
     exclude:
