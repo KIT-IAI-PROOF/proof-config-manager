@@ -62,7 +62,7 @@ spring:
         registration:
           keycloak:
             client-id: proof
-            client-secret: TE8xwoZlEA3UvKc2CL6bWLOhVWpDvQSb
+            client-secret: WecLpg5ZavXXCkBXi2aSayIDFhq8dblt
             client-name: proof
             authorization-grant-type: client_credentials
 timezone: Europe/Berlin

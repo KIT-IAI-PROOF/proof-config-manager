@@ -36,7 +36,7 @@ spring:
     name: PROOF Config Manager
   main:
     lazy-initialization: false
-    banner-mode: console
+    banner-mode: off
   security:
     oauth2:
       resourceserver:
