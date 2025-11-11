@@ -87,7 +87,7 @@ public class ServerSecurityConfig {
                     authorize.requestMatchers("/swagger-ui/**").permitAll();
                     authorize.requestMatchers("/v3/api-docs/**").permitAll();
                     authorize.requestMatchers("/ws/**").permitAll();
-                    authorize.anyRequest().authenticated();
+                    authorize.anyRequest().permitAll();
                 })
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
