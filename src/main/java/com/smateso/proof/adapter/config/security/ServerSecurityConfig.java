@@ -79,16 +79,13 @@ public class ServerSecurityConfig {
                     source.registerCorsConfiguration("/**", configuration);
                     cors.configurationSource(source);
                 })
-                .csrf((var csrf) -> {
-                    csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
-                    csrf.csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler());
-                })
                 .authorizeHttpRequests((final var authorize) -> {
                     authorize.requestMatchers("/swagger-ui/**").permitAll();
                     authorize.requestMatchers("/v3/api-docs/**").permitAll();
                     authorize.requestMatchers("/ws/**").permitAll();
                     authorize.anyRequest().permitAll();
                 })
+                .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .sessionManagement(AbstractHttpConfigurer::disable)
@@ -131,8 +128,10 @@ public class ServerSecurityConfig {
     }
 
     @Bean
-    public ChannelInterceptor csrfChannelInterceptor() {
-        return new CsrfChannelInterceptor();
+    public ChannelInterceptor csrfChannelInterceptor(){
+        return new ChannelInterceptor() {
+
+        };
     }
 
 }
