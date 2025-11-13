@@ -27,7 +27,7 @@ public class ClientSecurityConfig {
      * @return Configured registration repository.
      */
     @Bean
-    @Profile(value = {"prod", "dev"})
+    @Profile(value = {"prod"})
     public ReactiveClientRegistrationRepository getRegistration(
             @Value("${spring.security.oauth2.client.provider.keycloak.token-uri}") @NonNull final String token_uri,
             @Value("${spring.security.oauth2.client.registration.keycloak.client-id}") @NonNull final String client_id,
