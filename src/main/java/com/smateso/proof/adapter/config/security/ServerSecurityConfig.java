@@ -18,13 +18,10 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.socket.EnableWebSocketSecurity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.messaging.web.csrf.CsrfChannelInterceptor;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
@@ -91,8 +88,8 @@ public class ServerSecurityConfig {
                 .sessionManagement(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
                 .oauth2ResourceServer((final var oauth2) ->
-                        oauth2.jwt((final var jwt) -> jwt
-                                .jwtAuthenticationConverter((final var converter) -> {
+                        oauth2.jwt((final var jwt) ->
+                                jwt.jwtAuthenticationConverter((final var converter) -> {
                                     final var grantedAuthorities = new ArrayList<GrantedAuthority>();
                                     if (converter.hasClaim(REALM_ACCESS)) {
                                         final Map<String, Collection<String>> realmAccess = converter.getClaim(REALM_ACCESS);
@@ -128,9 +125,9 @@ public class ServerSecurityConfig {
     }
 
     @Bean
-    public ChannelInterceptor csrfChannelInterceptor(){
+    public ChannelInterceptor csrfChannelInterceptor() {
         return new ChannelInterceptor() {
-
+            // NO OP
         };
     }
 

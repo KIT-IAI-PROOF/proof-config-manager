@@ -21,7 +21,7 @@ import java.util.List;
  */
 @Slf4j
 @Component
-@Profile({"dev", "prod"})
+@Profile({"dev", "prod", "debug"})
 public class DataImporter implements CommandLineRunner {
 
     private final WorkflowRepository workflowRepository;

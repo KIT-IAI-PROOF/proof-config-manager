@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.servers.Server;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 
 import static org.springframework.boot.SpringApplication.run;
@@ -33,7 +32,6 @@ import static org.springframework.boot.SpringApplication.run;
  * <p>
  * The main method is the entry point of the application and is responsible for launching the Spring Boot application.
  */
-@EnableCaching
 @SpringBootApplication
 @EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.COLLECTION_JSON)
 @EntityScan("edu.kit.iai.webis.proofmodels")

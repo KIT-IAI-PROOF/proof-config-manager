@@ -1,5 +1,6 @@
 package com.smateso.proof.adapter.config.cache;
 
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
@@ -10,6 +11,7 @@ import java.time.Duration;
  * Configuration class for Redis caching.
  * This class is responsible for setting up configurations for Redis caching in the application.
  */
+@EnableCaching
 @Configuration
 public class RedisConfig {
 
