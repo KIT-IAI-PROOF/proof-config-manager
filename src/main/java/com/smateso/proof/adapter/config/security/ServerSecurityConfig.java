@@ -54,7 +54,6 @@ public class ServerSecurityConfig {
         return new ProviderManager(jwtAuthenticationProvider);
     }
 
-
     @Bean
     public AuthorizationManager<Message<?>> messageAuthorizationManager(@NonNull final Builder messages) {
         messages.anyMessage().authenticated().build();
