@@ -5,13 +5,17 @@ import com.smateso.proof.adapter.repositories.WorkflowRepository;
 import edu.kit.iai.webis.proofmodels.dao.WorkflowDao;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * The DataImporter class is a Spring Component that implements the CommandLineRunner interface.
@@ -24,25 +28,20 @@ import java.util.List;
 @Profile({"dev", "prod", "debug"})
 public class DataImporter implements CommandLineRunner {
 
+    private final CacheManager cacheManager;
     private final WorkflowRepository workflowRepository;
     private final ObjectMapper objectMapper;
 
-    public DataImporter(final WorkflowRepository workflowRepository, final ObjectMapper objectMapper) {
+    public DataImporter(final CacheManager cacheManager, final WorkflowRepository workflowRepository, final ObjectMapper objectMapper) {
+        this.cacheManager = cacheManager;
         this.workflowRepository = workflowRepository;
         this.objectMapper = objectMapper;
     }
 
     @Override
-    @Caching(
-            evict = {
-                    @CacheEvict(value = "workflows", allEntries = true),
-                    @CacheEvict(value = "executions", allEntries = true),
-                    @CacheEvict(value = "templates", allEntries = true),
-                    @CacheEvict(value = "blocks", allEntries = true),
-                    @CacheEvict(value = "attachments", allEntries = true),
-            }
-    )
+    @Transactional
     public void run(final String... args) {
+        this.evictAllCaches();
         try {
             final var resource = new ClassPathResource("import.json");
             final var inputStream = resource.getInputStream();
@@ -51,6 +50,10 @@ public class DataImporter implements CommandLineRunner {
         } catch (Exception e) {
             log.info("No files present to import.");
         }
+    }
+
+    public void evictAllCaches() {
+        this.cacheManager.getCacheNames().forEach(cacheName -> requireNonNull(cacheManager.getCache(cacheName)).clear());
     }
 
 }
