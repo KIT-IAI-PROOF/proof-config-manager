@@ -254,36 +254,6 @@ VALUES ('l71ba36a-cb03-4353-adeb-a2d6985932e0', 'anonymous', '2025-04-23 14:59:4
 ON CONFLICT DO NOTHING;
 
 
-
---
--- Data for Name: applied_inputs; Type: TABLE DATA; Schema: public; Owner: admin
---
-
-
-INSERT INTO public.applied_inputs (id, value, execution_dao_id)
-VALUES ('e2063aa3-e694-4593-8f54-d322b977971e', '10', '58caf8ce-6783-46e7-a671-d827f1b0958d')
-ON CONFLICT DO NOTHING;
-INSERT INTO public.applied_inputs (id, value, execution_dao_id)
-VALUES ('ca76bf1a-6f3a-4754-87d8-924c8a9ac1d0', 'w', '58caf8ce-6783-46e7-a671-d827f1b0958d')
-ON CONFLICT DO NOTHING;
-INSERT INTO public.applied_inputs (id, value, execution_dao_id)
-VALUES ('509cea6d-dc33-4e2a-af9d-b8b0475d8c46', 'True', '58caf8ce-6783-46e7-a671-d827f1b0958d')
-ON CONFLICT DO NOTHING;
-INSERT INTO public.applied_inputs (id, value, execution_dao_id)
-VALUES ('1ad1aea4-e255-4324-9809-6923f537ec23', 'True', '58caf8ce-6783-46e7-a671-d827f1b0958d')
-ON CONFLICT DO NOTHING;
-INSERT INTO public.applied_inputs (id, value, execution_dao_id)
-VALUES ('cd25d323-9544-4236-91a5-963e68dc3620', '/tmp/ebbes', '58caf8ce-6783-46e7-a671-d827f1b0958d')
-ON CONFLICT DO NOTHING;
-INSERT INTO public.applied_inputs (id, value, execution_dao_id)
-VALUES ('689eef18-1189-4538-9019-7d7a646d9af4', '/tmp/csvTest.csv', '58caf8ce-6783-46e7-a671-d827f1b0958d')
-ON CONFLICT DO NOTHING;
-
---
--- Data for Name: mapping; Type: TABLE DATA; Schema: public; Owner: admin
---
-
-
 --
 -- Data for Name: output; Type: TABLE DATA; Schema: public; Owner: admin
 --
