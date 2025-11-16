@@ -25,6 +25,7 @@
         <gitUserId>kit/iai/webis/proof2</gitUserId>
         <gitRepoId>proof-config-manager</gitRepoId>
         <lombok.version>1.18.38</lombok.version>
+        <model.version>3.2.1</model.version>
     </properties>
 
     <dependencies>
@@ -33,7 +34,7 @@
         <dependency>
             <groupId>edu.kit.iai.webis</groupId>
             <artifactId>proof-models</artifactId>
-            <version>3.2.1</version>
+            <version>${model.version}</version>
         </dependency>
 
         <!-- Spring Security -->
