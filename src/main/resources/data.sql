@@ -16,19 +16,6 @@ VALUES ('11f02ad7-08d0-4f92-b911-f70f969a6ba6', 'test', '2025-05-06 11:32:21', '
 ON CONFLICT DO NOTHING;
 
 --
--- Data for Name: execution; Type: TABLE DATA; Schema: public; Owner: admin
---
-
-
-INSERT INTO public.execution (id, manual, override, status, creation_date, last_modified_date, created_by, label,
-                              last_modified_by, started_at, stopped_at, workflow_id)
-VALUES ('58caf8ce-6783-46e7-a671-d827f1b0958d', NULL, NULL, 0, '2025-06-10 09:22:19.181', '2025-06-10 09:22:19.208',
-        'test', 'ex-1', 'test', NULL, NULL, '11f02ad7-08d0-4f92-b911-f70f969a6ba6')
-ON CONFLICT DO NOTHING;
-
-
-
---
 -- Data for Name: program; Type: TABLE DATA; Schema: public; Owner: admin
 --
 
