@@ -6,9 +6,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.lang.NonNull;
+import org.springframework.security.oauth2.client.AuthorizedClientServiceReactiveOAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.client.InMemoryReactiveOAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.InMemoryReactiveClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository;
+import org.springframework.security.oauth2.client.web.reactive.function.client.ServerOAuth2AuthorizedClientExchangeFilterFunction;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -43,15 +46,37 @@ public class ClientSecurityConfig {
     }
 
     /**
-     * Configure client for ArcGIS communication.
-     * This is a client without oauth2 token.
+     * Configure client for data service communication.
+     * This client handles authentication and token retrieval automatically.
+     *
+     * @param clientRegistrations Registrations from the manager.
+     * @return Configured WebClient.
+     */
+    @Profile(value = {"prod"})
+    @Bean(name = "defaultWebClient", value = "defaultWebClient")
+    public WebClient defaultWebClient(@NonNull final ReactiveClientRegistrationRepository clientRegistrations) {
+        final var builder = builder();
+        final var clientService = new InMemoryReactiveOAuth2AuthorizedClientService(clientRegistrations);
+        final var authorizedClientManager = new AuthorizedClientServiceReactiveOAuth2AuthorizedClientManager(clientRegistrations, clientService);
+        final var oauth = new ServerOAuth2AuthorizedClientExchangeFilterFunction(authorizedClientManager);
+        oauth.setDefaultClientRegistrationId("keycloak");
+        return builder
+                .filter(oauth)
+                .build();
+    }
+
+    /**
+     * Configure client for data service communication.
+     * This client handles authentication and token retrieval automatically.
      *
      * @return Configured WebClient.
      */
+    @Profile(value = {"dev", "test"})
     @Bean(name = "defaultWebClient", value = "defaultWebClient")
-    public WebClient defaultWebClient() {
+    public WebClient devDefaultWebclient() {
         final var builder = builder();
-        return builder.build();
+        return builder
+                .build();
     }
 
 }
