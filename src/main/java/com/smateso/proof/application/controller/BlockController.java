@@ -5,6 +5,7 @@ import com.smateso.proof.adapter.boundaries.services.IBlockInteractor;
 import com.smateso.proof.adapter.model.Request;
 import edu.kit.iai.webis.proofmodels.dao.BlockDao;
 import edu.kit.iai.webis.proofmodels.dto.Block;
+import edu.kit.iai.webis.proofmodels.paging.BlockPagingModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import org.springframework.http.ResponseEntity;
@@ -30,14 +31,18 @@ public class BlockController implements IBlockController {
     }
 
     @Override
-    public ResponseEntity<List<Block>> searchBlocks(@NonNull final Request request) {
+    public ResponseEntity<BlockPagingModel> searchBlocks(@NonNull final Request request) {
         final var blocks = this.blockInteractor.searchBlocks(request);
-        final var results = blocks
-                .stream()
-                .map(BlockDao::convert)
-                .map(BlockController::attachLinks)
-                .toList();
-        return ResponseEntity.ok(results);
+        final var result = BlockPagingModel
+                .builder()
+                .rowCount(blocks.getTotalElements())
+                .results(blocks
+                        .stream()
+                        .map(BlockDao::convert)
+                        .map(BlockController::attachLinks)
+                        .toList())
+                .build();
+        return ResponseEntity.ok(result);
     }
 
     @Override

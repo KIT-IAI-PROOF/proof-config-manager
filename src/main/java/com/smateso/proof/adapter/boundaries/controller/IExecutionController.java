@@ -3,6 +3,7 @@ package com.smateso.proof.adapter.boundaries.controller;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.smateso.proof.adapter.model.Request;
 import edu.kit.iai.webis.proofmodels.dto.Execution;
+import edu.kit.iai.webis.proofmodels.paging.ExecutionPagingModel;
 import edu.kit.iai.webis.proofmodels.utils.Views.Detail;
 import edu.kit.iai.webis.proofmodels.utils.Views.Listing;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,7 +36,7 @@ public interface IExecutionController {
                     @ApiResponse(responseCode = "500", description = "Retrieval incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @PostMapping(value = "search", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<List<Execution>> searchExecutions(@RequestBody final Request request);
+    ResponseEntity<ExecutionPagingModel> searchExecutions(@RequestBody final Request request);
 
     @JsonView(Listing.class)
     @Operation(

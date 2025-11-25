@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.smateso.proof.adapter.model.Request;
 import edu.kit.iai.webis.proofmodels.dto.WorkflowRequest;
 import edu.kit.iai.webis.proofmodels.dto.WorkflowResponse;
+import edu.kit.iai.webis.proofmodels.paging.WorkflowPagingModel;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -36,7 +37,7 @@ public interface IWorkflowController {
                     @ApiResponse(responseCode = "500", description = "Retrieval incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @PostMapping(value = "search", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<List<WorkflowResponse>> searchWorkflows(@RequestBody final Request request);
+    ResponseEntity<WorkflowPagingModel> searchWorkflows(@RequestBody final Request request);
 
     @JsonView(Listing.class)
     @Operation(

@@ -5,6 +5,7 @@ import com.smateso.proof.adapter.boundaries.services.IAttachmentInteractor;
 import com.smateso.proof.adapter.model.Request;
 import edu.kit.iai.webis.proofmodels.dao.AttachmentDao;
 import edu.kit.iai.webis.proofmodels.dto.Attachment;
+import edu.kit.iai.webis.proofmodels.paging.AttachmentPagingModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import org.springframework.core.io.Resource;
@@ -43,14 +44,18 @@ public class AttachmentController implements IAttachmentController {
     }
 
     @Override
-    public ResponseEntity<List<Attachment>> searchAttachments(@NonNull final Request request) {
+    public ResponseEntity<AttachmentPagingModel> searchAttachments(@NonNull final Request request) {
         final var attachments = this.attachmentInteractor.searchAttachments(request);
-        final var results = attachments
-                .stream()
-                .map(AttachmentDao::convert)
-                .map(AttachmentController::attachLinks)
-                .toList();
-        return ResponseEntity.ok(results);
+        final var result = AttachmentPagingModel
+                .builder()
+                .rowCount(attachments.getTotalElements())
+                .results(attachments
+                        .stream()
+                        .map(AttachmentDao::convert)
+                        .map(AttachmentController::attachLinks)
+                        .toList())
+                .build();
+        return ResponseEntity.ok(result);
     }
 
     @Override

@@ -87,7 +87,7 @@ public class ServerSecurityConfig {
     }
 
     @Bean
-    @Profile(value = {"dev"})
+    @Profile(value = {"dev", "debug"})
     public SecurityFilterChain devFilterChain(@NonNull final HttpSecurity http, @Qualifier("corsProperties") final CorsProperties corsProperties) throws Exception {
         http
                 .cors(getCorsCustomizer(corsProperties))

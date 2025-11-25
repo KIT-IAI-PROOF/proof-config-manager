@@ -5,6 +5,7 @@ import com.smateso.proof.adapter.boundaries.services.IProgramInteractor;
 import com.smateso.proof.adapter.model.Request;
 import edu.kit.iai.webis.proofmodels.dao.ProgramDao;
 import edu.kit.iai.webis.proofmodels.dto.Program;
+import edu.kit.iai.webis.proofmodels.paging.ProgramPagingModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import org.springframework.http.ResponseEntity;
@@ -30,14 +31,18 @@ public class ProgramController implements IProgramController {
     }
 
     @Override
-    public ResponseEntity<List<Program>> searchPrograms(@NonNull final Request request) {
+    public ResponseEntity<ProgramPagingModel> searchPrograms(@NonNull final Request request) {
         final var programs = this.programInteractor.searchPrograms(request);
-        final var results = programs
-                .stream()
-                .map(ProgramDao::convert)
-                .map(ProgramController::attachLinks)
-                .toList();
-        return ResponseEntity.ok(results);
+        final var result = ProgramPagingModel
+                .builder()
+                .rowCount(programs.getTotalElements())
+                .results(programs
+                        .stream()
+                        .map(ProgramDao::convert)
+                        .map(ProgramController::attachLinks)
+                        .toList())
+                .build();
+        return ResponseEntity.ok(result);
     }
 
     @Override

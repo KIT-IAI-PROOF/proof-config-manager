@@ -5,6 +5,7 @@ import com.smateso.proof.adapter.boundaries.services.ITemplateInteractor;
 import com.smateso.proof.adapter.model.Request;
 import edu.kit.iai.webis.proofmodels.dao.TemplateDao;
 import edu.kit.iai.webis.proofmodels.dto.Template;
+import edu.kit.iai.webis.proofmodels.paging.TemplatePagingModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import org.springframework.http.ResponseEntity;
@@ -30,14 +31,18 @@ public class TemplateController implements ITemplateController {
     }
 
     @Override
-    public ResponseEntity<List<Template>> searchTemplates(@NonNull final Request request) {
+    public ResponseEntity<TemplatePagingModel> searchTemplates(@NonNull final Request request) {
         final var templates = this.templateInteractor.searchTemplates(request);
-        final var results = templates
-                .stream()
-                .map(TemplateDao::convert)
-                .map(TemplateController::attachLinks)
-                .toList();
-        return ResponseEntity.ok(results);
+        final var result = TemplatePagingModel
+                .builder()
+                .rowCount(templates.getTotalElements())
+                .results(templates
+                        .stream()
+                        .map(TemplateDao::convert)
+                        .map(TemplateController::attachLinks)
+                        .toList())
+                .build();
+        return ResponseEntity.ok(result);
     }
 
     @Override

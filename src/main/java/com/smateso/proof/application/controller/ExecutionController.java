@@ -5,6 +5,7 @@ import com.smateso.proof.adapter.boundaries.services.IExecutionInteractor;
 import com.smateso.proof.adapter.model.Request;
 import edu.kit.iai.webis.proofmodels.dao.ExecutionDao;
 import edu.kit.iai.webis.proofmodels.dto.Execution;
+import edu.kit.iai.webis.proofmodels.paging.ExecutionPagingModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import org.springframework.http.ResponseEntity;
@@ -30,14 +31,18 @@ public class ExecutionController implements IExecutionController {
     }
 
     @Override
-    public ResponseEntity<List<Execution>> searchExecutions(@NonNull final Request request) {
+    public ResponseEntity<ExecutionPagingModel> searchExecutions(@NonNull final Request request) {
         final var executions = this.executionInteractor.searchExecutions(request);
-        final var results = executions
-                .stream()
-                .map(ExecutionDao::convert)
-                .map(ExecutionController::attachLinks)
-                .toList();
-        return ResponseEntity.ok(results);
+        final var result = ExecutionPagingModel
+                .builder()
+                .rowCount(executions.getTotalElements())
+                .results(executions
+                        .stream()
+                        .map(ExecutionDao::convert)
+                        .map(ExecutionController::attachLinks)
+                        .toList())
+                .build();
+        return ResponseEntity.ok(result);
     }
 
     @Override

@@ -5,6 +5,7 @@ import com.smateso.proof.adapter.boundaries.services.IConnectionInteractor;
 import com.smateso.proof.adapter.model.Request;
 import edu.kit.iai.webis.proofmodels.dao.ConnectionDao;
 import edu.kit.iai.webis.proofmodels.dto.Connection;
+import edu.kit.iai.webis.proofmodels.paging.ConnectionPagingModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import org.springframework.http.ResponseEntity;
@@ -30,14 +31,18 @@ public class ConnectionController implements IConnectionController {
     }
 
     @Override
-    public ResponseEntity<List<Connection>> searchConnections(@NonNull final Request request) {
+    public ResponseEntity<ConnectionPagingModel> searchConnections(@NonNull final Request request) {
         final var connections = this.connectionInteractor.searchConnections(request);
-        final var results = connections
-                .stream()
-                .map(ConnectionDao::convert)
-                .map(ConnectionController::attachLinks)
-                .toList();
-        return ResponseEntity.ok(results);
+        final var result = ConnectionPagingModel
+                .builder()
+                .rowCount(connections.getTotalElements())
+                .results(connections
+                        .stream()
+                        .map(ConnectionDao::convert)
+                        .map(ConnectionController::attachLinks)
+                        .toList())
+                .build();
+        return ResponseEntity.ok(result);
     }
 
     @Override

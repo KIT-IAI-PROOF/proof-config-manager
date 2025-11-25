@@ -71,7 +71,7 @@ public class ClientSecurityConfig {
      *
      * @return Configured WebClient.
      */
-    @Profile(value = {"dev", "test"})
+    @Profile(value = {"dev", "debug", "test"})
     @Bean(name = "defaultWebClient", value = "defaultWebClient")
     public WebClient devDefaultWebclient() {
         final var builder = builder();

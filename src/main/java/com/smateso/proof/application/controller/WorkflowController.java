@@ -6,6 +6,7 @@ import com.smateso.proof.adapter.model.Request;
 import edu.kit.iai.webis.proofmodels.dao.WorkflowDao;
 import edu.kit.iai.webis.proofmodels.dto.WorkflowRequest;
 import edu.kit.iai.webis.proofmodels.dto.WorkflowResponse;
+import edu.kit.iai.webis.proofmodels.paging.WorkflowPagingModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import org.springframework.http.ResponseEntity;
@@ -31,14 +32,18 @@ public class WorkflowController implements IWorkflowController {
     }
 
     @Override
-    public ResponseEntity<List<WorkflowResponse>> searchWorkflows(@NonNull final Request request) {
+    public ResponseEntity<WorkflowPagingModel> searchWorkflows(@NonNull final Request request) {
         final var workflows = this.workflowInteractor.searchWorkflows(request);
-        final var results = workflows
-                .stream()
-                .map(WorkflowDao::convert)
-                .map(WorkflowController::attachLinks)
-                .toList();
-        return ResponseEntity.ok(results);
+        final var result = WorkflowPagingModel
+                .builder()
+                .rowCount(workflows.getTotalElements())
+                .results(workflows
+                        .stream()
+                        .map(WorkflowDao::convert)
+                        .map(WorkflowController::attachLinks)
+                        .toList())
+                .build();
+        return ResponseEntity.ok(result);
     }
 
     @Override
