@@ -6,7 +6,7 @@ import com.smateso.proof.adapter.model.Message;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.amqp.core.*;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -27,6 +27,7 @@ public class MessageInteractor implements IMessageInteractor {
 
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final AmqpTemplate amqpTemplate;
+    private final AmqpAdmin amqpAdmin;
 
     /**
      * Publishes an update event for a specified entity with the provided details.
@@ -50,6 +51,17 @@ public class MessageInteractor implements IMessageInteractor {
                 .user(username)
                 .build();
         this.simpMessagingTemplate.convertAndSend("/topic/updates", message);
+    }
+
+    @Override
+    public void deleteLoggingQueues(@NonNull final Iterable<String> blockIds) {
+        log.info("Deleting loggings queues for blocks");
+        blockIds.forEach((final var blockId) -> {
+            final var queue = QueueBuilder.durable("logs." + blockIds).build();
+            final var binding = BindingBuilder.bind(queue).to(new TopicExchange("logs")).with("logs." + blockId);
+            this.amqpAdmin.removeBinding(binding);
+            this.amqpAdmin.deleteQueue(queue.getName());
+        });
     }
 
 }

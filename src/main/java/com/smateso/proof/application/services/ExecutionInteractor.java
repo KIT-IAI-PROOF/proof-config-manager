@@ -5,6 +5,7 @@ import com.smateso.proof.adapter.boundaries.services.IMessageInteractor;
 import com.smateso.proof.adapter.exceptions.NotFoundException;
 import com.smateso.proof.adapter.model.Request;
 import com.smateso.proof.adapter.repositories.ExecutionRepository;
+import edu.kit.iai.webis.proofmodels.dao.BlockDao;
 import edu.kit.iai.webis.proofmodels.dao.ExecutionDao;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,6 +21,7 @@ import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createPa
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createSpecification;
 import static com.smateso.proof.application.utils.LogMessages.EXECUTION_DAO_NOT_FOUND_MESSAGE;
 import static com.smateso.proof.application.utils.PropertyCopyHelper.deepCopyEntityProperties;
+import static java.util.Objects.*;
 import static java.util.Objects.requireNonNull;
 
 @Slf4j
@@ -76,8 +78,17 @@ public class ExecutionInteractor implements IExecutionInteractor {
 
     @Override
     public void deleteExecution(@NonNull final String id, @NonNull final String sessionKey, @NonNull final String username) {
-        this.executionRepository.deleteById(id);
-        this.messageInteractor.sendUpdate(ENTITY_EXECUTION, id, DELETED, sessionKey, username);
+        final var optionalExecution = this.executionRepository.findById(id);
+        if (optionalExecution.isPresent()) {
+            final var execution = optionalExecution.get();
+            this.executionRepository.delete(execution);
+            if (nonNull(execution.getWorkflow())) {
+                if (nonNull(execution.getWorkflow().getBlocks())) {
+                    this.messageInteractor.deleteLoggingQueues(execution.getWorkflow().getBlocks().stream().map(BlockDao::getId).toList());
+                }
+            }
+            this.messageInteractor.sendUpdate(ENTITY_EXECUTION, id, DELETED, sessionKey, username);
+        }
     }
 
 }

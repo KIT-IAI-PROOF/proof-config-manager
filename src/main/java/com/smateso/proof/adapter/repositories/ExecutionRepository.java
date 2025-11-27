@@ -46,7 +46,6 @@ public interface ExecutionRepository extends JpaRepository<ExecutionDao, String>
     @Cacheable(value = "executions", key = "#executionId", unless = "#result == null")
     Optional<ExecutionDao> findById(@NonNull final String executionId);
 
-    @NonNull
     @Override
     @Caching(
             evict = {
@@ -60,6 +59,20 @@ public interface ExecutionRepository extends JpaRepository<ExecutionDao, String>
             }
     )
     void deleteById(@NonNull final String executionId);
+
+    @Override
+    @Caching(
+            evict = {
+                    @CacheEvict(cacheNames = "programs", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "attachments", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "blocks", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "connections", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "workflows", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "templates", allEntries = true, beforeInvocation = true),
+            }
+    )
+    void delete(@NonNull final ExecutionDao entity);
 
     @NonNull
     @Override

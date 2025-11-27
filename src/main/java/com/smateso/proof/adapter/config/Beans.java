@@ -6,6 +6,8 @@ import com.smateso.proof.adapter.repositories.*;
 import com.smateso.proof.application.controller.*;
 import com.smateso.proof.application.services.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.AmqpAdmin;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -104,9 +106,11 @@ public class Beans {
     }
 
     @Bean(value = "messageInteractor", name = "messageInteractor")
-    public IMessageInteractor messageInteractor(@NonNull final SimpMessagingTemplate simpMessagingTemplate) {
+    public IMessageInteractor messageInteractor(@NonNull final SimpMessagingTemplate simpMessagingTemplate, @NonNull final AmqpTemplate amqpTemplate, @NonNull final AmqpAdmin amqpAdmin) {
         return MessageInteractor
                 .builder()
+                .amqpAdmin(amqpAdmin)
+                .amqpTemplate(amqpTemplate)
                 .simpMessagingTemplate(simpMessagingTemplate)
                 .build();
     }
