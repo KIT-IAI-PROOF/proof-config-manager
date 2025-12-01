@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.lang.NonNull;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
@@ -105,16 +106,6 @@ public class Beans {
                 .build();
     }
 
-    @Bean(value = "messageInteractor", name = "messageInteractor")
-    public IMessageInteractor messageInteractor(@NonNull final SimpMessagingTemplate simpMessagingTemplate, @NonNull final AmqpTemplate amqpTemplate, @NonNull final AmqpAdmin amqpAdmin) {
-        return MessageInteractor
-                .builder()
-                .amqpAdmin(amqpAdmin)
-                .amqpTemplate(amqpTemplate)
-                .simpMessagingTemplate(simpMessagingTemplate)
-                .build();
-    }
-
     @Bean(value = "workflowController", name = "workflowController")
     public IWorkflowController workflowController(@Qualifier("workflowInteractor") IWorkflowInteractor workflowInteractor) {
         return WorkflowController
@@ -165,6 +156,26 @@ public class Beans {
     @Bean(value = "messageController", name = "messageController")
     public IMessageController messageController() {
         return new MessageController();
+    }
+
+    @Profile({"debug", "dev", "prod"})
+    @Bean(value = "messageInteractor", name = "messageInteractor")
+    public IMessageInteractor messageInteractor(@NonNull final SimpMessagingTemplate simpMessagingTemplate, @NonNull final AmqpTemplate amqpTemplate, @NonNull final AmqpAdmin amqpAdmin) {
+        return MessageInteractor
+                .builder()
+                .amqpAdmin(amqpAdmin)
+                .amqpTemplate(amqpTemplate)
+                .simpMessagingTemplate(simpMessagingTemplate)
+                .build();
+    }
+
+    @Profile({"test"})
+    @Bean(value = "messageInteractor", name = "messageInteractor")
+    public IMessageInteractor messageInteractorTest(@NonNull final SimpMessagingTemplate simpMessagingTemplate) {
+        return MessageInteractor
+                .builder()
+                .simpMessagingTemplate(simpMessagingTemplate)
+                .build();
     }
 
 }
