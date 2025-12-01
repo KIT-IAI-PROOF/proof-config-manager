@@ -57,7 +57,7 @@ public class MessageInteractor implements IMessageInteractor {
     public void deleteLoggingQueues(@NonNull final Iterable<String> blockIds) {
         log.info("Deleting loggings queues for blocks");
         blockIds.forEach((final var blockId) -> {
-            final var queue = QueueBuilder.durable("logs." + blockIds).build();
+            final var queue = QueueBuilder.durable("logs." + blockId).build();
             final var binding = BindingBuilder.bind(queue).to(new TopicExchange("logs")).with("logs." + blockId);
             this.amqpAdmin.removeBinding(binding);
             this.amqpAdmin.deleteQueue(queue.getName());
