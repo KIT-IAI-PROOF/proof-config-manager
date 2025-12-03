@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 import java.util.List;
 
@@ -52,14 +53,14 @@ public class WorkflowInteractor implements IWorkflowInteractor {
     }
 
     @Override
-    public WorkflowDao createWorkflow(@NonNull final WorkflowDao workflowDao, @NonNull final String sessionKey, @NonNull final String username) {
+    public WorkflowDao createWorkflow(@NonNull final WorkflowDao workflowDao, @Nullable final String sessionKey, @NonNull final String username) {
         final var result = this.workflowRepository.save(workflowDao);
         this.messageInteractor.sendUpdate(ENTITY_WORKFLOW, requireNonNull(result.getId()), CREATED, sessionKey, username);
         return result;
     }
 
     @Override
-    public WorkflowDao updateWorkflow(@NonNull final String id, @NonNull final WorkflowDao partial, @NonNull final String sessionKey, @NonNull final String username) {
+    public WorkflowDao updateWorkflow(@NonNull final String id, @NonNull final WorkflowDao partial, @Nullable final String sessionKey, @NonNull final String username) {
         final var optionalWorkflow = this.workflowRepository.findById(id);
         if (optionalWorkflow.isPresent()) {
             final var workflow = optionalWorkflow.get();
@@ -75,7 +76,7 @@ public class WorkflowInteractor implements IWorkflowInteractor {
     }
 
     @Override
-    public void deleteWorkflow(@NonNull final String id, @NonNull final String sessionKey, @NonNull final String username) {
+    public void deleteWorkflow(@NonNull final String id, @Nullable final String sessionKey, @NonNull final String username) {
         this.workflowRepository.deleteById(id);
         this.messageInteractor.sendUpdate(ENTITY_WORKFLOW, id, DELETED, sessionKey, username);
     }

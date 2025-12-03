@@ -14,6 +14,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 import java.util.List;
 
@@ -55,14 +56,14 @@ public class ProgramInteractor implements IProgramInteractor {
     }
 
     @Override
-    public ProgramDao createProgram(@NonNull final ProgramDao programDao, @NonNull final String sessionKey, @NonNull final String username) {
+    public ProgramDao createProgram(@NonNull final ProgramDao programDao, @Nullable final String sessionKey, @NonNull final String username) {
         final var result = this.programRepository.save(programDao);
         this.messageInteractor.sendUpdate(ENTITY_PROGRAM, requireNonNull(result.getId()), CREATED, sessionKey, username);
         return result;
     }
 
     @Override
-    public ProgramDao updateProgram(@NonNull final String id, @NonNull final ProgramDao partial, @NonNull final String sessionKey, @NonNull final String username) {
+    public ProgramDao updateProgram(@NonNull final String id, @NonNull final ProgramDao partial, @Nullable final String sessionKey, @NonNull final String username) {
         final var optionalProgram = this.programRepository.findById(id);
         if (optionalProgram.isPresent()) {
             final var program = optionalProgram.get();
@@ -78,7 +79,7 @@ public class ProgramInteractor implements IProgramInteractor {
     }
 
     @Override
-    public void deleteProgram(@NonNull final String id, @NonNull final String sessionKey, @NonNull final String username) {
+    public void deleteProgram(@NonNull final String id, @Nullable final String sessionKey, @NonNull final String username) {
         try {
             this.programRepository.deleteById(id);
             this.messageInteractor.sendUpdate(ENTITY_PROGRAM, id, DELETED, sessionKey, username);

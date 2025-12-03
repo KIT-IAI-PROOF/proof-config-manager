@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 import java.util.List;
 
@@ -52,14 +53,14 @@ public class BlockInteractor implements IBlockInteractor {
     }
 
     @Override
-    public BlockDao createBlock(@NonNull final BlockDao blockDao, @NonNull final String sessionKey, @NonNull final String username) {
+    public BlockDao createBlock(@NonNull final BlockDao blockDao, @Nullable final String sessionKey, @NonNull final String username) {
         final var result = this.blockRepository.save(blockDao);
         this.messageInteractor.sendUpdate(ENTITY_BLOCK, requireNonNull(result.getId()), CREATED, sessionKey, username);
         return result;
     }
 
     @Override
-    public BlockDao updateBlock(@NonNull final String id, @NonNull final BlockDao partial, @NonNull final String sessionKey, @NonNull final String username) {
+    public BlockDao updateBlock(@NonNull final String id, @NonNull final BlockDao partial, @Nullable final String sessionKey, @NonNull final String username) {
         final var optionalBlock = this.blockRepository.findById(id);
         if (optionalBlock.isPresent()) {
             final var block = optionalBlock.get();
@@ -75,7 +76,7 @@ public class BlockInteractor implements IBlockInteractor {
     }
 
     @Override
-    public void deleteBlock(@NonNull final String id, @NonNull final String sessionKey, @NonNull final String username) {
+    public void deleteBlock(@NonNull final String id, @Nullable final String sessionKey, @NonNull final String username) {
         this.blockRepository.deleteById(id);
         this.messageInteractor.sendUpdate(ENTITY_BLOCK, id, DELETED, sessionKey, username);
     }

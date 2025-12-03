@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 import java.util.List;
 
@@ -52,14 +53,14 @@ public class TemplateInteractor implements ITemplateInteractor {
     }
 
     @Override
-    public TemplateDao createTemplate(@NonNull final TemplateDao templateDao, @NonNull final String sessionKey, @NonNull final String username) {
+    public TemplateDao createTemplate(@NonNull final TemplateDao templateDao, @Nullable final String sessionKey, @NonNull final String username) {
         final var result = this.templateRepository.save(templateDao);
         this.messageInteractor.sendUpdate(ENTITY_TEMPLATE, requireNonNull(result.getId()), CREATED, sessionKey, username);
         return result;
     }
 
     @Override
-    public TemplateDao updateTemplate(@NonNull final String id, @NonNull final TemplateDao partial, @NonNull final String sessionKey, @NonNull final String username) {
+    public TemplateDao updateTemplate(@NonNull final String id, @NonNull final TemplateDao partial, @Nullable final String sessionKey, @NonNull final String username) {
         final var optionalTemplate = this.templateRepository.findById(id);
         if (optionalTemplate.isPresent()) {
             final var template = optionalTemplate.get();
@@ -75,7 +76,7 @@ public class TemplateInteractor implements ITemplateInteractor {
     }
 
     @Override
-    public void deleteTemplate(@NonNull final String id, @NonNull final String sessionKey, @NonNull final String username) {
+    public void deleteTemplate(@NonNull final String id, @Nullable final String sessionKey, @NonNull final String username) {
         this.templateRepository.deleteById(id);
         this.messageInteractor.sendUpdate(ENTITY_TEMPLATE, id, DELETED, sessionKey, username);
     }

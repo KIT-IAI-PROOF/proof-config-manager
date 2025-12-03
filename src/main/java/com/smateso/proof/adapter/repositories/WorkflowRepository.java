@@ -48,7 +48,6 @@ public interface WorkflowRepository extends JpaRepository<WorkflowDao, String>, 
     @Cacheable(value = "workflows", key = "#workflowId", unless = "#result == null")
     Optional<WorkflowDao> findById(@NonNull final String workflowId);
 
-    @NonNull
     @Override
     @Caching(
             evict = {

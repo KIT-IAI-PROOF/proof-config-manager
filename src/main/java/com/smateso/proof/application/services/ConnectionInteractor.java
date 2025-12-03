@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 import java.util.List;
 
@@ -52,14 +53,14 @@ public class ConnectionInteractor implements IConnectionInteractor {
     }
 
     @Override
-    public ConnectionDao createConnection(@NonNull final ConnectionDao connectionDao, @NonNull final String sessionKey, @NonNull final String username) {
+    public ConnectionDao createConnection(@NonNull final ConnectionDao connectionDao, @Nullable final String sessionKey, @NonNull final String username) {
         final var result = this.connectionRepository.save(connectionDao);
         this.messageInteractor.sendUpdate(ENTITY_CONNECTION, requireNonNull(result.getId()), CREATED, sessionKey, username);
         return result;
     }
 
     @Override
-    public ConnectionDao updateConnection(@NonNull final String id, @NonNull final ConnectionDao partial, @NonNull final String sessionKey, @NonNull final String username) {
+    public ConnectionDao updateConnection(@NonNull final String id, @NonNull final ConnectionDao partial, @Nullable final String sessionKey, @NonNull final String username) {
         final var optionalConnection = this.connectionRepository.findById(id);
         if (optionalConnection.isPresent()) {
             final var connection = optionalConnection.get();
@@ -75,7 +76,7 @@ public class ConnectionInteractor implements IConnectionInteractor {
     }
 
     @Override
-    public void deleteConnection(@NonNull final String id, @NonNull final String sessionKey, @NonNull final String username) {
+    public void deleteConnection(@NonNull final String id, @Nullable final String sessionKey, @NonNull final String username) {
         this.connectionRepository.deleteById(id);
         this.messageInteractor.sendUpdate(ENTITY_CONNECTION, id, DELETED, sessionKey, username);
     }

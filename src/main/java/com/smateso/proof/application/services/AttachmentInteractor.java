@@ -14,6 +14,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 import java.util.List;
 
@@ -55,14 +56,14 @@ public class AttachmentInteractor implements IAttachmentInteractor {
     }
 
     @Override
-    public AttachmentDao createAttachment(@NonNull final AttachmentDao attachmentDao, @NonNull final String sessionKey, @NonNull final String username) {
+    public AttachmentDao createAttachment(@NonNull final AttachmentDao attachmentDao, @Nullable final String sessionKey, @NonNull final String username) {
         final var result = this.attachmentRepository.save(attachmentDao);
         this.messageInteractor.sendUpdate(ENTITY_ATTACHMENT, requireNonNull(result.getId()), CREATED, sessionKey, username);
         return result;
     }
 
     @Override
-    public AttachmentDao updateAttachment(@NonNull final String id, @NonNull final AttachmentDao partial, @NonNull final String sessionKey, @NonNull final String username) {
+    public AttachmentDao updateAttachment(@NonNull final String id, @NonNull final AttachmentDao partial, @Nullable final String sessionKey, @NonNull final String username) {
         final var optionalAttachment = this.attachmentRepository.findById(id);
         if (optionalAttachment.isPresent()) {
             final var attachment = optionalAttachment.get();
@@ -78,7 +79,7 @@ public class AttachmentInteractor implements IAttachmentInteractor {
     }
 
     @Override
-    public void deleteAttachment(@NonNull final String id, @NonNull final String sessionKey, @NonNull final String username) {
+    public void deleteAttachment(@NonNull final String id, @Nullable final String sessionKey, @NonNull final String username) {
         try {
             this.attachmentRepository.deleteById(id);
             this.messageInteractor.sendUpdate(ENTITY_ATTACHMENT, id, DELETED, sessionKey, username);
