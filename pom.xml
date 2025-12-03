@@ -11,7 +11,7 @@
 
     <groupId>edu.kit.iai.webis</groupId>
     <artifactId>proof-config-manager</artifactId>
-    <version>1.2.30</version>
+    <version>1.2.31</version>
     <name>PROOF Config Manager</name>
     <description>PROOF Config Manager</description>
     <packaging>jar</packaging>
@@ -25,7 +25,7 @@
         <gitUserId>kit/iai/webis/proof2</gitUserId>
         <gitRepoId>proof-config-manager</gitRepoId>
         <lombok.version>1.18.38</lombok.version>
-        <model.version>3.2.7</model.version>
+        <model.version>3.2.8</model.version>
     </properties>
 
     <dependencies>
