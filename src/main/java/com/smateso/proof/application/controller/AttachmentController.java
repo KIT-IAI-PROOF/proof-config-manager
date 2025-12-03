@@ -14,6 +14,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -81,21 +82,21 @@ public class AttachmentController implements IAttachmentController {
     }
 
     @Override
-    public ResponseEntity<Attachment> createAttachment(@NonNull final Attachment attachment, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
+    public ResponseEntity<Attachment> createAttachment(@NonNull final Attachment attachment, @NonNull final Authentication authentication, @Nullable final String sessionKey) {
         final var username = getUsername(authentication);
         final var result = this.attachmentInteractor.createAttachment(attachment.convert(), sessionKey, username).convert();
         return ResponseEntity.ok(result);
     }
 
     @Override
-    public ResponseEntity<Attachment> updateAttachment(@NonNull final String attachmentId, @NonNull final Attachment attachment, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
+    public ResponseEntity<Attachment> updateAttachment(@NonNull final String attachmentId, @NonNull final Attachment attachment, @NonNull final Authentication authentication, @Nullable final String sessionKey) {
         final var username = getUsername(authentication);
         final var result = this.attachmentInteractor.updateAttachment(attachmentId, attachment.convert(), sessionKey, username).convert();
         return ResponseEntity.ok(result);
     }
 
     @Override
-    public ResponseEntity<Void> deleteAttachment(@NonNull final String id, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
+    public ResponseEntity<Void> deleteAttachment(@NonNull final String id, @NonNull final Authentication authentication, @Nullable final String sessionKey) {
         final var username = getUsername(authentication);
         this.attachmentInteractor.deleteAttachment(id, sessionKey, username);
         return ResponseEntity.ok().build();

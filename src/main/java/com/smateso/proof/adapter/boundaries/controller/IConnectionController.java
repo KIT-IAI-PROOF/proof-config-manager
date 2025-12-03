@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -72,7 +73,7 @@ public interface IConnectionController {
                     @ApiResponse(responseCode = "500", description = "Create incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<Connection> createConnection(@RequestBody final Connection connection, @RequestParam(required = false, defaultValue = "0") final String sessionKey, final Authentication authentication);
+    ResponseEntity<Connection> createConnection(@RequestBody final Connection connection, final Authentication authentication, @Nullable @RequestParam(required = false, defaultValue = "0") final String sessionKey);
 
     @JsonView(Detail.class)
     @Operation(
@@ -84,7 +85,7 @@ public interface IConnectionController {
                     @ApiResponse(responseCode = "500", description = "Update incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @PostMapping(value = "{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<Connection> updateConnection(@PathVariable(value = "id") final String id, @RequestBody final Connection connection, @RequestParam(required = false, defaultValue = "0") final String sessionKey, final Authentication authentication);
+    ResponseEntity<Connection> updateConnection(@PathVariable(value = "id") final String id, @RequestBody final Connection connection, final Authentication authentication, @Nullable @RequestParam(required = false, defaultValue = "0") final String sessionKey);
 
     @JsonView(Detail.class)
     @Operation(
@@ -96,6 +97,6 @@ public interface IConnectionController {
                     @ApiResponse(responseCode = "500", description = "Delete incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @DeleteMapping(value = "{id}", consumes = ALL_VALUE, produces = ALL_VALUE)
-    ResponseEntity<Void> deleteConnection(@PathVariable(value = "id") final String id, @RequestParam(required = false, defaultValue = "0") final String sessionKey, final Authentication authentication);
+    ResponseEntity<Void> deleteConnection(@PathVariable(value = "id") final String id, final Authentication authentication, @Nullable @RequestParam(required = false, defaultValue = "0") final String sessionKey);
 
 }

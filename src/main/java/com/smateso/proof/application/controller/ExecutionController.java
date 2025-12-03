@@ -2,7 +2,6 @@ package com.smateso.proof.application.controller;
 
 import com.smateso.proof.adapter.boundaries.controller.IExecutionController;
 import com.smateso.proof.adapter.boundaries.services.IExecutionInteractor;
-import com.smateso.proof.adapter.boundaries.services.IMessageInteractor;
 import com.smateso.proof.adapter.model.Request;
 import edu.kit.iai.webis.proofmodels.dao.ExecutionDao;
 import edu.kit.iai.webis.proofmodels.dto.Execution;
@@ -11,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.security.core.Authentication;
 
 import java.util.List;
@@ -64,21 +64,21 @@ public class ExecutionController implements IExecutionController {
     }
 
     @Override
-    public ResponseEntity<Execution> createExecution(@NonNull final Execution execution, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
+    public ResponseEntity<Execution> createExecution(@NonNull final Execution execution, @NonNull final Authentication authentication, @Nullable final String sessionKey) {
         final var username = getUsername(authentication);
         final var result = this.executionInteractor.createExecution(execution.convert(), sessionKey, username).convert();
         return ResponseEntity.ok(result);
     }
 
     @Override
-    public ResponseEntity<Execution> updateExecution(@NonNull final String executionId, @NonNull final Execution execution, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
+    public ResponseEntity<Execution> updateExecution(@NonNull final String executionId, @NonNull final Execution execution, @NonNull final Authentication authentication, @Nullable final String sessionKey) {
         final var username = getUsername(authentication);
         final var result = this.executionInteractor.updateExecution(executionId, execution.convert(), sessionKey, username).convert();
         return ResponseEntity.ok(result);
     }
 
     @Override
-    public ResponseEntity<Void> deleteExecution(@NonNull final String id, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
+    public ResponseEntity<Void> deleteExecution(@NonNull final String id, @NonNull final Authentication authentication, @Nullable final String sessionKey) {
         final var username = getUsername(authentication);
         this.executionInteractor.deleteExecution(id, sessionKey, username);
         return ResponseEntity.ok().build();

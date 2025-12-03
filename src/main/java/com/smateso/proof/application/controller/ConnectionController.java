@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.security.core.Authentication;
 
 import java.util.List;
@@ -63,21 +64,21 @@ public class ConnectionController implements IConnectionController {
     }
 
     @Override
-    public ResponseEntity<Connection> createConnection(@NonNull final Connection connection, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
+    public ResponseEntity<Connection> createConnection(@NonNull final Connection connection, @NonNull final Authentication authentication, @Nullable final String sessionKey) {
         final var username = getUsername(authentication);
         final var result = this.connectionInteractor.createConnection(connection.convert(), sessionKey, username).convert();
         return ResponseEntity.ok(result);
     }
 
     @Override
-    public ResponseEntity<Connection> updateConnection(@NonNull final String connectionId, @NonNull final Connection connection, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
+    public ResponseEntity<Connection> updateConnection(@NonNull final String connectionId, @NonNull final Connection connection, @NonNull final Authentication authentication, @Nullable final String sessionKey) {
         final var username = getUsername(authentication);
         final var result = this.connectionInteractor.updateConnection(connectionId, connection.convert(), sessionKey, username).convert();
         return ResponseEntity.ok(result);
     }
 
     @Override
-    public ResponseEntity<Void> deleteConnection(@NonNull final String id, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
+    public ResponseEntity<Void> deleteConnection(@NonNull final String id, @NonNull final Authentication authentication, @Nullable final String sessionKey) {
         final var username = getUsername(authentication);
         this.connectionInteractor.deleteConnection(id, sessionKey, username);
         return ResponseEntity.ok().build();

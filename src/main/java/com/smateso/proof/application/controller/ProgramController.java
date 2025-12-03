@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.security.core.Authentication;
 
 import java.util.List;
@@ -68,21 +69,21 @@ public class ProgramController implements IProgramController {
     }
 
     @Override
-    public ResponseEntity<Program> createProgram(@NonNull final Program program, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
+    public ResponseEntity<Program> createProgram(@NonNull final Program program, @NonNull final Authentication authentication, @Nullable final String sessionKey) {
         final var username = getUsername(authentication);
         final var result = this.programInteractor.createProgram(program.convert(), sessionKey, username).convert();
         return ResponseEntity.ok(result);
     }
 
     @Override
-    public ResponseEntity<Program> updateProgram(@NonNull final String programId, @NonNull final Program program, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
+    public ResponseEntity<Program> updateProgram(@NonNull final String programId, @NonNull final Program program, @NonNull final Authentication authentication, @Nullable final String sessionKey) {
         final var username = getUsername(authentication);
         final var result = this.programInteractor.updateProgram(programId, program.convert(), sessionKey, username).convert();
         return ResponseEntity.ok(result);
     }
 
     @Override
-    public ResponseEntity<Void> deleteProgram(@NonNull final String id, @NonNull final String sessionKey, @NonNull final Authentication authentication) {
+    public ResponseEntity<Void> deleteProgram(@NonNull final String id, @NonNull final Authentication authentication, @Nullable final String sessionKey) {
         final var username = getUsername(authentication);
         this.programInteractor.deleteProgram(id, sessionKey, username);
         return ResponseEntity.ok().build();

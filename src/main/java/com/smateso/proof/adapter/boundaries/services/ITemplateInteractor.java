@@ -4,6 +4,7 @@ import com.smateso.proof.adapter.model.Request;
 import edu.kit.iai.webis.proofmodels.dao.TemplateDao;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 import java.util.List;
 
@@ -13,11 +14,11 @@ public interface ITemplateInteractor {
 
     TemplateDao getTemplate(@NonNull final String id);
 
-    TemplateDao createTemplate(@NonNull final TemplateDao template, @NonNull final String sessionKey, @NonNull final String username);
+    TemplateDao createTemplate(@NonNull final TemplateDao template, @Nullable final String sessionKey, @NonNull final String username);
 
-    TemplateDao updateTemplate(@NonNull final String id, @NonNull final TemplateDao template, @NonNull final String sessionKey, @NonNull final String username);
+    TemplateDao updateTemplate(@NonNull final String id, @NonNull final TemplateDao template, @Nullable final String sessionKey, @NonNull final String username);
 
-    void deleteTemplate(@NonNull final String id, @NonNull final String sessionKey, @NonNull final String username);
+    void deleteTemplate(@NonNull final String id, @Nullable final String sessionKey, @NonNull final String username);
 
     List<TemplateDao> getTemplates();
 }
