@@ -11,7 +11,7 @@
 
     <groupId>edu.kit.iai.webis</groupId>
     <artifactId>proof-config-manager</artifactId>
-    <version>1.2.33</version>
+    <version>1.2.34</version>
     <name>PROOF Config Manager</name>
     <description>PROOF Config Manager</description>
     <packaging>jar</packaging>
@@ -25,7 +25,7 @@
         <gitUserId>kit/iai/webis/proof2</gitUserId>
         <gitRepoId>proof-config-manager</gitRepoId>
         <lombok.version>1.18.38</lombok.version>
-        <model.version>3.2.9</model.version>
+        <model.version>3.2.10</model.version>
     </properties>
 
     <dependencies>
@@ -249,6 +249,20 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
+                            <configOptions>
+                                <java8>true</java8>
+                                <dateLibrary>custom</dateLibrary>
+                                <openApiNullable>false</openApiNullable>
+                                <interfaceOnly>true</interfaceOnly>
+                            </configOptions>
+                            <typeMappings>
+                                <typeMapping>DateTime=Instant</typeMapping>
+                                <typeMapping>Date=Date</typeMapping>
+                            </typeMappings>
+                            <importMappings>
+                                <importMapping>Instant=java.time.Instant</importMapping>
+                                <importMapping>Date=java.util.Date</importMapping>
+                            </importMappings>
                             <verbose>false</verbose>
                             <cleanupOutput>true</cleanupOutput>
                             <enablePostProcessFile>true</enablePostProcessFile>
