@@ -133,7 +133,7 @@ ON CONFLICT DO NOTHING;
 INSERT INTO public.connection (id, created_by, creation_date, last_modified_by, last_modified_date, algorithm, animated,
                                connection_type, input, output, source, target, type, workflow_id)
 VALUES ('43179bda-c044-4ab9-9e68-fbfa8602a79e', 'test', '2025-07-15 12:19:15.906', 'test', '2025-07-15 12:19:15.92',
-        'bezier-catmull-rom', NULL, NULL, 'f71ba36a-cb03-4353-adeb-a2d6985932e0',
+        'bezier-catmull-rom', NULL, 'STRING', 'f71ba36a-cb03-4353-adeb-a2d6985932e0',
         '7100cc5d-637d-4c7f-b961-a9c9e797c50c', 'bed2ac71-2575-462b-9b73-048e5f60388a',
         'da35e3b1-aaea-4ba3-bd27-34c1323dd2af', 'block', '11f02ad7-08d0-4f92-b911-f70f969a6ba6')
 ON CONFLICT DO NOTHING;
