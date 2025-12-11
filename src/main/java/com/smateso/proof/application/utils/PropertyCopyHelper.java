@@ -9,9 +9,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static com.smateso.proof.adapter.utils.NullAwareUtil.getNullPropertyNames;
@@ -28,6 +26,7 @@ public class PropertyCopyHelper {
     public static final String SET = "set";
     public static final String GET = "get";
     public static final String LIST = "java.util.List";
+    public static final String MAP = "java.util.Map";
 
     private static Optional<Method> getSourceClassGetter(@NonNull final Class<?> sourceClass, @NonNull final Field relationalField) {
         try {
@@ -40,6 +39,11 @@ public class PropertyCopyHelper {
 
     private static Object getTargetSubClassInstanceForList(@NonNull final Field relationalField) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ClassNotFoundException {
         final var targetClassType = ((ParameterizedType) relationalField.getGenericType()).getActualTypeArguments()[0];
+        return forName(targetClassType.getTypeName()).getDeclaredConstructor().newInstance();
+    }
+
+    private static Object getTargetSubClassInstanceForMap(@NonNull final Field relationalField) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ClassNotFoundException {
+        final var targetClassType = ((ParameterizedType) relationalField.getGenericType()).getActualTypeArguments()[1];
         return forName(targetClassType.getTypeName()).getDeclaredConstructor().newInstance();
     }
 
@@ -74,6 +78,19 @@ public class PropertyCopyHelper {
                                                     result.add(targetSubClassInstance);
                                                 }
                                                 targetClass.getDeclaredMethod(SET + capitalize(complexField.getName()), List.class).invoke(target, result);
+                                            }
+                                        }
+                                    } else if (complexField.getType().getTypeName().equals(MAP)) {
+                                        if (sourceClassGetter.isPresent()) {
+                                            final var sourceValue = (Map<?, ?>) sourceClassGetter.get().invoke(source);
+                                            if (!isNull(sourceValue)) {
+                                                final var result = new HashMap<>();
+                                                for (Map.Entry<?, ?> entry : sourceValue.entrySet()) {
+                                                    final var targetSubClassInstance = getTargetSubClassInstanceForMap(complexField);
+                                                    deepCopyEntityProperties(entry.getValue(), targetSubClassInstance, ignoreNullProperties, excludedProperties, complexFieldNames);
+                                                    result.put(entry.getKey(), targetSubClassInstance);
+                                                }
+                                                targetClass.getDeclaredMethod(SET + capitalize(complexField.getName()), Map.class).invoke(target, result);
                                             }
                                         }
                                     } else {
