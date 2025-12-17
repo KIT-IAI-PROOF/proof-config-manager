@@ -2,7 +2,9 @@ package com.smateso.proof.adapter.boundaries.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.smateso.proof.adapter.model.Request;
+import com.smateso.proof.application.controller.WorkflowController;
 import edu.kit.iai.webis.proofmodels.dto.Execution;
+import edu.kit.iai.webis.proofmodels.dto.WorkflowResponse;
 import edu.kit.iai.webis.proofmodels.paging.ExecutionPagingModel;
 import edu.kit.iai.webis.proofmodels.utils.Views.Detail;
 import edu.kit.iai.webis.proofmodels.utils.Views.Listing;
@@ -13,12 +15,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.http.MediaType.ALL_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 

@@ -32,10 +32,12 @@ public class Beans {
     @Bean(value = "workflowInteractor", name = "workflowInteractor")
     public IWorkflowInteractor workflowInteractor(
             @Qualifier("workflowRepository") @NonNull final WorkflowRepository workflowRepository,
+            @Qualifier("executionRepository") @NonNull final ExecutionRepository executionRepository,
             @Qualifier("messageInteractor") @NonNull final IMessageInteractor messageInteractor) {
         return WorkflowInteractor
                 .builder()
                 .workflowRepository(workflowRepository)
+                .executionRepository(executionRepository)
                 .messageInteractor(messageInteractor)
                 .build();
     }

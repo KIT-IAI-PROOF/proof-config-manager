@@ -65,6 +65,4 @@ public interface ConnectionRepository extends JpaRepository<ConnectionDao, Strin
     @Override
     Page<ConnectionDao> findAll(@Nullable final Specification<ConnectionDao> spec, @NonNull final Pageable pageable);
 
-    List<ConnectionDao> findConnectionsByWorkflowId(@NonNull final String workflowId);
-
 }

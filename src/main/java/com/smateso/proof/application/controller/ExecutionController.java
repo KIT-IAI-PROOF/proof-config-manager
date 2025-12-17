@@ -25,7 +25,7 @@ public class ExecutionController implements IExecutionController {
     private final IExecutionInteractor executionInteractor;
 
     @NonNull
-    private static Execution attachLinks(@NonNull final Execution execution) {
+    public static Execution attachLinks(@NonNull final Execution execution) {
         final var selfLink = linkTo(ExecutionController.class).slash(execution.getId()).withSelfRel();
         execution.add(selfLink);
         return execution;

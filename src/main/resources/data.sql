@@ -6,11 +6,21 @@
 -- Dumped by pg_dump version 17.7 (Homebrew)
 
 --
+-- Data for Name: step_based_configON CONFLICT DO NOTHING; Type: TABLE DATAON CONFLICT DO NOTHING; Schema: publicON CONFLICT DO NOTHING; Owner: admin
+--
+
+INSERT INTO public.step_based_config (id, created_by, creation_date, last_modified_by, last_modified_date, default_step_size, duration, end_point, end_time, start_point, start_time)
+VALUES ('e4b90ac9-6d78-441b-9762-87af0114115f', 'anonymous', '2025-12-17 10:32:38.193114+00', 'anonymous', '2025-12-17 10:32:38.239789+00', 1, 500, 10, 1000, 1, 1)
+ON CONFLICT DO NOTHING;
+
+
+--
 -- Data for Name: workflowON CONFLICT DO NOTHING; Type: TABLE DATAON CONFLICT DO NOTHING; Schema: publicON CONFLICT DO NOTHING; Owner: admin
 --
 
-INSERT INTO public.workflow (id, created_by, creation_date, last_modified_by, last_modified_date, communication_paradigm, description, label, simulation_strategy)
-VALUES ('11f02ad7-08d0-4f92-b911-f70f969a6ba6', 'anonymous', '2025-12-17 10:32:38.13094+00', 'anonymous', '2025-12-17 10:32:38.23622+00', 0, 'FileReader2FileWriter', 'FileReader2FileWriter', 3)
+INSERT INTO public.workflow (id, created_by, creation_date, last_modified_by, last_modified_date, communication_paradigm, description, label, simulation_strategy, step_based_config_id)
+VALUES ('11f02ad7-08d0-4f92-b911-f70f969a6ba6', 'anonymous', '2025-12-17 10:32:38.13094+00', 'anonymous', '2025-12-17 10:32:38.23622+00', 0, 'FileReader2FileWriter', 'FileReader2FileWriter', 3,
+        'e4b90ac9-6d78-441b-9762-87af0114115f')
 ON CONFLICT DO NOTHING;
 
 
@@ -42,7 +52,8 @@ ON CONFLICT DO NOTHING;
 --
 
 INSERT INTO public.program (id, created_by, creation_date, last_modified_by, last_modified_date, description, entry_point, label, runtime, tag)
-VALUES ('08d4fc61-b9d5-4bd8-9f69-19bff1f33e29', 'anonymous', '2025-04-23 12:59:46.713+00', 'anonymous', '2025-12-17 10:32:38.237731+00', 'Provide other blocks with one line per SYNC from a given file',
+VALUES ('08d4fc61-b9d5-4bd8-9f69-19bff1f33e29', 'anonymous', '2025-04-23 12:59:46.713+00', 'anonymous', '2025-12-17 10:32:38.237731+00',
+        'Provide other blocks with one line per SYNC from a given file',
         'attachment_file_line_provider', 'prog_file_line_provider', 0, 'testFLP')
 ON CONFLICT DO NOTHING;
 INSERT INTO public.program (id, created_by, creation_date, last_modified_by, last_modified_date, description, entry_point, label, runtime, tag)
@@ -201,17 +212,6 @@ ON CONFLICT DO NOTHING;
 INSERT INTO public.program_attached (program_id, attachment_id)
 VALUES ('7554873a-813c-4e00-b8d3-be072f12bea8', 'attachment_file_writer')
 ON CONFLICT DO NOTHING;
-
-
---
--- Data for Name: step_based_configON CONFLICT DO NOTHING; Type: TABLE DATAON CONFLICT DO NOTHING; Schema: publicON CONFLICT DO NOTHING; Owner: admin
---
-
-INSERT INTO public.step_based_config (id, created_by, creation_date, last_modified_by, last_modified_date, default_step_size, duration, end_point, end_time, start_point, start_time, workflow_id)
-VALUES ('e4b90ac9-6d78-441b-9762-87af0114115f', 'anonymous', '2025-12-17 10:32:38.193114+00', 'anonymous', '2025-12-17 10:32:38.239789+00', 1, 500, 10, 1000, 1, 1,
-        '11f02ad7-08d0-4f92-b911-f70f969a6ba6')
-ON CONFLICT DO NOTHING;
-
 
 --
 -- Data for Name: step_size_definitionON CONFLICT DO NOTHING; Type: TABLE DATAON CONFLICT DO NOTHING; Schema: publicON CONFLICT DO NOTHING; Owner: admin

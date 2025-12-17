@@ -1,6 +1,7 @@
 package com.smateso.proof.adapter.boundaries.services;
 
 import com.smateso.proof.adapter.model.Request;
+import edu.kit.iai.webis.proofmodels.dao.ExecutionDao;
 import edu.kit.iai.webis.proofmodels.dao.WorkflowDao;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
@@ -21,5 +22,7 @@ public interface IWorkflowInteractor {
     void deleteWorkflow(@NonNull final String id, @Nullable final String sessionKey, @NonNull final String username);
 
     List<WorkflowDao> getWorkflows();
+
+    List<ExecutionDao> getExecutionsOfWorkflow(@NonNull final String id);
 
 }

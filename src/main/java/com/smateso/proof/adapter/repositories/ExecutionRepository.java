@@ -1,6 +1,7 @@
 package com.smateso.proof.adapter.repositories;
 
 import edu.kit.iai.webis.proofmodels.dao.ExecutionDao;
+import edu.kit.iai.webis.proofmodels.dao.WorkflowDao;
 import org.springframework.cache.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -77,5 +78,20 @@ public interface ExecutionRepository extends JpaRepository<ExecutionDao, String>
     @NonNull
     @Override
     Page<ExecutionDao> findAll(@Nullable final Specification<ExecutionDao> spec, @NonNull final Pageable pageable);
+
+    @Caching(
+            evict = {
+                    @CacheEvict(cacheNames = "programs", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "attachments", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "blocks", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "connections", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "workflows", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "templates", allEntries = true, beforeInvocation = true),
+            }
+    )
+    void deleteByWorkflowId(@NonNull final String id);
+
+    List<ExecutionDao> findAllByWorkflowId(final String workflowId);
 
 }

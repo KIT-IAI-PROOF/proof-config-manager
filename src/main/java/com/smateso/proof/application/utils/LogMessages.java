@@ -13,6 +13,7 @@ public class LogMessages {
     public static final String PROGRAM_DAO_NOT_FOUND_MESSAGE = "Program with id %s not found";
     public static final String PROGRAM_DAO_IN_USE_MESSAGE = "Program with id %s is still in use by another entity";
     public static final String ATTACHMENT_DAO_IN_USE_MESSAGE = "Attachment with id %s is still in use by another entity";
+    public static final String WORKFLOW_DAO_IN_USE_MESSAGE = "Workflow with id %s is still in use by another entity";
     public static final String SET_PROPERTY = "Set property %s of %s to %s";
 
 }

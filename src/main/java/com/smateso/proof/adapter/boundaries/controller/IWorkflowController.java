@@ -2,6 +2,7 @@ package com.smateso.proof.adapter.boundaries.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.smateso.proof.adapter.model.Request;
+import edu.kit.iai.webis.proofmodels.dto.Execution;
 import edu.kit.iai.webis.proofmodels.dto.WorkflowRequest;
 import edu.kit.iai.webis.proofmodels.dto.WorkflowResponse;
 import edu.kit.iai.webis.proofmodels.paging.WorkflowPagingModel;
@@ -110,6 +111,18 @@ public interface IWorkflowController {
                     @ApiResponse(responseCode = "500", description = "Delete incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @DeleteMapping(value = "{id}", consumes = ALL_VALUE, produces = ALL_VALUE)
-    ResponseEntity<Void> deleteWorkflow(@PathVariable(value = "id") final String id, final Authentication authentication, @Nullable @RequestParam(required = false, defaultValue = "0") final String sessionKey);
+    ResponseEntity<Void> deleteWorkflow(@PathVariable final String id, final Authentication authentication, @Nullable @RequestParam(required = false, defaultValue = "0") final String sessionKey);
+
+    @JsonView(Listing.class)
+    @Operation(
+            summary = "Retrieve executions of workflow",
+            description = "Retrieve executions of workflow",
+            security = @SecurityRequirement(name = "oauth2"),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Delete successful", useReturnTypeSchema = true),
+                    @ApiResponse(responseCode = "500", description = "Delete incomplete", content = @Content(schema = @Schema(hidden = true))),
+            })
+    @GetMapping(value = "{id}/executions", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
+    ResponseEntity<List<Execution>> getExecutionsOfWorkflow(@PathVariable final String id);
 
 }

@@ -3,7 +3,9 @@ package com.smateso.proof.application.controller;
 import com.smateso.proof.adapter.boundaries.controller.IWorkflowController;
 import com.smateso.proof.adapter.boundaries.services.IWorkflowInteractor;
 import com.smateso.proof.adapter.model.Request;
+import edu.kit.iai.webis.proofmodels.dao.ExecutionDao;
 import edu.kit.iai.webis.proofmodels.dao.WorkflowDao;
+import edu.kit.iai.webis.proofmodels.dto.Execution;
 import edu.kit.iai.webis.proofmodels.dto.WorkflowRequest;
 import edu.kit.iai.webis.proofmodels.dto.WorkflowResponse;
 import edu.kit.iai.webis.proofmodels.paging.WorkflowPagingModel;
@@ -88,6 +90,17 @@ public class WorkflowController implements IWorkflowController {
         final var username = getUsername(authentication);
         this.workflowInteractor.deleteWorkflow(id, sessionKey, username);
         return ResponseEntity.ok().build();
+    }
+
+    @Override
+    public ResponseEntity<List<Execution>> getExecutionsOfWorkflow(@NonNull final String id) {
+        final var executions = this.workflowInteractor.getExecutionsOfWorkflow(id);
+        final var results = executions
+                .stream()
+                .map(ExecutionDao::convert)
+                .map(ExecutionController::attachLinks)
+                .toList();
+        return ResponseEntity.ok(results);
     }
 
 }
