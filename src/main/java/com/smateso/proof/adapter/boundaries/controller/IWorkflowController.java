@@ -3,7 +3,8 @@ package com.smateso.proof.adapter.boundaries.controller;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.smateso.proof.adapter.model.Request;
 import edu.kit.iai.webis.proofmodels.dto.Execution;
-import edu.kit.iai.webis.proofmodels.dto.Workflow;
+import edu.kit.iai.webis.proofmodels.dto.WorkflowRequest;
+import edu.kit.iai.webis.proofmodels.dto.WorkflowResponse;
 import edu.kit.iai.webis.proofmodels.paging.WorkflowPagingModel;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -50,7 +51,7 @@ public interface IWorkflowController {
                     @ApiResponse(responseCode = "500", description = "Retrieval incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @GetMapping(consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<List<Workflow>> getWorkflows();
+    ResponseEntity<List<WorkflowResponse>> getWorkflows();
 
     @JsonView(Detail.class)
     @Operation(
@@ -62,7 +63,7 @@ public interface IWorkflowController {
                     @ApiResponse(responseCode = "500", description = "Retrieval incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @GetMapping(value = "export", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<List<Workflow>> exportWorkflows();
+    ResponseEntity<List<WorkflowResponse>> exportWorkflows();
 
     @JsonView(Detail.class)
     @Operation(
@@ -74,7 +75,7 @@ public interface IWorkflowController {
                     @ApiResponse(responseCode = "500", description = "Retrieval incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @GetMapping(value = "{id}", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<Workflow> getWorkflow(@PathVariable(value = "id") final String id);
+    ResponseEntity<WorkflowResponse> getWorkflow(@PathVariable(value = "id") final String id);
 
     @JsonView(Detail.class)
     @Operation(
@@ -86,7 +87,7 @@ public interface IWorkflowController {
                     @ApiResponse(responseCode = "500", description = "Create incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<Workflow> createWorkflow(@RequestBody final Workflow workflow, final Authentication authentication, @Nullable @RequestParam(required = false, defaultValue = "0") final String sessionKey);
+    ResponseEntity<WorkflowResponse> createWorkflow(@RequestBody final WorkflowRequest workflow, final Authentication authentication, @Nullable @RequestParam(required = false, defaultValue = "0") final String sessionKey);
 
     @JsonView(Detail.class)
     @Operation(
@@ -98,7 +99,7 @@ public interface IWorkflowController {
                     @ApiResponse(responseCode = "500", description = "Update incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @PostMapping(value = "{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<Workflow> updateWorkflow(@PathVariable(value = "id") final String id, @RequestBody final Workflow workflow, final Authentication authentication, @Nullable @RequestParam(required = false, defaultValue = "0") final String sessionKey);
+    ResponseEntity<WorkflowResponse> updateWorkflow(@PathVariable(value = "id") final String id, @RequestBody final WorkflowRequest workflow, final Authentication authentication, @Nullable @RequestParam(required = false, defaultValue = "0") final String sessionKey);
 
     @JsonView(Detail.class)
     @Operation(

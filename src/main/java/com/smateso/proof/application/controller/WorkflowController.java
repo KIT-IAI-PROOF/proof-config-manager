@@ -4,7 +4,8 @@ import com.smateso.proof.adapter.boundaries.controller.IWorkflowController;
 import com.smateso.proof.adapter.boundaries.services.IWorkflowInteractor;
 import com.smateso.proof.adapter.model.Request;
 import edu.kit.iai.webis.proofmodels.dto.Execution;
-import edu.kit.iai.webis.proofmodels.dto.Workflow;
+import edu.kit.iai.webis.proofmodels.dto.WorkflowRequest;
+import edu.kit.iai.webis.proofmodels.dto.WorkflowResponse;
 import edu.kit.iai.webis.proofmodels.paging.WorkflowPagingModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,7 +26,7 @@ public class WorkflowController implements IWorkflowController {
     private final IWorkflowInteractor workflowInteractor;
 
     @NonNull
-    private static Workflow attachLinks(@NonNull final Workflow workflow) {
+    private static WorkflowResponse attachLinks(@NonNull final WorkflowResponse workflow) {
         final var selfLink = linkTo(WorkflowController.class).slash(workflow.getId()).withSelfRel();
         workflow.add(selfLink);
         return workflow;
@@ -39,32 +40,32 @@ public class WorkflowController implements IWorkflowController {
     }
 
     @Override
-    public ResponseEntity<List<Workflow>> getWorkflows() {
+    public ResponseEntity<List<WorkflowResponse>> getWorkflows() {
         final var workflows = this.workflowInteractor.getWorkflows();
         final var results = workflows.stream().map(WorkflowController::attachLinks).toList();
         return ResponseEntity.ok(results);
     }
 
     @Override
-    public ResponseEntity<List<Workflow>> exportWorkflows() {
+    public ResponseEntity<List<WorkflowResponse>> exportWorkflows() {
         return this.getWorkflows();
     }
 
     @Override
-    public ResponseEntity<Workflow> getWorkflow(final String id) {
+    public ResponseEntity<WorkflowResponse> getWorkflow(final String id) {
         final var workflow = this.workflowInteractor.getWorkflow(id);
         return ResponseEntity.ok(workflow);
     }
 
     @Override
-    public ResponseEntity<Workflow> createWorkflow(@NonNull final Workflow workflow, @NonNull final Authentication authentication, @Nullable final String sessionKey) {
+    public ResponseEntity<WorkflowResponse> createWorkflow(@NonNull final WorkflowRequest workflow, @NonNull final Authentication authentication, @Nullable final String sessionKey) {
         final var username = getUsername(authentication);
         final var result = this.workflowInteractor.createWorkflow(workflow, sessionKey, username);
         return ResponseEntity.ok(result);
     }
 
     @Override
-    public ResponseEntity<Workflow> updateWorkflow(@NonNull final String workflowId, @NonNull final Workflow workflow, @NonNull final Authentication authentication, @Nullable final String sessionKey) {
+    public ResponseEntity<WorkflowResponse> updateWorkflow(@NonNull final String workflowId, @NonNull final WorkflowRequest workflow, @NonNull final Authentication authentication, @Nullable final String sessionKey) {
         final var username = getUsername(authentication);
         final var result = this.workflowInteractor.updateWorkflow(workflowId, workflow, sessionKey, username);
         return ResponseEntity.ok(result);
