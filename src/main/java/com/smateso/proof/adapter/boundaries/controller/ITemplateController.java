@@ -39,7 +39,7 @@ public interface ITemplateController {
     @PostMapping(value = "search", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
     ResponseEntity<TemplatePagingModel> searchTemplates(@RequestBody final Request request);
 
-    @JsonView(Listing.class)
+    @JsonView(Detail.class)
     @Operation(
             summary = "Retrieve templates",
             description = "Retrieve templates",

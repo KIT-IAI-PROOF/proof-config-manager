@@ -39,7 +39,7 @@ public interface IProgramController {
     @PostMapping(value = "search", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
     ResponseEntity<ProgramPagingModel> searchPrograms(@RequestBody final Request request);
 
-    @JsonView(Listing.class)
+    @JsonView(Detail.class)
     @Operation(
             summary = "Retrieve programs",
             description = "Retrieve programs",

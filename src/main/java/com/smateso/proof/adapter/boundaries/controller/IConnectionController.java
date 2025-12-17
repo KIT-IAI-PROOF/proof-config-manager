@@ -39,7 +39,7 @@ public interface IConnectionController {
     @PostMapping(value = "search", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
     ResponseEntity<ConnectionPagingModel> searchConnections(@RequestBody final Request request);
 
-    @JsonView(Listing.class)
+    @JsonView(Detail.class)
     @Operation(
             summary = "Retrieve connections",
             description = "Retrieve connections",

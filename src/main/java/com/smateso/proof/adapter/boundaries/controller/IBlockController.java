@@ -39,7 +39,7 @@ public interface IBlockController {
     @PostMapping(value = "search", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
     ResponseEntity<BlockPagingModel> searchBlocks(@RequestBody final Request request);
 
-    @JsonView(Listing.class)
+    @JsonView(Detail.class)
     @Operation(
             summary = "Retrieve blocks",
             description = "Retrieve blocks",

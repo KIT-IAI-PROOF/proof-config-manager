@@ -39,7 +39,7 @@ public interface IAttachmentController {
     @PostMapping(value = "search", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
     ResponseEntity<AttachmentPagingModel> searchAttachments(@RequestBody final Request request);
 
-    @JsonView(Listing.class)
+    @JsonView(Detail.class)
     @Operation(
             summary = "Retrieve attachments",
             description = "Retrieve attachments",

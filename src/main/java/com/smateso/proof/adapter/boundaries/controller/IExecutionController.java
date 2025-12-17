@@ -43,7 +43,7 @@ public interface IExecutionController {
     @PostMapping(value = "search", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
     ResponseEntity<ExecutionPagingModel> searchExecutions(@RequestBody final Request request);
 
-    @JsonView(Listing.class)
+    @JsonView(Detail.class)
     @Operation(
             summary = "Retrieve executions",
             description = "Retrieve executions",
