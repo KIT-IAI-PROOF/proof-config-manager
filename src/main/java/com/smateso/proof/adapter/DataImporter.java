@@ -41,7 +41,7 @@ public class DataImporter implements CommandLineRunner {
     public void run(final String... args) {
         this.evictAllCaches();
         try {
-            final var resource = new ClassPathResource("import.json");
+            final var resource = new ClassPathResource("workflow.import.json");
             final var inputStream = resource.getInputStream();
             final var workflow = objectMapper.readValue(inputStream, WorkflowDao.class);
             workflowRepository.saveAll(List.of(workflow));

@@ -67,6 +67,10 @@ spring:
 timezone: Europe/Berlin
 springdoc:
   show-actuator: false
+  swagger-ui:
+    enabled: false
+  api-docs:
+    enabled: false
 logging:
   level:
     root: info
