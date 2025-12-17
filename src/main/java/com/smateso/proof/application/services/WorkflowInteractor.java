@@ -28,7 +28,7 @@ import static java.util.Objects.requireNonNull;
 @AllArgsConstructor
 public class WorkflowInteractor implements IWorkflowInteractor {
 
-    private static final List<String> COMPLEX_FIELDS = List.of("stepBasedConfig", "stepSizeDefinitions", "blocks", "executions", "inputs", "outputs", "eventLifeCycles", "blockIODefinitions", "connections", "points");
+    private static final List<String> COMPLEX_FIELDS = List.of("stepBasedConfig", "stepSizeDefinitions", "blocks", "inputs", "outputs", "eventLifeCycles", "blockIODefinitions", "connections", "points");
     private static final String ENTITY_WORKFLOW = "workflows";
     private final IMessageInteractor messageInteractor;
     private final WorkflowRepository workflowRepository;
