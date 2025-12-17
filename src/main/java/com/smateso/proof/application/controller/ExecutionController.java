@@ -3,7 +3,6 @@ package com.smateso.proof.application.controller;
 import com.smateso.proof.adapter.boundaries.controller.IExecutionController;
 import com.smateso.proof.adapter.boundaries.services.IExecutionInteractor;
 import com.smateso.proof.adapter.model.Request;
-import edu.kit.iai.webis.proofmodels.dao.ExecutionDao;
 import edu.kit.iai.webis.proofmodels.dto.Execution;
 import edu.kit.iai.webis.proofmodels.paging.ExecutionPagingModel;
 import lombok.AllArgsConstructor;
@@ -37,11 +36,7 @@ public class ExecutionController implements IExecutionController {
         final var result = ExecutionPagingModel
                 .builder()
                 .rowCount(executions.getTotalElements())
-                .results(executions
-                        .stream()
-                        .map(ExecutionDao::convert)
-                        .map(ExecutionController::attachLinks)
-                        .toList())
+                .results(executions.map(ExecutionController::attachLinks).toList())
                 .build();
         return ResponseEntity.ok(result);
     }
@@ -51,7 +46,6 @@ public class ExecutionController implements IExecutionController {
         final var executions = this.executionInteractor.getExecutions();
         final var results = executions
                 .stream()
-                .map(ExecutionDao::convert)
                 .map(ExecutionController::attachLinks)
                 .toList();
         return ResponseEntity.ok(results);
@@ -59,21 +53,21 @@ public class ExecutionController implements IExecutionController {
 
     @Override
     public ResponseEntity<Execution> getExecution(final String id) {
-        final var execution = this.executionInteractor.getExecution(id).convert();
+        final var execution = this.executionInteractor.getExecution(id);
         return ResponseEntity.ok(execution);
     }
 
     @Override
     public ResponseEntity<Execution> createExecution(@NonNull final Execution execution, @NonNull final Authentication authentication, @Nullable final String sessionKey) {
         final var username = getUsername(authentication);
-        final var result = this.executionInteractor.createExecution(execution.convert(), sessionKey, username).convert();
+        final var result = this.executionInteractor.createExecution(execution, sessionKey, username);
         return ResponseEntity.ok(result);
     }
 
     @Override
     public ResponseEntity<Execution> updateExecution(@NonNull final String executionId, @NonNull final Execution execution, @NonNull final Authentication authentication, @Nullable final String sessionKey) {
         final var username = getUsername(authentication);
-        final var result = this.executionInteractor.updateExecution(executionId, execution.convert(), sessionKey, username).convert();
+        final var result = this.executionInteractor.updateExecution(executionId, execution, sessionKey, username);
         return ResponseEntity.ok(result);
     }
 

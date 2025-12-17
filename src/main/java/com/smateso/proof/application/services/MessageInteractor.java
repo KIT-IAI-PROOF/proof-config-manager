@@ -4,9 +4,11 @@ import com.smateso.proof.adapter.boundaries.services.IMessageInteractor;
 import com.smateso.proof.adapter.model.Action;
 import com.smateso.proof.adapter.model.Message;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.core.*;
+import org.springframework.amqp.core.AmqpAdmin;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.QueueBuilder;
+import org.springframework.amqp.core.TopicExchange;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -21,12 +23,10 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
  * functionality for handling the generation and delivery of these messages.
  */
 @Slf4j
-@Builder
 @AllArgsConstructor
 public class MessageInteractor implements IMessageInteractor {
 
     private final SimpMessagingTemplate simpMessagingTemplate;
-    private final AmqpTemplate amqpTemplate;
     private final AmqpAdmin amqpAdmin;
 
     /**

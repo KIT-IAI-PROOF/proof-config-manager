@@ -3,7 +3,6 @@ package com.smateso.proof.application.controller;
 import com.smateso.proof.adapter.boundaries.controller.IProgramController;
 import com.smateso.proof.adapter.boundaries.services.IProgramInteractor;
 import com.smateso.proof.adapter.model.Request;
-import edu.kit.iai.webis.proofmodels.dao.ProgramDao;
 import edu.kit.iai.webis.proofmodels.dto.Program;
 import edu.kit.iai.webis.proofmodels.paging.ProgramPagingModel;
 import lombok.AllArgsConstructor;
@@ -37,11 +36,7 @@ public class ProgramController implements IProgramController {
         final var result = ProgramPagingModel
                 .builder()
                 .rowCount(programs.getTotalElements())
-                .results(programs
-                        .stream()
-                        .map(ProgramDao::convert)
-                        .map(ProgramController::attachLinks)
-                        .toList())
+                .results(programs.map(ProgramController::attachLinks).toList())
                 .build();
         return ResponseEntity.ok(result);
     }
@@ -51,7 +46,6 @@ public class ProgramController implements IProgramController {
         final var programs = this.programInteractor.getPrograms();
         final var results = programs
                 .stream()
-                .map(ProgramDao::convert)
                 .map(ProgramController::attachLinks)
                 .toList();
         return ResponseEntity.ok(results);
@@ -64,21 +58,21 @@ public class ProgramController implements IProgramController {
 
     @Override
     public ResponseEntity<Program> getProgram(final String id) {
-        final var program = this.programInteractor.getProgram(id).convert();
+        final var program = this.programInteractor.getProgram(id);
         return ResponseEntity.ok(program);
     }
 
     @Override
     public ResponseEntity<Program> createProgram(@NonNull final Program program, @NonNull final Authentication authentication, @Nullable final String sessionKey) {
         final var username = getUsername(authentication);
-        final var result = this.programInteractor.createProgram(program.convert(), sessionKey, username).convert();
+        final var result = this.programInteractor.createProgram(program, sessionKey, username);
         return ResponseEntity.ok(result);
     }
 
     @Override
     public ResponseEntity<Program> updateProgram(@NonNull final String programId, @NonNull final Program program, @NonNull final Authentication authentication, @Nullable final String sessionKey) {
         final var username = getUsername(authentication);
-        final var result = this.programInteractor.updateProgram(programId, program.convert(), sessionKey, username).convert();
+        final var result = this.programInteractor.updateProgram(programId, program, sessionKey, username);
         return ResponseEntity.ok(result);
     }
 

@@ -3,7 +3,6 @@ package com.smateso.proof.application.controller;
 import com.smateso.proof.adapter.boundaries.controller.IBlockController;
 import com.smateso.proof.adapter.boundaries.services.IBlockInteractor;
 import com.smateso.proof.adapter.model.Request;
-import edu.kit.iai.webis.proofmodels.dao.BlockDao;
 import edu.kit.iai.webis.proofmodels.dto.Block;
 import edu.kit.iai.webis.proofmodels.paging.BlockPagingModel;
 import lombok.AllArgsConstructor;
@@ -37,11 +36,7 @@ public class BlockController implements IBlockController {
         final var result = BlockPagingModel
                 .builder()
                 .rowCount(blocks.getTotalElements())
-                .results(blocks
-                        .stream()
-                        .map(BlockDao::convert)
-                        .map(BlockController::attachLinks)
-                        .toList())
+                .results(blocks.map(BlockController::attachLinks).toList())
                 .build();
         return ResponseEntity.ok(result);
     }
@@ -51,7 +46,6 @@ public class BlockController implements IBlockController {
         final var blocks = this.blockInteractor.getBlocks();
         final var results = blocks
                 .stream()
-                .map(BlockDao::convert)
                 .map(BlockController::attachLinks)
                 .toList();
         return ResponseEntity.ok(results);
@@ -64,21 +58,21 @@ public class BlockController implements IBlockController {
 
     @Override
     public ResponseEntity<Block> getBlock(final String id) {
-        final var block = this.blockInteractor.getBlock(id).convert();
+        final var block = this.blockInteractor.getBlock(id);
         return ResponseEntity.ok(block);
     }
 
     @Override
     public ResponseEntity<Block> createBlock(@NonNull final Block block, @NonNull final Authentication authentication, @Nullable final String sessionKey) {
         final var username = getUsername(authentication);
-        final var result = this.blockInteractor.createBlock(block.convert(), sessionKey, username).convert();
+        final var result = this.blockInteractor.createBlock(block, sessionKey, username);
         return ResponseEntity.ok(result);
     }
 
     @Override
     public ResponseEntity<Block> updateBlock(@NonNull final String blockId, @NonNull final Block block, @NonNull final Authentication authentication, @Nullable final String sessionKey) {
         final var username = getUsername(authentication);
-        final var result = this.blockInteractor.updateBlock(blockId, block.convert(), sessionKey, username).convert();
+        final var result = this.blockInteractor.updateBlock(blockId, block, sessionKey, username);
         return ResponseEntity.ok(result);
     }
 

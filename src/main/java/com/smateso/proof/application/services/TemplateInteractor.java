@@ -2,83 +2,94 @@ package com.smateso.proof.application.services;
 
 import com.smateso.proof.adapter.boundaries.services.IMessageInteractor;
 import com.smateso.proof.adapter.boundaries.services.ITemplateInteractor;
+import com.smateso.proof.adapter.exceptions.AlreadyExistsException;
+import com.smateso.proof.adapter.exceptions.InUseException;
 import com.smateso.proof.adapter.exceptions.NotFoundException;
 import com.smateso.proof.adapter.model.Request;
 import com.smateso.proof.adapter.repositories.TemplateRepository;
 import edu.kit.iai.webis.proofmodels.dao.TemplateDao;
+import edu.kit.iai.webis.proofmodels.dto.Template;
+import edu.kit.iai.webis.proofmodels.mapper.TemplateMapper;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 import java.util.List;
+import java.util.Objects;
 
 import static com.smateso.proof.adapter.model.Action.*;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createPageable;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createSpecification;
-import static com.smateso.proof.application.utils.LogMessages.TEMPLATE_DAO_NOT_FOUND_MESSAGE;
-import static com.smateso.proof.application.utils.PropertyCopyHelper.deepCopyEntityProperties;
+import static com.smateso.proof.application.utils.LogMessages.*;
 import static java.util.Objects.requireNonNull;
 
 @Slf4j
-@Builder
 @AllArgsConstructor
 public class TemplateInteractor implements ITemplateInteractor {
 
-    private static final List<String> COMPLEX_FIELDS = List.of("inputs", "outputs", "eventLifeCycles", "blockIODefinitions");
     private static final String ENTITY_TEMPLATE = "templates";
     private final IMessageInteractor messageInteractor;
     private final TemplateRepository templateRepository;
+    private final TemplateMapper templateMapper;
 
     @Override
-    public Page<TemplateDao> searchTemplates(@NonNull final Request request) {
+    public Page<Template> searchTemplates(@NonNull final Request request) {
         final Specification<TemplateDao> specification = createSpecification(request);
         final var pageable = createPageable(request);
-        return this.templateRepository.findAll(specification, pageable);
+        final var result = this.templateRepository.findAll(specification, pageable);
+        return result.map(this.templateMapper::convert);
     }
 
     @Override
-    public List<TemplateDao> getTemplates() {
-        return this.templateRepository.findAll();
+    public List<Template> getTemplates() {
+        final var result = this.templateRepository.findAll();
+        return this.templateMapper.convert(result);
     }
 
     @Override
-    public TemplateDao getTemplate(@NonNull final String id) {
+    public Template getTemplate(@NonNull final String id) {
         final var result = this.templateRepository.findById(id);
-        if (result.isPresent()) return result.get();
+        if (result.isPresent()) return this.templateMapper.convert(result.get());
         else throw new NotFoundException(TEMPLATE_DAO_NOT_FOUND_MESSAGE.formatted(id));
     }
 
     @Override
-    public TemplateDao createTemplate(@NonNull final TemplateDao templateDao, @Nullable final String sessionKey, @NonNull final String username) {
-        final var result = this.templateRepository.save(templateDao);
-        this.messageInteractor.sendUpdate(ENTITY_TEMPLATE, requireNonNull(result.getId()), CREATED, sessionKey, username);
-        return result;
+    public Template createTemplate(@NonNull final Template template, @Nullable final String sessionKey, @NonNull final String username) {
+        if (Objects.nonNull(template.getId()) && !templateRepository.existsById(template.getId())) {
+            final var result = this.templateRepository.save(this.templateMapper.convert(template));
+            this.messageInteractor.sendUpdate(ENTITY_TEMPLATE, requireNonNull(result.getId()), CREATED, sessionKey, username);
+            return this.templateMapper.convert(result);
+        } else {
+            throw new AlreadyExistsException(TEMPLATE_DAO_EXISTS.formatted(template.getId()));
+        }
     }
 
     @Override
-    public TemplateDao updateTemplate(@NonNull final String id, @NonNull final TemplateDao partial, @Nullable final String sessionKey, @NonNull final String username) {
+    public Template updateTemplate(@NonNull final String id, @NonNull final Template partial, @Nullable final String sessionKey, @NonNull final String username) {
         final var optionalTemplate = this.templateRepository.findById(id);
         if (optionalTemplate.isPresent()) {
             final var template = optionalTemplate.get();
-            deepCopyEntityProperties(partial, template, true, List.of(), COMPLEX_FIELDS);
+            this.templateMapper.patch(partial, template);
             final var result = this.templateRepository.save(template);
             this.messageInteractor.sendUpdate(ENTITY_TEMPLATE, requireNonNull(result.getId()), UPDATED, sessionKey, username);
-            return result;
+            return this.templateMapper.convert(result);
         } else {
-            final var result = this.templateRepository.save(partial);
-            this.messageInteractor.sendUpdate(ENTITY_TEMPLATE, requireNonNull(result.getId()), UPDATED, sessionKey, username);
-            return result;
+            throw new NotFoundException(TEMPLATE_DAO_NOT_FOUND_MESSAGE.formatted(id));
         }
     }
 
     @Override
     public void deleteTemplate(@NonNull final String id, @Nullable final String sessionKey, @NonNull final String username) {
-        this.templateRepository.deleteById(id);
-        this.messageInteractor.sendUpdate(ENTITY_TEMPLATE, id, DELETED, sessionKey, username);
+        try {
+            this.templateRepository.deleteById(id);
+            this.messageInteractor.sendUpdate(ENTITY_TEMPLATE, id, DELETED, sessionKey, username);
+        } catch (final DataIntegrityViolationException e) {
+            throw new InUseException(TEMPLATE_DAO_IN_USE_MESSAGE.formatted(id));
+        }
     }
 
 }

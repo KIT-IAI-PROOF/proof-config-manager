@@ -2,13 +2,15 @@ package com.smateso.proof.application.services;
 
 import com.smateso.proof.adapter.boundaries.services.IAttachmentInteractor;
 import com.smateso.proof.adapter.boundaries.services.IMessageInteractor;
+import com.smateso.proof.adapter.exceptions.AlreadyExistsException;
 import com.smateso.proof.adapter.exceptions.InUseException;
 import com.smateso.proof.adapter.exceptions.NotFoundException;
 import com.smateso.proof.adapter.model.Request;
 import com.smateso.proof.adapter.repositories.AttachmentRepository;
 import edu.kit.iai.webis.proofmodels.dao.AttachmentDao;
+import edu.kit.iai.webis.proofmodels.dto.Attachment;
+import edu.kit.iai.webis.proofmodels.mapper.AttachmentMapper;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -17,64 +19,66 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 import java.util.List;
+import java.util.Objects;
 
 import static com.smateso.proof.adapter.model.Action.*;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createPageable;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createSpecification;
-import static com.smateso.proof.application.utils.LogMessages.ATTACHMENT_DAO_IN_USE_MESSAGE;
-import static com.smateso.proof.application.utils.LogMessages.ATTACHMENT_DAO_NOT_FOUND_MESSAGE;
-import static com.smateso.proof.application.utils.PropertyCopyHelper.deepCopyEntityProperties;
+import static com.smateso.proof.application.utils.LogMessages.*;
 import static java.util.Objects.requireNonNull;
 
 @Slf4j
-@Builder
 @AllArgsConstructor
 public class AttachmentInteractor implements IAttachmentInteractor {
 
-    private static final List<String> COMPLEX_FIELDS = List.of();
     private static final String ENTITY_ATTACHMENT = "attachments";
     private final IMessageInteractor messageInteractor;
     private final AttachmentRepository attachmentRepository;
+    private final AttachmentMapper attachmentMapper;
 
     @Override
-    public Page<AttachmentDao> searchAttachments(@NonNull final Request request) {
+    public Page<Attachment> searchAttachments(@NonNull final Request request) {
         final Specification<AttachmentDao> specification = createSpecification(request);
         final var pageable = createPageable(request);
-        return this.attachmentRepository.findAll(specification, pageable);
+        final var result = this.attachmentRepository.findAll(specification, pageable);
+        return result.map(this.attachmentMapper::convert);
     }
 
     @Override
-    public List<AttachmentDao> getAttachments() {
-        return this.attachmentRepository.findAll();
+    public List<Attachment> getAttachments() {
+        final var result = this.attachmentRepository.findAll();
+        return this.attachmentMapper.convert(result);
     }
 
     @Override
-    public AttachmentDao getAttachment(@NonNull final String id) {
+    public Attachment getAttachment(@NonNull final String id) {
         final var result = this.attachmentRepository.findById(id);
-        if (result.isPresent()) return result.get();
+        if (result.isPresent()) return this.attachmentMapper.convert(result.get());
         else throw new NotFoundException(ATTACHMENT_DAO_NOT_FOUND_MESSAGE.formatted(id));
     }
 
     @Override
-    public AttachmentDao createAttachment(@NonNull final AttachmentDao attachmentDao, @Nullable final String sessionKey, @NonNull final String username) {
-        final var result = this.attachmentRepository.save(attachmentDao);
-        this.messageInteractor.sendUpdate(ENTITY_ATTACHMENT, requireNonNull(result.getId()), CREATED, sessionKey, username);
-        return result;
+    public Attachment createAttachment(@NonNull final Attachment attachment, @Nullable final String sessionKey, @NonNull final String username) {
+        if (Objects.nonNull(attachment.getId()) && !attachmentRepository.existsById(attachment.getId())) {
+            final var result = this.attachmentRepository.save(this.attachmentMapper.convert(attachment));
+            this.messageInteractor.sendUpdate(ENTITY_ATTACHMENT, requireNonNull(result.getId()), CREATED, sessionKey, username);
+            return this.attachmentMapper.convert(result);
+        } else {
+            throw new AlreadyExistsException(ATTACHMENT_DAO_EXISTS.formatted(attachment.getId()));
+        }
     }
 
     @Override
-    public AttachmentDao updateAttachment(@NonNull final String id, @NonNull final AttachmentDao partial, @Nullable final String sessionKey, @NonNull final String username) {
+    public Attachment updateAttachment(@NonNull final String id, @NonNull final Attachment partial, @Nullable final String sessionKey, @NonNull final String username) {
         final var optionalAttachment = this.attachmentRepository.findById(id);
         if (optionalAttachment.isPresent()) {
             final var attachment = optionalAttachment.get();
-            deepCopyEntityProperties(partial, attachment, true, List.of(), COMPLEX_FIELDS);
+            this.attachmentMapper.patch(partial, attachment);
             final var result = this.attachmentRepository.save(attachment);
             this.messageInteractor.sendUpdate(ENTITY_ATTACHMENT, requireNonNull(result.getId()), UPDATED, sessionKey, username);
-            return result;
+            return this.attachmentMapper.convert(result);
         } else {
-            final var result = this.attachmentRepository.save(partial);
-            this.messageInteractor.sendUpdate(ENTITY_ATTACHMENT, requireNonNull(result.getId()), UPDATED, sessionKey, username);
-            return result;
+            throw new NotFoundException(ATTACHMENT_DAO_NOT_FOUND_MESSAGE.formatted(id));
         }
     }
 
