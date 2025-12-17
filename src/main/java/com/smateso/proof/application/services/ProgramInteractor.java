@@ -31,7 +31,7 @@ import static java.util.Objects.requireNonNull;
 @AllArgsConstructor
 public class ProgramInteractor implements IProgramInteractor {
 
-    private static final List<String> COMPLEX_FIELDS = List.of();
+    private static final List<String> COMPLEX_FIELDS = List.of("attachments");
     private static final String ENTITY_PROGRAM = "programs";
     private final IMessageInteractor messageInteractor;
     private final ProgramRepository programRepository;
