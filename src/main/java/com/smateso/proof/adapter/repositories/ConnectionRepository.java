@@ -46,7 +46,6 @@ public interface ConnectionRepository extends JpaRepository<ConnectionDao, Strin
     @Cacheable(value = "connections", key = "#connectionId", unless = "#result == null")
     Optional<ConnectionDao> findById(@NonNull final String connectionId);
 
-    @NonNull
     @Override
     @Caching(
             evict = {

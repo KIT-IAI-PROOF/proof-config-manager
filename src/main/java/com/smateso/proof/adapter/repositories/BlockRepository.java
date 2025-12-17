@@ -46,7 +46,6 @@ public interface BlockRepository extends JpaRepository<BlockDao, String>, JpaSpe
     @Cacheable(value = "blocks", key = "#blockId", unless = "#result == null")
     Optional<BlockDao> findById(@NonNull final String blockId);
 
-    @NonNull
     @Override
     @Caching(
             evict = {

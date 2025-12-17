@@ -46,7 +46,6 @@ public interface TemplateRepository extends JpaRepository<TemplateDao, String>, 
     @Cacheable(value = "templates", key = "#templateId", unless = "#result == null")
     Optional<TemplateDao> findById(@NonNull final String templateId);
 
-    @NonNull
     @Override
     @Caching(
             evict = {

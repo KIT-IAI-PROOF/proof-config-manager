@@ -1,7 +1,6 @@
 package com.smateso.proof.adapter.repositories;
 
 import edu.kit.iai.webis.proofmodels.dao.ExecutionDao;
-import edu.kit.iai.webis.proofmodels.dao.WorkflowDao;
 import org.springframework.cache.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

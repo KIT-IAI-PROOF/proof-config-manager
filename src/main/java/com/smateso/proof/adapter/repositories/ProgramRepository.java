@@ -46,7 +46,6 @@ public interface ProgramRepository extends JpaRepository<ProgramDao, String>, Jp
     @Cacheable(value = "programs", key = "#programId", unless = "#result == null")
     Optional<ProgramDao> findById(@NonNull final String programId);
 
-    @NonNull
     @Override
     @Caching(
             evict = {
