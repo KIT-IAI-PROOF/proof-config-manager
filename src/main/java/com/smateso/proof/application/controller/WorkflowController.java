@@ -17,7 +17,6 @@ import org.springframework.security.core.Authentication;
 import java.util.List;
 
 import static com.smateso.proof.adapter.config.audit.AuditorProvider.getUsername;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @Builder
 @AllArgsConstructor
@@ -25,25 +24,17 @@ public class WorkflowController implements IWorkflowController {
 
     private final IWorkflowInteractor workflowInteractor;
 
-    @NonNull
-    private static WorkflowResponse attachLinks(@NonNull final WorkflowResponse workflow) {
-        final var selfLink = linkTo(WorkflowController.class).slash(workflow.getId()).withSelfRel();
-        workflow.add(selfLink);
-        return workflow;
-    }
-
     @Override
     public ResponseEntity<WorkflowPagingModel> searchWorkflows(@NonNull final Request request) {
         final var workflows = this.workflowInteractor.searchWorkflows(request);
-        final var result = WorkflowPagingModel.builder().rowCount(workflows.getTotalElements()).results(workflows.map(WorkflowController::attachLinks).toList()).build();
+        final var result = WorkflowPagingModel.builder().rowCount(workflows.getTotalElements()).results(workflows.toList()).build();
         return ResponseEntity.ok(result);
     }
 
     @Override
     public ResponseEntity<List<WorkflowResponse>> getWorkflows() {
         final var workflows = this.workflowInteractor.getWorkflows();
-        final var results = workflows.stream().map(WorkflowController::attachLinks).toList();
-        return ResponseEntity.ok(results);
+        return ResponseEntity.ok(workflows);
     }
 
     @Override
@@ -81,8 +72,7 @@ public class WorkflowController implements IWorkflowController {
     @Override
     public ResponseEntity<List<Execution>> getExecutionsOfWorkflow(@NonNull final String id) {
         final var executions = this.workflowInteractor.getExecutionsOfWorkflow(id);
-        final var results = executions.stream().map(ExecutionController::attachLinks).toList();
-        return ResponseEntity.ok(results);
+        return ResponseEntity.ok(executions);
     }
 
 }

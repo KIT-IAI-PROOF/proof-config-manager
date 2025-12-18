@@ -15,7 +15,6 @@ import org.springframework.security.core.Authentication;
 import java.util.List;
 
 import static com.smateso.proof.adapter.config.audit.AuditorProvider.getUsername;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @Builder
 @AllArgsConstructor
@@ -23,25 +22,21 @@ public class TemplateController implements ITemplateController {
 
     private final ITemplateInteractor templateInteractor;
 
-    @NonNull
-    private static Template attachLinks(@NonNull final Template template) {
-        final var selfLink = linkTo(TemplateController.class).slash(template.getId()).withSelfRel();
-        template.add(selfLink);
-        return template;
-    }
-
     @Override
     public ResponseEntity<TemplatePagingModel> searchTemplates(@NonNull final Request request) {
         final var templates = this.templateInteractor.searchTemplates(request);
-        final var result = TemplatePagingModel.builder().rowCount(templates.getTotalElements()).results(templates.map(TemplateController::attachLinks).toList()).build();
+        final var result = TemplatePagingModel
+                .builder()
+                .rowCount(templates.getTotalElements())
+                .results(templates.toList())
+                .build();
         return ResponseEntity.ok(result);
     }
 
     @Override
     public ResponseEntity<List<Template>> getTemplates() {
         final var templates = this.templateInteractor.getTemplates();
-        final var results = templates.stream().map(TemplateController::attachLinks).toList();
-        return ResponseEntity.ok(results);
+        return ResponseEntity.ok(templates);
     }
 
     @Override

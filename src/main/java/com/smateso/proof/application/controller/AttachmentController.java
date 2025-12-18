@@ -26,7 +26,6 @@ import static com.smateso.proof.adapter.config.audit.AuditorProvider.getUsername
 import static java.nio.file.Files.copy;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static java.util.Objects.requireNonNull;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.http.HttpStatus.CONFLICT;
 
 @Builder
@@ -36,12 +35,6 @@ public class AttachmentController implements IAttachmentController {
     private final IAttachmentInteractor attachmentInteractor;
     private final Path fileStorageRoot;
 
-    @NonNull
-    private static Attachment attachLinks(@NonNull final Attachment attachment) {
-        final var selfLink = linkTo(AttachmentController.class).slash(attachment.getId()).withSelfRel();
-        attachment.add(selfLink);
-        return attachment;
-    }
 
     @Override
     public ResponseEntity<AttachmentPagingModel> searchAttachments(@NonNull final Request request) {
@@ -49,7 +42,7 @@ public class AttachmentController implements IAttachmentController {
         final var result = AttachmentPagingModel
                 .builder()
                 .rowCount(attachments.getTotalElements())
-                .results(attachments.map(AttachmentController::attachLinks).toList())
+                .results(attachments.toList())
                 .build();
         return ResponseEntity.ok(result);
     }
@@ -57,11 +50,7 @@ public class AttachmentController implements IAttachmentController {
     @Override
     public ResponseEntity<List<Attachment>> getAttachments() {
         final var attachments = this.attachmentInteractor.getAttachments();
-        final var results = attachments
-                .stream()
-                .map(AttachmentController::attachLinks)
-                .toList();
-        return ResponseEntity.ok(results);
+        return ResponseEntity.ok(attachments);
     }
 
     @Override

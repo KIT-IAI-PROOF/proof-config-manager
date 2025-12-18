@@ -15,7 +15,6 @@ import org.springframework.security.core.Authentication;
 import java.util.List;
 
 import static com.smateso.proof.adapter.config.audit.AuditorProvider.getUsername;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @Builder
 @AllArgsConstructor
@@ -23,20 +22,13 @@ public class ExecutionController implements IExecutionController {
 
     private final IExecutionInteractor executionInteractor;
 
-    @NonNull
-    public static Execution attachLinks(@NonNull final Execution execution) {
-        final var selfLink = linkTo(ExecutionController.class).slash(execution.getId()).withSelfRel();
-        execution.add(selfLink);
-        return execution;
-    }
-
     @Override
     public ResponseEntity<ExecutionPagingModel> searchExecutions(@NonNull final Request request) {
         final var executions = this.executionInteractor.searchExecutions(request);
         final var result = ExecutionPagingModel
                 .builder()
                 .rowCount(executions.getTotalElements())
-                .results(executions.map(ExecutionController::attachLinks).toList())
+                .results(executions.toList())
                 .build();
         return ResponseEntity.ok(result);
     }
@@ -44,11 +36,7 @@ public class ExecutionController implements IExecutionController {
     @Override
     public ResponseEntity<List<Execution>> getExecutions() {
         final var executions = this.executionInteractor.getExecutions();
-        final var results = executions
-                .stream()
-                .map(ExecutionController::attachLinks)
-                .toList();
-        return ResponseEntity.ok(results);
+        return ResponseEntity.ok(executions);
     }
 
     @Override

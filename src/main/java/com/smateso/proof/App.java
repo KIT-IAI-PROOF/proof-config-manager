@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.servers.Server;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.hateoas.config.EnableHypermediaSupport;
 
 import static org.springframework.boot.SpringApplication.run;
 
@@ -34,7 +33,6 @@ import static org.springframework.boot.SpringApplication.run;
  * The main method is the entry point of the application and is responsible for launching the Spring Boot application.
  */
 @SpringBootApplication
-@EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.COLLECTION_JSON)
 @EntityScan("edu.kit.iai.webis.proofmodels")
 @ComponentScan(basePackages = {"edu.kit.iai.webis.proofmodels", "com.smateso.proof"})
 @OpenAPIDefinition(

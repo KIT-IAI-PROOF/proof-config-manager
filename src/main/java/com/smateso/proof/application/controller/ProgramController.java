@@ -15,28 +15,19 @@ import org.springframework.security.core.Authentication;
 import java.util.List;
 
 import static com.smateso.proof.adapter.config.audit.AuditorProvider.getUsername;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @Builder
 @AllArgsConstructor
 public class ProgramController implements IProgramController {
 
     private final IProgramInteractor programInteractor;
-
-    @NonNull
-    private static Program attachLinks(@NonNull final Program program) {
-        final var selfLink = linkTo(ProgramController.class).slash(program.getId()).withSelfRel();
-        program.add(selfLink);
-        return program;
-    }
-
     @Override
     public ResponseEntity<ProgramPagingModel> searchPrograms(@NonNull final Request request) {
         final var programs = this.programInteractor.searchPrograms(request);
         final var result = ProgramPagingModel
                 .builder()
                 .rowCount(programs.getTotalElements())
-                .results(programs.map(ProgramController::attachLinks).toList())
+                .results(programs.toList())
                 .build();
         return ResponseEntity.ok(result);
     }
@@ -44,11 +35,7 @@ public class ProgramController implements IProgramController {
     @Override
     public ResponseEntity<List<Program>> getPrograms() {
         final var programs = this.programInteractor.getPrograms();
-        final var results = programs
-                .stream()
-                .map(ProgramController::attachLinks)
-                .toList();
-        return ResponseEntity.ok(results);
+        return ResponseEntity.ok(programs);
     }
 
     @Override

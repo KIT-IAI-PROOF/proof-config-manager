@@ -15,7 +15,6 @@ import org.springframework.security.core.Authentication;
 import java.util.List;
 
 import static com.smateso.proof.adapter.config.audit.AuditorProvider.getUsername;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @Builder
 @AllArgsConstructor
@@ -23,20 +22,13 @@ public class BlockController implements IBlockController {
 
     private final IBlockInteractor blockInteractor;
 
-    @NonNull
-    private static Block attachLinks(@NonNull final Block block) {
-        final var selfLink = linkTo(BlockController.class).slash(block.getId()).withSelfRel();
-        block.add(selfLink);
-        return block;
-    }
-
     @Override
     public ResponseEntity<BlockPagingModel> searchBlocks(@NonNull final Request request) {
         final var blocks = this.blockInteractor.searchBlocks(request);
         final var result = BlockPagingModel
                 .builder()
                 .rowCount(blocks.getTotalElements())
-                .results(blocks.map(BlockController::attachLinks).toList())
+                .results(blocks.toList())
                 .build();
         return ResponseEntity.ok(result);
     }
@@ -44,11 +36,7 @@ public class BlockController implements IBlockController {
     @Override
     public ResponseEntity<List<Block>> getBlocks() {
         final var blocks = this.blockInteractor.getBlocks();
-        final var results = blocks
-                .stream()
-                .map(BlockController::attachLinks)
-                .toList();
-        return ResponseEntity.ok(results);
+        return ResponseEntity.ok(blocks);
     }
 
     @Override
