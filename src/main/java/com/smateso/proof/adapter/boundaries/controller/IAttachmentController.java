@@ -129,7 +129,7 @@ public interface IAttachmentController {
             description = "Download attachment",
             security = @SecurityRequirement(name = "oauth2"),
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Download successful", useReturnTypeSchema = true),
+                    @ApiResponse(responseCode = "200", description = "Download successful", content = @Content(schema = @Schema(hidden = true))),
                     @ApiResponse(responseCode = "500", description = "Download incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @GetMapping(value = "download", name = "download", consumes = ALL_VALUE)
