@@ -4,6 +4,7 @@ import com.smateso.proof.adapter.boundaries.services.IBlockInteractor;
 import com.smateso.proof.adapter.boundaries.services.IMessageInteractor;
 import com.smateso.proof.adapter.exceptions.AlreadyExistsException;
 import com.smateso.proof.adapter.exceptions.InUseException;
+import com.smateso.proof.adapter.exceptions.MismatchException;
 import com.smateso.proof.adapter.exceptions.NotFoundException;
 import com.smateso.proof.adapter.model.Request;
 import com.smateso.proof.adapter.repositories.BlockRepository;
@@ -24,7 +25,6 @@ import java.util.Objects;
 import static com.smateso.proof.adapter.model.Action.*;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createPageable;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createSpecification;
-import static com.smateso.proof.application.utils.LogMessages.*;
 import static java.util.Objects.requireNonNull;
 
 @Slf4j
@@ -54,7 +54,7 @@ public class BlockInteractor implements IBlockInteractor {
     public Block getBlock(@NonNull final String id) {
         final var result = this.blockRepository.findById(id);
         if (result.isPresent()) return this.blockMapper.convert(result.get());
-        else throw new NotFoundException(BLOCK_DAO_NOT_FOUND_MESSAGE.formatted(id));
+        else throw new NotFoundException("Block with id %s not found".formatted(id));
     }
 
     @Override
@@ -64,21 +64,21 @@ public class BlockInteractor implements IBlockInteractor {
             this.messageInteractor.sendUpdate(ENTITY_BLOCK, requireNonNull(result.getId()), CREATED, sessionKey, username);
             return this.blockMapper.convert(result);
         } else {
-            throw new AlreadyExistsException(BLOCK_DAO_EXISTS.formatted(block.getId()));
+            throw new AlreadyExistsException("Block with id %s already exists".formatted(block.getId()));
         }
     }
 
     @Override
-    public Block updateBlock(@NonNull final String id, @NonNull final Block partial, @Nullable final String sessionKey, @NonNull final String username) {
-        final var optionalBlock = this.blockRepository.findById(id);
-        if (optionalBlock.isPresent()) {
-            final var block = optionalBlock.get();
-            this.blockMapper.patch(partial, block);
-            final var result = this.blockRepository.save(block);
+    public Block updateBlock(@NonNull final String id, @NonNull final Block update, @Nullable final String sessionKey, @NonNull final String username) {
+        if (!Objects.equals(id, update.getId())) {
+            throw new MismatchException("ID mismatch: Path ID (%s) does not match Request ID (%s)".formatted(id, update.getId()));
+        }
+        if (this.blockRepository.existsById(id)) {
+            final var result = this.blockRepository.save(this.blockMapper.convert(update));
             this.messageInteractor.sendUpdate(ENTITY_BLOCK, requireNonNull(result.getId()), UPDATED, sessionKey, username);
             return this.blockMapper.convert(result);
         } else {
-            throw new NotFoundException(BLOCK_DAO_NOT_FOUND_MESSAGE.formatted(id));
+            throw new NotFoundException("Block with id %s not found".formatted(id));
         }
     }
 
@@ -88,7 +88,7 @@ public class BlockInteractor implements IBlockInteractor {
             this.blockRepository.deleteById(id);
             this.messageInteractor.sendUpdate(ENTITY_BLOCK, id, DELETED, sessionKey, username);
         } catch (final DataIntegrityViolationException e) {
-            throw new InUseException(BLOCK_DAO_IN_USE_MESSAGE.formatted(id));
+            throw new InUseException("Block with id %s is still in use by another entity".formatted(id));
         }
     }
 

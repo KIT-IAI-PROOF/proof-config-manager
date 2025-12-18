@@ -4,6 +4,7 @@ import com.smateso.proof.adapter.boundaries.services.IExecutionInteractor;
 import com.smateso.proof.adapter.boundaries.services.IMessageInteractor;
 import com.smateso.proof.adapter.exceptions.AlreadyExistsException;
 import com.smateso.proof.adapter.exceptions.InUseException;
+import com.smateso.proof.adapter.exceptions.MismatchException;
 import com.smateso.proof.adapter.exceptions.NotFoundException;
 import com.smateso.proof.adapter.model.Request;
 import com.smateso.proof.adapter.repositories.ExecutionRepository;
@@ -20,11 +21,11 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 import java.util.List;
+import java.util.Objects;
 
 import static com.smateso.proof.adapter.model.Action.*;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createPageable;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createSpecification;
-import static com.smateso.proof.application.utils.LogMessages.*;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 
@@ -55,7 +56,7 @@ public class ExecutionInteractor implements IExecutionInteractor {
     public Execution getExecution(@NonNull final String id) {
         final var result = this.executionRepository.findById(id);
         if (result.isPresent()) return this.executionMapper.convert(result.get());
-        else throw new NotFoundException(EXECUTION_DAO_NOT_FOUND_MESSAGE.formatted(id));
+        else throw new NotFoundException("Execution with id %s not found".formatted(id));
     }
 
     @Override
@@ -65,21 +66,21 @@ public class ExecutionInteractor implements IExecutionInteractor {
             this.messageInteractor.sendUpdate(ENTITY_EXECUTION, requireNonNull(result.getId()), CREATED, sessionKey, username);
             return this.executionMapper.convert(result);
         } else {
-            throw new AlreadyExistsException(EXECUTION_DAO_EXISTS.formatted(execution.getId()));
+            throw new AlreadyExistsException("Execution with id %s already exists".formatted(execution.getId()));
         }
     }
 
     @Override
-    public Execution updateExecution(@NonNull final String id, @NonNull final Execution partial, @Nullable final String sessionKey, @NonNull final String username) {
-        final var optionalExecution = this.executionRepository.findById(id);
-        if (optionalExecution.isPresent()) {
-            final var execution = optionalExecution.get();
-            this.executionMapper.patch(partial, execution);
-            final var result = this.executionRepository.save(execution);
+    public Execution updateExecution(@NonNull final String id, @NonNull final Execution update, @Nullable final String sessionKey, @NonNull final String username) {
+        if (!Objects.equals(id, update.getId())) {
+            throw new MismatchException("ID mismatch: Path ID (%s) does not match Request ID (%s)".formatted(id, update.getId()));
+        }
+        if (this.executionRepository.existsById(id)) {
+            final var result = this.executionRepository.save(this.executionMapper.convert(update));
             this.messageInteractor.sendUpdate(ENTITY_EXECUTION, requireNonNull(result.getId()), UPDATED, sessionKey, username);
             return this.executionMapper.convert(result);
         } else {
-            throw new NotFoundException(EXECUTION_DAO_NOT_FOUND_MESSAGE.formatted(id));
+            throw new NotFoundException("Execution with id %s not found".formatted(id));
         }
     }
 
@@ -98,7 +99,7 @@ public class ExecutionInteractor implements IExecutionInteractor {
                 this.messageInteractor.sendUpdate(ENTITY_EXECUTION, id, DELETED, sessionKey, username);
             }
         } catch (final DataIntegrityViolationException e) {
-            throw new InUseException(EXECUTION_DAO_IN_USE_MESSAGE.formatted(id));
+            throw new InUseException("Execution with id %s is still in use by another entity".formatted(id));
         }
     }
 

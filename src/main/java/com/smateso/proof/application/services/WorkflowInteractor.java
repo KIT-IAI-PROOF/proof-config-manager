@@ -4,6 +4,7 @@ import com.smateso.proof.adapter.boundaries.services.IMessageInteractor;
 import com.smateso.proof.adapter.boundaries.services.IWorkflowInteractor;
 import com.smateso.proof.adapter.exceptions.AlreadyExistsException;
 import com.smateso.proof.adapter.exceptions.InUseException;
+import com.smateso.proof.adapter.exceptions.MismatchException;
 import com.smateso.proof.adapter.exceptions.NotFoundException;
 import com.smateso.proof.adapter.model.Request;
 import com.smateso.proof.adapter.repositories.ExecutionRepository;
@@ -29,7 +30,6 @@ import java.util.Objects;
 import static com.smateso.proof.adapter.model.Action.*;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createPageable;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createSpecification;
-import static com.smateso.proof.application.utils.LogMessages.*;
 import static java.util.Objects.requireNonNull;
 
 @Slf4j
@@ -61,7 +61,7 @@ public class WorkflowInteractor implements IWorkflowInteractor {
     public WorkflowResponse getWorkflow(@NonNull final String id) {
         final var result = this.workflowRepository.findById(id);
         if (result.isPresent()) return this.workflowMapper.convert(result.get());
-        else throw new NotFoundException(WORKFLOW_DAO_NOT_FOUND_MESSAGE.formatted(id));
+        else throw new NotFoundException("Workflow with id %s not found".formatted(id));
     }
 
     @Override
@@ -71,21 +71,21 @@ public class WorkflowInteractor implements IWorkflowInteractor {
             this.messageInteractor.sendUpdate(ENTITY_WORKFLOW, requireNonNull(result.getId()), CREATED, sessionKey, username);
             return this.workflowMapper.convert(result);
         } else {
-            throw new AlreadyExistsException(WORKFLOW_DAO_EXISTS.formatted(workflow.getId()));
+            throw new AlreadyExistsException("Workflow with id %s already exists".formatted(workflow.getId()));
         }
     }
 
     @Override
-    public WorkflowResponse updateWorkflow(@NonNull final String id, @NonNull final WorkflowRequest partial, @Nullable final String sessionKey, @NonNull final String username) {
-        final var optionalWorkflow = this.workflowRepository.findById(id);
-        if (optionalWorkflow.isPresent()) {
-            final var workflow = optionalWorkflow.get();
-            this.workflowMapper.patch(partial, workflow);
-            final var result = this.workflowRepository.save(workflow);
+    public WorkflowResponse updateWorkflow(@NonNull final String id, @NonNull final WorkflowRequest update, @Nullable final String sessionKey, @NonNull final String username) {
+        if (!Objects.equals(id, update.getId())) {
+            throw new MismatchException("ID mismatch: Path ID (%s) does not match Request ID (%s)".formatted(id, update.getId()));
+        }
+        if (this.workflowRepository.existsById(id)) {
+            final var result = this.workflowRepository.save(this.workflowMapper.convert(update));
             this.messageInteractor.sendUpdate(ENTITY_WORKFLOW, requireNonNull(result.getId()), UPDATED, sessionKey, username);
             return this.workflowMapper.convert(result);
         } else {
-            throw new NotFoundException(WORKFLOW_DAO_NOT_FOUND_MESSAGE.formatted(id));
+            throw new NotFoundException("Workflow with id %s not found".formatted(id));
         }
     }
 
@@ -97,7 +97,7 @@ public class WorkflowInteractor implements IWorkflowInteractor {
             this.workflowRepository.deleteById(id);
             this.messageInteractor.sendUpdate(ENTITY_WORKFLOW, id, DELETED, sessionKey, username);
         } catch (final DataIntegrityViolationException e) {
-            throw new InUseException(WORKFLOW_DAO_IN_USE_MESSAGE.formatted(id));
+            throw new InUseException("Workflow with id %s is still in use by another entity".formatted(id), e);
         }
     }
 

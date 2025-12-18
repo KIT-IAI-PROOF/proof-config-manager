@@ -4,6 +4,7 @@ import com.smateso.proof.adapter.boundaries.services.IAttachmentInteractor;
 import com.smateso.proof.adapter.boundaries.services.IMessageInteractor;
 import com.smateso.proof.adapter.exceptions.AlreadyExistsException;
 import com.smateso.proof.adapter.exceptions.InUseException;
+import com.smateso.proof.adapter.exceptions.MismatchException;
 import com.smateso.proof.adapter.exceptions.NotFoundException;
 import com.smateso.proof.adapter.model.Request;
 import com.smateso.proof.adapter.repositories.AttachmentRepository;
@@ -24,7 +25,6 @@ import java.util.Objects;
 import static com.smateso.proof.adapter.model.Action.*;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createPageable;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createSpecification;
-import static com.smateso.proof.application.utils.LogMessages.*;
 import static java.util.Objects.requireNonNull;
 
 @Slf4j
@@ -54,7 +54,7 @@ public class AttachmentInteractor implements IAttachmentInteractor {
     public Attachment getAttachment(@NonNull final String id) {
         final var result = this.attachmentRepository.findById(id);
         if (result.isPresent()) return this.attachmentMapper.convert(result.get());
-        else throw new NotFoundException(ATTACHMENT_DAO_NOT_FOUND_MESSAGE.formatted(id));
+        else throw new NotFoundException("Attachment with id %s not found".formatted(id));
     }
 
     @Override
@@ -64,21 +64,21 @@ public class AttachmentInteractor implements IAttachmentInteractor {
             this.messageInteractor.sendUpdate(ENTITY_ATTACHMENT, requireNonNull(result.getId()), CREATED, sessionKey, username);
             return this.attachmentMapper.convert(result);
         } else {
-            throw new AlreadyExistsException(ATTACHMENT_DAO_EXISTS.formatted(attachment.getId()));
+            throw new AlreadyExistsException("Attachment with id %s already exists".formatted(attachment.getId()));
         }
     }
 
     @Override
-    public Attachment updateAttachment(@NonNull final String id, @NonNull final Attachment partial, @Nullable final String sessionKey, @NonNull final String username) {
-        final var optionalAttachment = this.attachmentRepository.findById(id);
-        if (optionalAttachment.isPresent()) {
-            final var attachment = optionalAttachment.get();
-            this.attachmentMapper.patch(partial, attachment);
-            final var result = this.attachmentRepository.save(attachment);
+    public Attachment updateAttachment(@NonNull final String id, @NonNull final Attachment update, @Nullable final String sessionKey, @NonNull final String username) {
+        if (!Objects.equals(id, update.getId())) {
+            throw new MismatchException("ID mismatch: Path ID (%s) does not match Request ID (%s)".formatted(id, update.getId()));
+        }
+        if (this.attachmentRepository.existsById(id)) {
+            final var result = this.attachmentRepository.save(this.attachmentMapper.convert(update));
             this.messageInteractor.sendUpdate(ENTITY_ATTACHMENT, requireNonNull(result.getId()), UPDATED, sessionKey, username);
             return this.attachmentMapper.convert(result);
         } else {
-            throw new NotFoundException(ATTACHMENT_DAO_NOT_FOUND_MESSAGE.formatted(id));
+            throw new NotFoundException("Attachment with id %s not found".formatted(id));
         }
     }
 
@@ -88,7 +88,7 @@ public class AttachmentInteractor implements IAttachmentInteractor {
             this.attachmentRepository.deleteById(id);
             this.messageInteractor.sendUpdate(ENTITY_ATTACHMENT, id, DELETED, sessionKey, username);
         } catch (final DataIntegrityViolationException e) {
-            throw new InUseException(ATTACHMENT_DAO_IN_USE_MESSAGE.formatted(id));
+            throw new InUseException("Attachment with id %s is still in use by another entity".formatted(id));
         }
     }
 
