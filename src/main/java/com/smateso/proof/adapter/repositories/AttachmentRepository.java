@@ -46,7 +46,6 @@ public interface AttachmentRepository extends JpaRepository<AttachmentDao, Strin
     @Cacheable(value = "attachments", key = "#attachmentId", unless = "#result == null")
     Optional<AttachmentDao> findById(@NonNull final String attachmentId);
 
-    @NonNull
     @Override
     @Caching(
             evict = {

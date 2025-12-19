@@ -3,8 +3,6 @@ package com.smateso.proof.application.controller;
 import com.smateso.proof.adapter.boundaries.controller.IWorkflowController;
 import com.smateso.proof.adapter.boundaries.services.IWorkflowInteractor;
 import com.smateso.proof.adapter.model.Request;
-import edu.kit.iai.webis.proofmodels.dao.ExecutionDao;
-import edu.kit.iai.webis.proofmodels.dao.WorkflowDao;
 import edu.kit.iai.webis.proofmodels.dto.Execution;
 import edu.kit.iai.webis.proofmodels.dto.WorkflowRequest;
 import edu.kit.iai.webis.proofmodels.dto.WorkflowResponse;
@@ -37,26 +35,14 @@ public class WorkflowController implements IWorkflowController {
     @Override
     public ResponseEntity<WorkflowPagingModel> searchWorkflows(@NonNull final Request request) {
         final var workflows = this.workflowInteractor.searchWorkflows(request);
-        final var result = WorkflowPagingModel
-                .builder()
-                .rowCount(workflows.getTotalElements())
-                .results(workflows
-                        .stream()
-                        .map(WorkflowDao::convert)
-                        .map(WorkflowController::attachLinks)
-                        .toList())
-                .build();
+        final var result = WorkflowPagingModel.builder().rowCount(workflows.getTotalElements()).results(workflows.map(WorkflowController::attachLinks).toList()).build();
         return ResponseEntity.ok(result);
     }
 
     @Override
     public ResponseEntity<List<WorkflowResponse>> getWorkflows() {
         final var workflows = this.workflowInteractor.getWorkflows();
-        final var results = workflows
-                .stream()
-                .map(WorkflowDao::convert)
-                .map(WorkflowController::attachLinks)
-                .toList();
+        final var results = workflows.stream().map(WorkflowController::attachLinks).toList();
         return ResponseEntity.ok(results);
     }
 
@@ -67,21 +53,21 @@ public class WorkflowController implements IWorkflowController {
 
     @Override
     public ResponseEntity<WorkflowResponse> getWorkflow(final String id) {
-        final var workflow = this.workflowInteractor.getWorkflow(id).convert();
+        final var workflow = this.workflowInteractor.getWorkflow(id);
         return ResponseEntity.ok(workflow);
     }
 
     @Override
     public ResponseEntity<WorkflowResponse> createWorkflow(@NonNull final WorkflowRequest workflow, @NonNull final Authentication authentication, @Nullable final String sessionKey) {
         final var username = getUsername(authentication);
-        final var result = this.workflowInteractor.createWorkflow(workflow.convert(), sessionKey, username).convert();
+        final var result = this.workflowInteractor.createWorkflow(workflow, sessionKey, username);
         return ResponseEntity.ok(result);
     }
 
     @Override
     public ResponseEntity<WorkflowResponse> updateWorkflow(@NonNull final String workflowId, @NonNull final WorkflowRequest workflow, @NonNull final Authentication authentication, @Nullable final String sessionKey) {
         final var username = getUsername(authentication);
-        final var result = this.workflowInteractor.updateWorkflow(workflowId, workflow.convert(), sessionKey, username).convert();
+        final var result = this.workflowInteractor.updateWorkflow(workflowId, workflow, sessionKey, username);
         return ResponseEntity.ok(result);
     }
 
@@ -95,11 +81,7 @@ public class WorkflowController implements IWorkflowController {
     @Override
     public ResponseEntity<List<Execution>> getExecutionsOfWorkflow(@NonNull final String id) {
         final var executions = this.workflowInteractor.getExecutionsOfWorkflow(id);
-        final var results = executions
-                .stream()
-                .map(ExecutionDao::convert)
-                .map(ExecutionController::attachLinks)
-                .toList();
+        final var results = executions.stream().map(ExecutionController::attachLinks).toList();
         return ResponseEntity.ok(results);
     }
 

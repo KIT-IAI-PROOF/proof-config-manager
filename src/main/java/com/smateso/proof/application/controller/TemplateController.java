@@ -3,7 +3,6 @@ package com.smateso.proof.application.controller;
 import com.smateso.proof.adapter.boundaries.controller.ITemplateController;
 import com.smateso.proof.adapter.boundaries.services.ITemplateInteractor;
 import com.smateso.proof.adapter.model.Request;
-import edu.kit.iai.webis.proofmodels.dao.TemplateDao;
 import edu.kit.iai.webis.proofmodels.dto.Template;
 import edu.kit.iai.webis.proofmodels.paging.TemplatePagingModel;
 import lombok.AllArgsConstructor;
@@ -34,26 +33,14 @@ public class TemplateController implements ITemplateController {
     @Override
     public ResponseEntity<TemplatePagingModel> searchTemplates(@NonNull final Request request) {
         final var templates = this.templateInteractor.searchTemplates(request);
-        final var result = TemplatePagingModel
-                .builder()
-                .rowCount(templates.getTotalElements())
-                .results(templates
-                        .stream()
-                        .map(TemplateDao::convert)
-                        .map(TemplateController::attachLinks)
-                        .toList())
-                .build();
+        final var result = TemplatePagingModel.builder().rowCount(templates.getTotalElements()).results(templates.map(TemplateController::attachLinks).toList()).build();
         return ResponseEntity.ok(result);
     }
 
     @Override
     public ResponseEntity<List<Template>> getTemplates() {
         final var templates = this.templateInteractor.getTemplates();
-        final var results = templates
-                .stream()
-                .map(TemplateDao::convert)
-                .map(TemplateController::attachLinks)
-                .toList();
+        final var results = templates.stream().map(TemplateController::attachLinks).toList();
         return ResponseEntity.ok(results);
     }
 
@@ -64,21 +51,21 @@ public class TemplateController implements ITemplateController {
 
     @Override
     public ResponseEntity<Template> getTemplate(final String id) {
-        final var template = this.templateInteractor.getTemplate(id).convert();
+        final var template = this.templateInteractor.getTemplate(id);
         return ResponseEntity.ok(template);
     }
 
     @Override
     public ResponseEntity<Template> createTemplate(@NonNull final Template template, @NonNull final Authentication authentication, @Nullable final String sessionKey) {
         final var username = getUsername(authentication);
-        final var result = this.templateInteractor.createTemplate(template.convert(), sessionKey, username).convert();
+        final var result = this.templateInteractor.createTemplate(template, sessionKey, username);
         return ResponseEntity.ok(result);
     }
 
     @Override
     public ResponseEntity<Template> updateTemplate(@NonNull final String templateId, @NonNull final Template template, @NonNull final Authentication authentication, @Nullable final String sessionKey) {
         final var username = getUsername(authentication);
-        final var result = this.templateInteractor.updateTemplate(templateId, template.convert(), sessionKey, username).convert();
+        final var result = this.templateInteractor.updateTemplate(templateId, template, sessionKey, username);
         return ResponseEntity.ok(result);
     }
 

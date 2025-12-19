@@ -5,9 +5,9 @@ import com.smateso.proof.adapter.boundaries.services.*;
 import com.smateso.proof.adapter.repositories.*;
 import com.smateso.proof.application.controller.*;
 import com.smateso.proof.application.services.*;
+import edu.kit.iai.webis.proofmodels.mapper.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.AmqpAdmin;
-import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -33,120 +33,79 @@ public class Beans {
     public IWorkflowInteractor workflowInteractor(
             @Qualifier("workflowRepository") @NonNull final WorkflowRepository workflowRepository,
             @Qualifier("executionRepository") @NonNull final ExecutionRepository executionRepository,
-            @Qualifier("messageInteractor") @NonNull final IMessageInteractor messageInteractor) {
-        return WorkflowInteractor
-                .builder()
-                .workflowRepository(workflowRepository)
-                .executionRepository(executionRepository)
-                .messageInteractor(messageInteractor)
-                .build();
+            @Qualifier("messageInteractor") @NonNull final IMessageInteractor messageInteractor,
+            @NonNull final WorkflowMapper workflowMapper,
+            @NonNull final ExecutionMapper executionMapper) {
+        return new WorkflowInteractor(messageInteractor, workflowRepository, executionRepository, executionMapper, workflowMapper);
     }
 
     @Bean(value = "blockInteractor", name = "blockInteractor")
     public IBlockInteractor blockInteractor(
             @Qualifier("blockRepository") @NonNull final BlockRepository blockRepository,
-            @Qualifier("messageInteractor") @NonNull final IMessageInteractor messageInteractor) {
-        return BlockInteractor
-                .builder()
-                .blockRepository(blockRepository)
-                .messageInteractor(messageInteractor)
-                .build();
-    }
-
-    @Bean(value = "connectionInteractor", name = "connectionInteractor")
-    public IConnectionInteractor connectionInteractor(
-            @Qualifier("connectionRepository") @NonNull final ConnectionRepository connectionRepository,
-            @Qualifier("messageInteractor") @NonNull final IMessageInteractor messageInteractor) {
-        return ConnectionInteractor
-                .builder()
-                .connectionRepository(connectionRepository)
-                .messageInteractor(messageInteractor)
-                .build();
+            @Qualifier("messageInteractor") @NonNull final IMessageInteractor messageInteractor,
+            @NonNull final BlockMapper blockMapper) {
+        return new BlockInteractor(messageInteractor, blockRepository, blockMapper);
     }
 
     @Bean(value = "templateInteractor", name = "templateInteractor")
     public ITemplateInteractor templateInteractor(
             @Qualifier("templateRepository") @NonNull final TemplateRepository templateRepository,
-            @Qualifier("messageInteractor") @NonNull final IMessageInteractor messageInteractor) {
-        return TemplateInteractor
-                .builder()
-                .templateRepository(templateRepository)
-                .messageInteractor(messageInteractor)
-                .build();
+            @Qualifier("messageInteractor") @NonNull final IMessageInteractor messageInteractor,
+            @NonNull final TemplateMapper templateMapper) {
+        return new TemplateInteractor(messageInteractor, templateRepository, templateMapper);
     }
 
     @Bean(value = "executionInteractor", name = "executionInteractor")
     public IExecutionInteractor executionInteractor(
             @Qualifier("executionRepository") @NonNull final ExecutionRepository executionRepository,
-            @Qualifier("messageInteractor") @NonNull final IMessageInteractor messageInteractor) {
-        return ExecutionInteractor
-                .builder()
-                .executionRepository(executionRepository)
-                .messageInteractor(messageInteractor)
-                .build();
+            @Qualifier("messageInteractor") @NonNull final IMessageInteractor messageInteractor,
+            @NonNull final ExecutionMapper executionMapper) {
+        return new ExecutionInteractor(messageInteractor, executionRepository, executionMapper);
     }
 
     @Bean(value = "attachmentInteractor", name = "attachmentInteractor")
     public IAttachmentInteractor attachmentInteractor(
             @Qualifier("attachmentRepository") @NonNull final AttachmentRepository attachmentRepository,
-            @Qualifier("messageInteractor") @NonNull final IMessageInteractor messageInteractor) {
-        return AttachmentInteractor
-                .builder()
-                .messageInteractor(messageInteractor)
-                .attachmentRepository(attachmentRepository)
-                .build();
+            @Qualifier("messageInteractor") @NonNull final IMessageInteractor messageInteractor,
+            @NonNull final AttachmentMapper attachmentMapper) {
+        return new AttachmentInteractor(messageInteractor, attachmentRepository, attachmentMapper);
     }
 
     @Bean(value = "programInteractor", name = "programInteractor")
     public IProgramInteractor programInteractor(
             @Qualifier("programRepository") @NonNull final ProgramRepository programRepository,
-            @Qualifier("messageInteractor") @NonNull final IMessageInteractor messageInteractor) {
-        return ProgramInteractor
-                .builder()
-                .messageInteractor(messageInteractor)
-                .programRepository(programRepository)
-                .build();
+            @Qualifier("messageInteractor") @NonNull final IMessageInteractor messageInteractor,
+            @NonNull final ProgramMapper programMapper) {
+        return new ProgramInteractor(messageInteractor, programRepository, programMapper);
     }
 
     @Bean(value = "workflowController", name = "workflowController")
-    public IWorkflowController workflowController(@Qualifier("workflowInteractor") IWorkflowInteractor workflowInteractor) {
-        return WorkflowController
-                .builder()
-                .workflowInteractor(workflowInteractor)
-                .build();
+    public IWorkflowController workflowController(@Qualifier("workflowInteractor") @NonNull final IWorkflowInteractor workflowInteractor) {
+        return new WorkflowController(workflowInteractor);
     }
 
     @Bean(value = "blockController", name = "blockController")
-    public IBlockController blockController(@Qualifier("blockInteractor") IBlockInteractor blockInteractor) {
+    public IBlockController blockController(@Qualifier("blockInteractor") @NonNull final IBlockInteractor blockInteractor) {
         return new BlockController(blockInteractor);
     }
 
-    @Bean(value = "connectionController", name = "connectionController")
-    public IConnectionController connectionController(@Qualifier("connectionInteractor") IConnectionInteractor connectionInteractor) {
-        return new ConnectionController(connectionInteractor);
-    }
-
     @Bean(value = "executionController", name = "executionController")
-    public IExecutionController executionController(@Qualifier("executionInteractor") IExecutionInteractor executionInteractor) {
+    public IExecutionController executionController(@Qualifier("executionInteractor") @NonNull final IExecutionInteractor executionInteractor) {
         return new ExecutionController(executionInteractor);
     }
 
     @Bean(value = "templateController", name = "templateController")
-    public ITemplateController templateController(@Qualifier("templateInteractor") ITemplateInteractor templateInteractor) {
+    public ITemplateController templateController(@Qualifier("templateInteractor") @NonNull final ITemplateInteractor templateInteractor) {
         return new TemplateController(templateInteractor);
     }
 
     @Bean(value = "attachmentController", name = "attachmentController")
-    public IAttachmentController attachmentController(@Qualifier("attachmentInteractor") IAttachmentInteractor attachmentInteractor) {
-        return AttachmentController
-                .builder()
-                .fileStorageRoot(Paths.get(this.fileStorageRoot))
-                .attachmentInteractor(attachmentInteractor)
-                .build();
+    public IAttachmentController attachmentController(@Qualifier("attachmentInteractor") @NonNull IAttachmentInteractor attachmentInteractor) {
+        return new AttachmentController(attachmentInteractor, Paths.get(this.fileStorageRoot));
     }
 
     @Bean(value = "programController", name = "programController")
-    public IProgramController programController(@Qualifier("programInteractor") IProgramInteractor programInteractor) {
+    public IProgramController programController(@Qualifier("programInteractor") @NonNull final IProgramInteractor programInteractor) {
         return new ProgramController(programInteractor);
     }
 
@@ -162,22 +121,14 @@ public class Beans {
 
     @Profile({"debug", "dev", "prod"})
     @Bean(value = "messageInteractor", name = "messageInteractor")
-    public IMessageInteractor messageInteractor(@NonNull final SimpMessagingTemplate simpMessagingTemplate, @NonNull final AmqpTemplate amqpTemplate, @NonNull final AmqpAdmin amqpAdmin) {
-        return MessageInteractor
-                .builder()
-                .amqpAdmin(amqpAdmin)
-                .amqpTemplate(amqpTemplate)
-                .simpMessagingTemplate(simpMessagingTemplate)
-                .build();
+    public IMessageInteractor messageInteractor(@NonNull final SimpMessagingTemplate simpMessagingTemplate, @NonNull final AmqpAdmin amqpAdmin) {
+        return new MessageInteractor(simpMessagingTemplate, amqpAdmin);
     }
 
     @Profile({"test"})
     @Bean(value = "messageInteractor", name = "messageInteractor")
     public IMessageInteractor messageInteractorTest(@NonNull final SimpMessagingTemplate simpMessagingTemplate) {
-        return MessageInteractor
-                .builder()
-                .simpMessagingTemplate(simpMessagingTemplate)
-                .build();
+        return new MessageInteractor(simpMessagingTemplate, null);
     }
 
 }

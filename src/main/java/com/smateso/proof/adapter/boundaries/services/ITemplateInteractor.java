@@ -1,7 +1,7 @@
 package com.smateso.proof.adapter.boundaries.services;
 
 import com.smateso.proof.adapter.model.Request;
-import edu.kit.iai.webis.proofmodels.dao.TemplateDao;
+import edu.kit.iai.webis.proofmodels.dto.Template;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -10,15 +10,16 @@ import java.util.List;
 
 public interface ITemplateInteractor {
 
-    Page<TemplateDao> searchTemplates(@NonNull final Request request);
+    Page<Template> searchTemplates(@NonNull final Request request);
 
-    TemplateDao getTemplate(@NonNull final String id);
+    Template getTemplate(@NonNull final String id);
 
-    TemplateDao createTemplate(@NonNull final TemplateDao template, @Nullable final String sessionKey, @NonNull final String username);
+    Template createTemplate(@NonNull final Template template, @Nullable final String sessionKey, @NonNull final String username);
 
-    TemplateDao updateTemplate(@NonNull final String id, @NonNull final TemplateDao template, @Nullable final String sessionKey, @NonNull final String username);
+    Template updateTemplate(@NonNull final String id, @NonNull final Template template, @Nullable final String sessionKey, @NonNull final String username);
 
     void deleteTemplate(@NonNull final String id, @Nullable final String sessionKey, @NonNull final String username);
 
-    List<TemplateDao> getTemplates();
+    List<Template> getTemplates();
+
 }

@@ -6,8 +6,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 
-import java.time.Duration;
-
 import static java.time.Duration.ofMinutes;
 import static java.time.Duration.ofSeconds;
 

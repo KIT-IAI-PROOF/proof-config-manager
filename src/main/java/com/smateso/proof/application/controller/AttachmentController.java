@@ -3,7 +3,6 @@ package com.smateso.proof.application.controller;
 import com.smateso.proof.adapter.boundaries.controller.IAttachmentController;
 import com.smateso.proof.adapter.boundaries.services.IAttachmentInteractor;
 import com.smateso.proof.adapter.model.Request;
-import edu.kit.iai.webis.proofmodels.dao.AttachmentDao;
 import edu.kit.iai.webis.proofmodels.dto.Attachment;
 import edu.kit.iai.webis.proofmodels.paging.AttachmentPagingModel;
 import lombok.AllArgsConstructor;
@@ -50,11 +49,7 @@ public class AttachmentController implements IAttachmentController {
         final var result = AttachmentPagingModel
                 .builder()
                 .rowCount(attachments.getTotalElements())
-                .results(attachments
-                        .stream()
-                        .map(AttachmentDao::convert)
-                        .map(AttachmentController::attachLinks)
-                        .toList())
+                .results(attachments.map(AttachmentController::attachLinks).toList())
                 .build();
         return ResponseEntity.ok(result);
     }
@@ -64,7 +59,6 @@ public class AttachmentController implements IAttachmentController {
         final var attachments = this.attachmentInteractor.getAttachments();
         final var results = attachments
                 .stream()
-                .map(AttachmentDao::convert)
                 .map(AttachmentController::attachLinks)
                 .toList();
         return ResponseEntity.ok(results);
@@ -77,21 +71,21 @@ public class AttachmentController implements IAttachmentController {
 
     @Override
     public ResponseEntity<Attachment> getAttachment(final String id) {
-        final var attachment = this.attachmentInteractor.getAttachment(id).convert();
+        final var attachment = this.attachmentInteractor.getAttachment(id);
         return ResponseEntity.ok(attachment);
     }
 
     @Override
     public ResponseEntity<Attachment> createAttachment(@NonNull final Attachment attachment, @NonNull final Authentication authentication, @Nullable final String sessionKey) {
         final var username = getUsername(authentication);
-        final var result = this.attachmentInteractor.createAttachment(attachment.convert(), sessionKey, username).convert();
+        final var result = this.attachmentInteractor.createAttachment(attachment, sessionKey, username);
         return ResponseEntity.ok(result);
     }
 
     @Override
     public ResponseEntity<Attachment> updateAttachment(@NonNull final String attachmentId, @NonNull final Attachment attachment, @NonNull final Authentication authentication, @Nullable final String sessionKey) {
         final var username = getUsername(authentication);
-        final var result = this.attachmentInteractor.updateAttachment(attachmentId, attachment.convert(), sessionKey, username).convert();
+        final var result = this.attachmentInteractor.updateAttachment(attachmentId, attachment, sessionKey, username);
         return ResponseEntity.ok(result);
     }
 
