@@ -40,10 +40,10 @@ ON CONFLICT DO NOTHING;
 
 INSERT INTO public.attachment (id, created_by, creation_date, last_modified_by, last_modified_date, description, label, path)
 VALUES ('attachment_file_line_provider', 'anonymous', '2025-04-23 12:59:46.722+00', 'anonymous', '2025-12-17 10:32:38.237847+00', 'Provide other blocks with one line per SYNC from a given file',
-        'file_line_provider.py', '/proof/latest:file_line_provider.py')
+        'file_line_provider.py', '/tmp/proof/file_line_provider.py')
 ON CONFLICT DO NOTHING;
 INSERT INTO public.attachment (id, created_by, creation_date, last_modified_by, last_modified_date, description, label, path)
-VALUES ('attachment_file_writer', 'anonymous', '2025-04-23 12:59:49.855+00', 'anonymous', '2025-12-17 10:32:38.238484+00', 'Write data to a file', 'file_writer.py', '/proof/latest:file_writer.py')
+VALUES ('attachment_file_writer', 'anonymous', '2025-04-23 12:59:49.855+00', 'anonymous', '2025-12-17 10:32:38.238484+00', 'Write data to a file', 'file_writer.py', '/tmp/proof/file_writer.py')
 ON CONFLICT DO NOTHING;
 
 
@@ -69,13 +69,13 @@ ON CONFLICT DO NOTHING;
 INSERT INTO public.block (id, created_by, creation_date, last_modified_by, last_modified_date, block_type, color, communication_paradigm, container_image, description, index, interface_type, label, x,
                           y, shutdown_relevant, status, sync_strategy, template_id, template_name, type, program_id, workflow_id)
 VALUES ('bed2ac71-2575-462b-9b73-048e5f60388a', 'anonymous', '2025-12-17 10:32:38.150792+00', 'anonymous', '2025-12-17 10:32:38.237996+00', 0, '#0D41E1', 0,
-        'iai-artifactory.iai.kit.edu/docker-webis/proof-2/proof-standard:latest', 'Provide lines from a file', 1, 1, 'File Provider', 0, 10, true, 0, 0, '365d5380-54eb-4b40-a377-b4921d7370c6',
-        'File Provider', 'block', '08d4fc61-b9d5-4bd8-9f69-19bff1f33e29', '11f02ad7-08d0-4f92-b911-f70f969a6ba6')
+        'ghcr.io/kit-iai-proof/proof-worker-python:1.0.0', 'Provide lines from a file', 1, 1, 'File Reader', 0, 10, true, 0, 0, '365d5380-54eb-4b40-a377-b4921d7370c6',
+        'File Reader', 'block', '08d4fc61-b9d5-4bd8-9f69-19bff1f33e29', '11f02ad7-08d0-4f92-b911-f70f969a6ba6')
 ON CONFLICT DO NOTHING;
 INSERT INTO public.block (id, created_by, creation_date, last_modified_by, last_modified_date, block_type, color, communication_paradigm, container_image, description, index, interface_type, label, x,
                           y, shutdown_relevant, status, sync_strategy, template_id, template_name, type, program_id, workflow_id)
 VALUES ('da35e3b1-aaea-4ba3-bd27-34c1323dd2af', 'anonymous', '2025-12-17 10:32:38.173622+00', 'anonymous', '2025-12-17 10:32:38.238597+00', 0, '#0D41E1', 0,
-        'iai-artifactory.iai.kit.edu/docker-webis/proof-2/proof-standard:latest', 'Write data to a file', 2, 1, 'File Writer', 200, 0, true, 0, 0, '4ad32c27-23c5-4e07-9e75-50a6549e82de',
+        'ghcr.io/kit-iai-proof/proof-worker-python:1.0.0', 'Write data to a file', 2, 1, 'File Writer', 200, 0, true, 0, 0, '4ad32c27-23c5-4e07-9e75-50a6549e82de',
         'File Writer', 'block', '7554873a-813c-4e00-b8d3-be072f12bea8', '11f02ad7-08d0-4f92-b911-f70f969a6ba6')
 ON CONFLICT DO NOTHING;
 
@@ -98,12 +98,12 @@ ON CONFLICT DO NOTHING;
 INSERT INTO public.template (id, created_by, creation_date, last_modified_by, last_modified_date, block_type, color, communication_paradigm, container_image, description, interface_type, name,
                              shutdown_relevant, status, sync_strategy, type, program_id)
 VALUES ('365d5380-54eb-4b40-a377-b4921d7370c6', 'anonymous', '2025-12-17 08:32:38.205558+00', 'anonymous', '2025-12-17 09:32:38.239927+00', 0, '#0D41E1', 0,
-        'iai-artifactory.iai.kit.edu/docker-webis/proof-2/proof-standard:latest', 'Provide lines from a file', 1, 'File Provider', true, NULL, 0, 'block', '08d4fc61-b9d5-4bd8-9f69-19bff1f33e29')
+        'ghcr.io/kit-iai-proof/proof-worker-python:1.0.0', 'Provide lines from a file', 1, 'File Reader', true, NULL, 0, 'block', '08d4fc61-b9d5-4bd8-9f69-19bff1f33e29')
 ON CONFLICT DO NOTHING;
 INSERT INTO public.template (id, created_by, creation_date, last_modified_by, last_modified_date, block_type, color, communication_paradigm, container_image, description, interface_type, name,
                              shutdown_relevant, status, sync_strategy, type, program_id)
 VALUES ('4ad32c27-23c5-4e07-9e75-50a6549e82de', 'anonymous', '2025-12-17 08:32:38.224959+00', 'anonymous', '2025-12-17 09:32:38.240161+00', 0, '#0D41E1', 0,
-        'iai-artifactory.iai.kit.edu/docker-webis/proof-2/proof-standard:latest', 'Write data to a file', 1, 'File Writer', true, NULL, 0, 'block', '7554873a-813c-4e00-b8d3-be072f12bea8')
+        'ghcr.io/kit-iai-proof/proof-worker-python:1.0.0', 'Write data to a file', 1, 'File Writer', true, NULL, 0, 'block', '7554873a-813c-4e00-b8d3-be072f12bea8')
 ON CONFLICT DO NOTHING;
 
 
