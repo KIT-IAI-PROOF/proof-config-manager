@@ -7,6 +7,7 @@ import com.smateso.proof.adapter.exceptions.InUseException;
 import com.smateso.proof.adapter.exceptions.MismatchException;
 import com.smateso.proof.adapter.exceptions.NotFoundException;
 import com.smateso.proof.adapter.model.Request;
+import com.smateso.proof.adapter.repositories.BlockRepository;
 import com.smateso.proof.adapter.repositories.TemplateRepository;
 import edu.kit.iai.webis.proofmodels.dao.TemplateDao;
 import edu.kit.iai.webis.proofmodels.dto.Template;
@@ -34,6 +35,7 @@ public class TemplateInteractor implements ITemplateInteractor {
     private static final String ENTITY_TEMPLATE = "templates";
     private final IMessageInteractor messageInteractor;
     private final TemplateRepository templateRepository;
+    private final BlockRepository blockRepository;
     private final TemplateMapper templateMapper;
 
     @Override
@@ -59,34 +61,46 @@ public class TemplateInteractor implements ITemplateInteractor {
 
     @Override
     public Template createTemplate(@NonNull final Template template, @Nullable final String sessionKey, @NonNull final String username) {
-        if (Objects.nonNull(template.getId()) && !templateRepository.existsById(template.getId())) {
-            final var result = this.templateRepository.save(this.templateMapper.convert(template));
-            this.messageInteractor.sendUpdate(ENTITY_TEMPLATE, requireNonNull(result.getId()), CREATED, sessionKey, username);
-            return this.templateMapper.convert(result);
-        } else {
-            throw new AlreadyExistsException("Template with id %s already exists".formatted(template.getId()));
+        try {
+            if (Objects.nonNull(template.getId()) && !templateRepository.existsById(template.getId())) {
+                final var result = this.templateRepository.save(this.templateMapper.convert(template));
+                this.messageInteractor.sendUpdate(ENTITY_TEMPLATE, requireNonNull(result.getId()), CREATED, sessionKey, username);
+                return this.templateMapper.convert(result);
+            } else {
+                throw new AlreadyExistsException("Template with id %s already exists".formatted(template.getId()));
+            }
+        } catch (final DataIntegrityViolationException e) {
+            throw new AlreadyExistsException(e);
         }
     }
 
     @Override
     public Template updateTemplate(@NonNull final String id, @NonNull final Template update, @Nullable final String sessionKey, @NonNull final String username) {
-        if (!Objects.equals(id, update.getId())) {
-            throw new MismatchException("ID mismatch: Path ID (%s) does not match Request ID (%s)".formatted(id, update.getId()));
-        }
-        if (this.templateRepository.existsById(id)) {
-            final var result = this.templateRepository.save(this.templateMapper.convert(update));
-            this.messageInteractor.sendUpdate(ENTITY_TEMPLATE, requireNonNull(result.getId()), UPDATED, sessionKey, username);
-            return this.templateMapper.convert(result);
-        } else {
-            throw new NotFoundException("Template with id %s not found".formatted(id));
+        try {
+            if (!Objects.equals(id, update.getId())) {
+                throw new MismatchException("ID mismatch: Path ID (%s) does not match Request ID (%s)".formatted(id, update.getId()));
+            }
+            if (this.templateRepository.existsById(id)) {
+                final var result = this.templateRepository.save(this.templateMapper.convert(update));
+                this.messageInteractor.sendUpdate(ENTITY_TEMPLATE, requireNonNull(result.getId()), UPDATED, sessionKey, username);
+                return this.templateMapper.convert(result);
+            } else {
+                throw new NotFoundException("Template with id %s not found".formatted(id));
+            }
+        } catch (final DataIntegrityViolationException e) {
+            throw new AlreadyExistsException(e);
         }
     }
 
     @Override
     public void deleteTemplate(@NonNull final String id, @Nullable final String sessionKey, @NonNull final String username) {
         try {
-            this.templateRepository.deleteById(id);
-            this.messageInteractor.sendUpdate(ENTITY_TEMPLATE, id, DELETED, sessionKey, username);
+            if (!this.blockRepository.existsByTemplateId(id)) {
+                this.templateRepository.deleteById(id);
+                this.messageInteractor.sendUpdate(ENTITY_TEMPLATE, id, DELETED, sessionKey, username);
+            } else {
+                throw new InUseException("Template with id %s is still in use by a block".formatted(id));
+            }
         } catch (final DataIntegrityViolationException e) {
             throw new InUseException("Template with id %s is still in use by another entity".formatted(id));
         }

@@ -64,4 +64,5 @@ public interface BlockRepository extends JpaRepository<BlockDao, String>, JpaSpe
     @Override
     Page<BlockDao> findAll(@Nullable final Specification<BlockDao> spec, @NonNull final Pageable pageable);
 
+    boolean existsByTemplateId(String templateId);
 }

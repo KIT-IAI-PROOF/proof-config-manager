@@ -30,52 +30,32 @@ public class Beans {
     private String fileStorageRoot;
 
     @Bean(value = "workflowInteractor", name = "workflowInteractor")
-    public IWorkflowInteractor workflowInteractor(
-            @Qualifier("workflowRepository") @NonNull final WorkflowRepository workflowRepository,
-            @Qualifier("executionRepository") @NonNull final ExecutionRepository executionRepository,
-            @Qualifier("messageInteractor") @NonNull final IMessageInteractor messageInteractor,
-            @NonNull final WorkflowMapper workflowMapper,
-            @NonNull final ExecutionMapper executionMapper) {
+    public IWorkflowInteractor workflowInteractor(@Qualifier("workflowRepository") @NonNull final WorkflowRepository workflowRepository, @Qualifier("executionRepository") @NonNull final ExecutionRepository executionRepository, @Qualifier("messageInteractor") @NonNull final IMessageInteractor messageInteractor, @NonNull final WorkflowMapper workflowMapper, @NonNull final ExecutionMapper executionMapper) {
         return new WorkflowInteractor(messageInteractor, workflowRepository, executionRepository, executionMapper, workflowMapper);
     }
 
     @Bean(value = "blockInteractor", name = "blockInteractor")
-    public IBlockInteractor blockInteractor(
-            @Qualifier("blockRepository") @NonNull final BlockRepository blockRepository,
-            @Qualifier("messageInteractor") @NonNull final IMessageInteractor messageInteractor,
-            @NonNull final BlockMapper blockMapper) {
+    public IBlockInteractor blockInteractor(@Qualifier("blockRepository") @NonNull final BlockRepository blockRepository, @Qualifier("messageInteractor") @NonNull final IMessageInteractor messageInteractor, @NonNull final BlockMapper blockMapper) {
         return new BlockInteractor(messageInteractor, blockRepository, blockMapper);
     }
 
     @Bean(value = "templateInteractor", name = "templateInteractor")
-    public ITemplateInteractor templateInteractor(
-            @Qualifier("templateRepository") @NonNull final TemplateRepository templateRepository,
-            @Qualifier("messageInteractor") @NonNull final IMessageInteractor messageInteractor,
-            @NonNull final TemplateMapper templateMapper) {
-        return new TemplateInteractor(messageInteractor, templateRepository, templateMapper);
+    public ITemplateInteractor templateInteractor(@Qualifier("templateRepository") @NonNull final TemplateRepository templateRepository, @Qualifier("blockRepository") @NonNull final BlockRepository blockRepository, @Qualifier("messageInteractor") @NonNull final IMessageInteractor messageInteractor, @NonNull final TemplateMapper templateMapper) {
+        return new TemplateInteractor(messageInteractor, templateRepository, blockRepository, templateMapper);
     }
 
     @Bean(value = "executionInteractor", name = "executionInteractor")
-    public IExecutionInteractor executionInteractor(
-            @Qualifier("executionRepository") @NonNull final ExecutionRepository executionRepository,
-            @Qualifier("messageInteractor") @NonNull final IMessageInteractor messageInteractor,
-            @NonNull final ExecutionMapper executionMapper) {
+    public IExecutionInteractor executionInteractor(@Qualifier("executionRepository") @NonNull final ExecutionRepository executionRepository, @Qualifier("messageInteractor") @NonNull final IMessageInteractor messageInteractor, @NonNull final ExecutionMapper executionMapper) {
         return new ExecutionInteractor(messageInteractor, executionRepository, executionMapper);
     }
 
     @Bean(value = "attachmentInteractor", name = "attachmentInteractor")
-    public IAttachmentInteractor attachmentInteractor(
-            @Qualifier("attachmentRepository") @NonNull final AttachmentRepository attachmentRepository,
-            @Qualifier("messageInteractor") @NonNull final IMessageInteractor messageInteractor,
-            @NonNull final AttachmentMapper attachmentMapper) {
+    public IAttachmentInteractor attachmentInteractor(@Qualifier("attachmentRepository") @NonNull final AttachmentRepository attachmentRepository, @Qualifier("messageInteractor") @NonNull final IMessageInteractor messageInteractor, @NonNull final AttachmentMapper attachmentMapper) {
         return new AttachmentInteractor(messageInteractor, attachmentRepository, attachmentMapper);
     }
 
     @Bean(value = "programInteractor", name = "programInteractor")
-    public IProgramInteractor programInteractor(
-            @Qualifier("programRepository") @NonNull final ProgramRepository programRepository,
-            @Qualifier("messageInteractor") @NonNull final IMessageInteractor messageInteractor,
-            @NonNull final ProgramMapper programMapper) {
+    public IProgramInteractor programInteractor(@Qualifier("programRepository") @NonNull final ProgramRepository programRepository, @Qualifier("messageInteractor") @NonNull final IMessageInteractor messageInteractor, @NonNull final ProgramMapper programMapper) {
         return new ProgramInteractor(messageInteractor, programRepository, programMapper);
     }
 

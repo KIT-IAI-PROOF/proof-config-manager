@@ -85,7 +85,7 @@ public interface IBlockController {
                     @ApiResponse(responseCode = "500", description = "Create incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<Block> createBlock(@RequestBody final Block block,final Authentication authentication, @Nullable @RequestParam(required = false, defaultValue = "0") final String sessionKey);
+    ResponseEntity<Block> createBlock(@RequestBody final Block block, final Authentication authentication, @Nullable @RequestParam(required = false, defaultValue = "0") final String sessionKey);
 
     @JsonView(Detail.class)
     @Operation(

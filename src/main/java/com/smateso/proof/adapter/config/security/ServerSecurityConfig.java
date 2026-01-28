@@ -48,6 +48,39 @@ public class ServerSecurityConfig {
     public static final String ROLES = "roles";
     public static final String GROUPS = "groups";
 
+    private static Customizer<CorsConfigurer<HttpSecurity>> getCorsCustomizer(@NonNull final CorsProperties corsProperties) {
+        return (final var cors) -> {
+            final var configuration = new CorsConfiguration();
+            final var source = new UrlBasedCorsConfigurationSource();
+            configuration.setAllowedOriginPatterns(corsProperties.getOrigins());
+            configuration.setAllowedMethods(corsProperties.getMethods());
+            configuration.setAllowedHeaders(corsProperties.getHeaders());
+            configuration.setAllowCredentials(true);
+            source.registerCorsConfiguration("/**", configuration);
+            cors.configurationSource(source);
+        };
+    }
+
+    private static Customizer<OAuth2ResourceServerConfigurer<HttpSecurity>> getResourceServerCustomizer() {
+        return (final var oauth2) -> oauth2.jwt((final var jwt) -> jwt.jwtAuthenticationConverter((final var converter) -> {
+            final var grantedAuthorities = new ArrayList<GrantedAuthority>();
+            if (converter.hasClaim(REALM_ACCESS)) {
+                final Map<String, Collection<String>> realmAccess = converter.getClaim(REALM_ACCESS);
+                final Collection<String> roles = realmAccess.get(ROLES);
+                roles.stream()
+                        .map((final var role) -> new SimpleGrantedAuthority(ROLE + role))
+                        .forEach(grantedAuthorities::add);
+            }
+            if (converter.hasClaim(GROUPS)) {
+                final Collection<String> groups = converter.getClaim(GROUPS);
+                groups.stream()
+                        .map((final var role) -> new SimpleGrantedAuthority(ROLE + role.replace("/", "")))
+                        .forEach(grantedAuthorities::add);
+            }
+            return new JwtAuthenticationToken(converter, grantedAuthorities);
+        }));
+    }
+
     @Bean
     public AuthenticationManager authenticationManager(@NonNull final JwtDecoder jwtDecoder) {
         JwtAuthenticationProvider jwtAuthenticationProvider = new JwtAuthenticationProvider(jwtDecoder);
@@ -101,7 +134,6 @@ public class ServerSecurityConfig {
         return http.build();
     }
 
-
     @Bean
     @Profile(value = {"test"})
     public SecurityFilterChain testFilterChain(@NonNull final HttpSecurity http) throws Exception {
@@ -115,39 +147,6 @@ public class ServerSecurityConfig {
                 .logout(AbstractHttpConfigurer::disable)
                 .oauth2ResourceServer(AbstractHttpConfigurer::disable);
         return http.build();
-    }
-
-    private static Customizer<CorsConfigurer<HttpSecurity>> getCorsCustomizer(@NonNull final CorsProperties corsProperties) {
-        return (final var cors) -> {
-            final var configuration = new CorsConfiguration();
-            final var source = new UrlBasedCorsConfigurationSource();
-            configuration.setAllowedOriginPatterns(corsProperties.getOrigins());
-            configuration.setAllowedMethods(corsProperties.getMethods());
-            configuration.setAllowedHeaders(corsProperties.getHeaders());
-            configuration.setAllowCredentials(true);
-            source.registerCorsConfiguration("/**", configuration);
-            cors.configurationSource(source);
-        };
-    }
-
-    private static Customizer<OAuth2ResourceServerConfigurer<HttpSecurity>> getResourceServerCustomizer() {
-        return (final var oauth2) -> oauth2.jwt((final var jwt) -> jwt.jwtAuthenticationConverter((final var converter) -> {
-            final var grantedAuthorities = new ArrayList<GrantedAuthority>();
-            if (converter.hasClaim(REALM_ACCESS)) {
-                final Map<String, Collection<String>> realmAccess = converter.getClaim(REALM_ACCESS);
-                final Collection<String> roles = realmAccess.get(ROLES);
-                roles.stream()
-                        .map((final var role) -> new SimpleGrantedAuthority(ROLE + role))
-                        .forEach(grantedAuthorities::add);
-            }
-            if (converter.hasClaim(GROUPS)) {
-                final Collection<String> groups = converter.getClaim(GROUPS);
-                groups.stream()
-                        .map((final var role) -> new SimpleGrantedAuthority(ROLE + role.replace("/", "")))
-                        .forEach(grantedAuthorities::add);
-            }
-            return new JwtAuthenticationToken(converter, grantedAuthorities);
-        }));
     }
 
 }

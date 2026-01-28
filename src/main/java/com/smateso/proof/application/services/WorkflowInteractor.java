@@ -93,7 +93,6 @@ public class WorkflowInteractor implements IWorkflowInteractor {
     @Transactional
     public void deleteWorkflow(@NonNull final String id, @Nullable final String sessionKey, @NonNull final String username) {
         try {
-            this.executionRepository.deleteByWorkflowId(id);
             this.workflowRepository.deleteById(id);
             this.messageInteractor.sendUpdate(ENTITY_WORKFLOW, id, DELETED, sessionKey, username);
         } catch (final DataIntegrityViolationException e) {

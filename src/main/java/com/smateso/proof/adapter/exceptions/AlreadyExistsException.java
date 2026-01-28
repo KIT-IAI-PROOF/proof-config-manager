@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(value = HttpStatus.CONFLICT, code = HttpStatus.CONFLICT, reason = "Entity with id already exists")
+@ResponseStatus(value = HttpStatus.CONFLICT, code = HttpStatus.CONFLICT, reason = "Entity with property already exists")
 public class AlreadyExistsException extends RuntimeException {
 
     public AlreadyExistsException(@NonNull final String message) {
@@ -13,6 +13,10 @@ public class AlreadyExistsException extends RuntimeException {
 
     public AlreadyExistsException(@NonNull final String message, @NonNull final Throwable cause) {
         super(message, cause);
+    }
+
+    public AlreadyExistsException(@NonNull final Throwable cause) {
+        super(cause);
     }
 
 }

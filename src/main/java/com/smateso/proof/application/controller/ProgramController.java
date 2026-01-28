@@ -21,6 +21,7 @@ import static com.smateso.proof.adapter.config.audit.AuditorProvider.getUsername
 public class ProgramController implements IProgramController {
 
     private final IProgramInteractor programInteractor;
+
     @Override
     public ResponseEntity<ProgramPagingModel> searchPrograms(@NonNull final Request request) {
         final var programs = this.programInteractor.searchPrograms(request);
