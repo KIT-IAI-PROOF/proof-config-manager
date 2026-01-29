@@ -17,16 +17,16 @@ import org.springframework.lang.Nullable;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 import static com.smateso.proof.adapter.config.audit.AuditorProvider.getUsername;
 import static java.nio.file.Files.copy;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static java.util.Objects.requireNonNull;
-import static org.springframework.http.HttpStatus.CONFLICT;
 
 @Builder
 @AllArgsConstructor
@@ -72,8 +72,50 @@ public class AttachmentController implements IAttachmentController {
     }
 
     @Override
+    public ResponseEntity<Attachment> createAttachmentWithFile(@Nullable final MultipartFile file, @NonNull final Attachment attachment, final Authentication authentication, @Nullable final String sessionKey) {
+        final var username = getUsername(authentication);
+        if (Objects.nonNull(file)) {
+            final var filename = file.getOriginalFilename();
+            try {
+                final var uuid = UUID.randomUUID().toString();
+                final var dirPath = this.fileStorageRoot.resolve(uuid);
+                final var filePath = dirPath.resolve(requireNonNull(filename));
+                final var inputStream = file.getInputStream();
+                Files.createDirectories(dirPath);
+                copy(inputStream, filePath.normalize().toAbsolutePath(), REPLACE_EXISTING);
+                attachment.setPath(filePath.normalize().toAbsolutePath().toString());
+                attachment.setId(uuid);
+            } catch (final Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        final var result = this.attachmentInteractor.createAttachment(attachment, sessionKey, username);
+        return ResponseEntity.ok(result);
+    }
+
+    @Override
     public ResponseEntity<Attachment> updateAttachment(@NonNull final String attachmentId, @NonNull final Attachment attachment, @NonNull final Authentication authentication, @Nullable final String sessionKey) {
         final var username = getUsername(authentication);
+        final var result = this.attachmentInteractor.updateAttachment(attachmentId, attachment, sessionKey, username);
+        return ResponseEntity.ok(result);
+    }
+
+    @Override
+    public ResponseEntity<Attachment> updateAttachmentWithFile(@NonNull final String attachmentId, @Nullable final MultipartFile file, @NonNull final Attachment attachment, final Authentication authentication, @Nullable final String sessionKey) {
+        final var username = getUsername(authentication);
+        if (Objects.nonNull(file)) {
+            final var filename = file.getOriginalFilename();
+            try {
+                final var dirPath = this.fileStorageRoot.resolve(attachmentId);
+                final var filePath = dirPath.resolve(requireNonNull(filename));
+                final var inputStream = file.getInputStream();
+                Files.createDirectories(dirPath);
+                copy(inputStream, filePath.normalize().toAbsolutePath(), REPLACE_EXISTING);
+                attachment.setPath(filePath.normalize().toAbsolutePath().toString());
+            } catch (final Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
         final var result = this.attachmentInteractor.updateAttachment(attachmentId, attachment, sessionKey, username);
         return ResponseEntity.ok(result);
     }
@@ -83,23 +125,6 @@ public class AttachmentController implements IAttachmentController {
         final var username = getUsername(authentication);
         this.attachmentInteractor.deleteAttachment(id, sessionKey, username);
         return ResponseEntity.ok().build();
-    }
-
-    @Override
-    public ResponseEntity<String> uploadFile(@NonNull final String id, @NonNull final MultipartFile file) {
-        final var filename = file.getOriginalFilename();
-        try {
-            final var dirPath = this.fileStorageRoot.resolve(id);
-            final var filePath = dirPath.resolve(requireNonNull(filename));
-            final var inputStream = file.getInputStream();
-            Files.createDirectories(dirPath);
-            copy(inputStream, filePath.normalize().toAbsolutePath(), REPLACE_EXISTING);
-            return ResponseEntity.ok(filePath.normalize().toAbsolutePath().toString());
-        } catch (final FileAlreadyExistsException e) {
-            return ResponseEntity.status(CONFLICT).body("A file of that name already exists.");
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override

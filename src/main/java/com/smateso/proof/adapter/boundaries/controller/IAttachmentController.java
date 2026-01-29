@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -89,6 +90,21 @@ public interface IAttachmentController {
 
     @JsonView(Detail.class)
     @Operation(
+            ignoreJsonView = true,
+            summary = "Create attachment with file",
+            description = "Create attachment with file",
+            security = @SecurityRequirement(name = "oauth2"),
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(mediaType = MULTIPART_FORM_DATA_VALUE, schema = @Schema(implementation = AttachmentWithFile.class))),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Saving successful", content = @Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = Attachment.class))),
+                    @ApiResponse(responseCode = "500", description = "Saving incomplete", content = @Content(schema = @Schema(hidden = true)))
+            }
+    )
+    @PostMapping(value = "file", name = "file", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    ResponseEntity<Attachment> createAttachmentWithFile(@RequestPart("file") @Nullable final MultipartFile file, @RequestPart("attachment") @NonNull final Attachment attachment, final Authentication authentication, @Nullable @RequestParam(required = false, defaultValue = "0") final String sessionKey);
+
+    @JsonView(Detail.class)
+    @Operation(
             summary = "Update attachment",
             description = "Update attachment",
             security = @SecurityRequirement(name = "oauth2"),
@@ -96,8 +112,23 @@ public interface IAttachmentController {
                     @ApiResponse(responseCode = "200", description = "Update successful", useReturnTypeSchema = true),
                     @ApiResponse(responseCode = "500", description = "Update incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
-    @PostMapping(value = "{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @PostMapping(value = "{id}", name = "{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     ResponseEntity<Attachment> updateAttachment(@PathVariable(value = "id") final String id, @RequestBody final Attachment attachment, final Authentication authentication, @Nullable @RequestParam(required = false, defaultValue = "0") final String sessionKey);
+
+    @JsonView(Detail.class)
+    @Operation(
+            ignoreJsonView = true,
+            summary = "Update attachment with file",
+            description = "Update attachment with file",
+            security = @SecurityRequirement(name = "oauth2"),
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(mediaType = MULTIPART_FORM_DATA_VALUE, schema = @Schema(implementation = AttachmentWithFile.class))),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Saving successful", content = @Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = Attachment.class))),
+                    @ApiResponse(responseCode = "500", description = "Saving incomplete", content = @Content(schema = @Schema(hidden = true)))
+            }
+    )
+    @PostMapping(value = "{id}/file", name = "{id}/file", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    ResponseEntity<Attachment> updateAttachmentWithFile(@PathVariable(value = "id") final String id, @RequestPart("file") @Nullable final MultipartFile file, @RequestPart("attachment") @NonNull final Attachment attachment, final Authentication authentication, @Nullable @RequestParam(required = false, defaultValue = "0") final String sessionKey);
 
     @JsonView(Detail.class)
     @Operation(
@@ -113,18 +144,6 @@ public interface IAttachmentController {
 
     @JsonView(Detail.class)
     @Operation(
-            summary = "Upload attachment",
-            description = "Upload attachment",
-            security = @SecurityRequirement(name = "oauth2"),
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Upload successful", useReturnTypeSchema = true),
-                    @ApiResponse(responseCode = "500", description = "Upload incomplete", content = @Content(schema = @Schema(hidden = true))),
-            })
-    @PostMapping(value = "{id}/upload", name = "{id}/upload", consumes = MULTIPART_FORM_DATA_VALUE, produces = TEXT_PLAIN_VALUE)
-    ResponseEntity<String> uploadFile(@PathVariable(value = "id") final String id, @RequestPart(value = "file") final MultipartFile file);
-
-    @JsonView(Detail.class)
-    @Operation(
             summary = "Download attachment",
             description = "Download attachment",
             security = @SecurityRequirement(name = "oauth2"),
@@ -134,5 +153,16 @@ public interface IAttachmentController {
             })
     @GetMapping(value = "download", name = "download", consumes = ALL_VALUE)
     ResponseEntity<?> downloadFile(@RequestParam(value = "path") final String path);
+
+    @Schema(description = "Multipart request for Attachment")
+    class AttachmentWithFile {
+
+        @Schema(type = "string", format = "binary")
+        public MultipartFile file;
+
+        @Schema(implementation = Attachment.class)
+        public Attachment attachment;
+
+    }
 
 }
