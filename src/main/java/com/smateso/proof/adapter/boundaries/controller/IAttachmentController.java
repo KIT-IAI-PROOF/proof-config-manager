@@ -100,7 +100,7 @@ public interface IAttachmentController {
                     @ApiResponse(responseCode = "500", description = "Saving incomplete", content = @Content(schema = @Schema(hidden = true)))
             }
     )
-    @PostMapping(value = "file", name = "file", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @PostMapping(value = "file", name = "file", consumes = MULTIPART_FORM_DATA_VALUE, produces = APPLICATION_JSON_VALUE)
     ResponseEntity<Attachment> createAttachmentWithFile(@RequestPart("file") @Nullable final MultipartFile file, @RequestPart("attachment") @NonNull final Attachment attachment, final Authentication authentication, @Nullable @RequestParam(required = false, defaultValue = "0") final String sessionKey);
 
     @JsonView(Detail.class)
@@ -127,7 +127,7 @@ public interface IAttachmentController {
                     @ApiResponse(responseCode = "500", description = "Saving incomplete", content = @Content(schema = @Schema(hidden = true)))
             }
     )
-    @PostMapping(value = "{id}/file", name = "{id}/file", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @PostMapping(value = "{id}/file", name = "{id}/file", consumes = MULTIPART_FORM_DATA_VALUE, produces = APPLICATION_JSON_VALUE)
     ResponseEntity<Attachment> updateAttachmentWithFile(@PathVariable(value = "id") final String id, @RequestPart("file") @Nullable final MultipartFile file, @RequestPart("attachment") @NonNull final Attachment attachment, final Authentication authentication, @Nullable @RequestParam(required = false, defaultValue = "0") final String sessionKey);
 
     @JsonView(Detail.class)
