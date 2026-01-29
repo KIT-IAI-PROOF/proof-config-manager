@@ -120,8 +120,8 @@ public interface IAttachmentController {
                     @ApiResponse(responseCode = "200", description = "Upload successful", useReturnTypeSchema = true),
                     @ApiResponse(responseCode = "500", description = "Upload incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
-    @PostMapping(value = "upload", name = "upload", consumes = MULTIPART_FORM_DATA_VALUE, produces = TEXT_PLAIN_VALUE)
-    ResponseEntity<String> uploadFile(@RequestPart(value = "file") final MultipartFile file);
+    @PostMapping(value = "{id}/upload", name = "{id}/upload", consumes = MULTIPART_FORM_DATA_VALUE, produces = TEXT_PLAIN_VALUE)
+    ResponseEntity<String> uploadFile(@PathVariable(value = "id") final String id, @RequestPart(value = "file") final MultipartFile file);
 
     @JsonView(Detail.class)
     @Operation(

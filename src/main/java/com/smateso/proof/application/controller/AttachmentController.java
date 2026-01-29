@@ -86,10 +86,10 @@ public class AttachmentController implements IAttachmentController {
     }
 
     @Override
-    public ResponseEntity<String> uploadFile(@NonNull final MultipartFile file) {
+    public ResponseEntity<String> uploadFile(@NonNull final String id, @NonNull final MultipartFile file) {
         final var filename = file.getOriginalFilename();
         try {
-            final var filePath = this.fileStorageRoot.resolve(requireNonNull(filename));
+            final var filePath = this.fileStorageRoot.resolve(id).resolve(requireNonNull(filename));
             final var inputStream = file.getInputStream();
             Files.createDirectories(this.fileStorageRoot);
             copy(inputStream, filePath.normalize().toAbsolutePath(), REPLACE_EXISTING);
