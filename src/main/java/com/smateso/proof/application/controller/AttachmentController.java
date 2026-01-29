@@ -89,9 +89,10 @@ public class AttachmentController implements IAttachmentController {
     public ResponseEntity<String> uploadFile(@NonNull final String id, @NonNull final MultipartFile file) {
         final var filename = file.getOriginalFilename();
         try {
-            final var filePath = this.fileStorageRoot.resolve(id).resolve(requireNonNull(filename));
+            final var dirPath = this.fileStorageRoot.resolve(id);
+            final var filePath = dirPath.resolve(requireNonNull(filename));
             final var inputStream = file.getInputStream();
-            Files.createDirectories(this.fileStorageRoot);
+            Files.createDirectories(dirPath);
             copy(inputStream, filePath.normalize().toAbsolutePath(), REPLACE_EXISTING);
             return ResponseEntity.ok(filePath.normalize().toAbsolutePath().toString());
         } catch (final FileAlreadyExistsException e) {
@@ -106,7 +107,6 @@ public class AttachmentController implements IAttachmentController {
         try {
             final var filePath = this.fileStorageRoot.resolve(path).normalize();
             final Resource resource = new UrlResource(filePath.toUri());
-
             if (resource.exists()) {
                 String mimeType = Files.probeContentType(filePath);
                 MediaType mediaType = mimeType != null ? MediaType.parseMediaType(mimeType) : MediaType.APPLICATION_OCTET_STREAM;
