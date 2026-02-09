@@ -22,6 +22,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.io.File;
 
 import static com.smateso.proof.adapter.config.audit.AuditorProvider.getUsername;
 import static java.nio.file.Files.copy;
@@ -83,7 +84,8 @@ public class AttachmentController implements IAttachmentController {
                 final var inputStream = file.getInputStream();
                 Files.createDirectories(dirPath);
                 copy(inputStream, filePath.normalize().toAbsolutePath(), REPLACE_EXISTING);
-                attachment.setPath(filePath.normalize().toAbsolutePath().toString());
+                // Only store the relative path in the attachment entity
+                attachment.setPath(uuid + File.pathSeparator + filename);
                 attachment.setId(uuid);
             } catch (final Exception e) {
                 throw new RuntimeException(e);
@@ -111,7 +113,7 @@ public class AttachmentController implements IAttachmentController {
                 final var inputStream = file.getInputStream();
                 Files.createDirectories(dirPath);
                 copy(inputStream, filePath.normalize().toAbsolutePath(), REPLACE_EXISTING);
-                attachment.setPath(filePath.normalize().toAbsolutePath().toString());
+                attachment.setPath(attachmentId + File.pathSeparator + filename);
             } catch (final Exception e) {
                 throw new RuntimeException(e);
             }
