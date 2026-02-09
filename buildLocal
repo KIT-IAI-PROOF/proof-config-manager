@@ -1,0 +1,10 @@
+mvn clean install -f pom.xml
+cd generated/java && mvn clean install -f pom.xml
+cd ../typescript && npm install
+cd ../..
+mvn clean compile jib:dockerBuild
+# To use in proof-orchestrator, reference the respective version and rebuild the proof-orchestrator image:
+#    mvn clean compile jib:dockerBuild
+# To use this locally built config-manager-client in the UI:
+#    cd proof-ui
+#    npm install ../proof-config-manager/generated/typescript
