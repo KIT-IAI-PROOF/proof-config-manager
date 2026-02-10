@@ -11,7 +11,7 @@
 
     <groupId>edu.kit.iai.webis</groupId>
     <artifactId>proof-config-manager</artifactId>
-    <version>1.4.0</version>
+    <version>1.4.1</version>
     <name>PROOF Config Manager</name>
     <description>PROOF Config Manager</description>
     <packaging>jar</packaging>
