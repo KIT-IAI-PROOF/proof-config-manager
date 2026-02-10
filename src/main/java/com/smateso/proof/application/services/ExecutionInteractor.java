@@ -93,9 +93,10 @@ public class ExecutionInteractor implements IExecutionInteractor {
                 this.executionRepository.delete(execution);
                 if (nonNull(execution.getWorkflow())) {
                     if (nonNull(execution.getWorkflow().getBlocks())) {
-                        this.messageInteractor.deleteLoggingQueues(execution.getWorkflow().getBlocks().stream().map(BlockDao::getId).toList());
+                        this.messageInteractor.deleteBlockLoggingQueues(execution.getWorkflow().getBlocks().stream().map(BlockDao::getId).toList());
                     }
                 }
+                this.messageInteractor.deleteExecutionLoggingQueue(id);
                 this.messageInteractor.sendUpdate(ENTITY_EXECUTION, id, DELETED, sessionKey, username);
             }
         } catch (final DataIntegrityViolationException e) {

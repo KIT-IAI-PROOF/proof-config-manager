@@ -17,12 +17,12 @@ import org.springframework.lang.Nullable;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import java.io.File;
 
 import static com.smateso.proof.adapter.config.audit.AuditorProvider.getUsername;
 import static java.nio.file.Files.copy;
