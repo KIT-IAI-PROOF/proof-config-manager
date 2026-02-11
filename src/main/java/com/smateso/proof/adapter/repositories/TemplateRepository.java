@@ -1,6 +1,8 @@
 package com.smateso.proof.adapter.repositories;
 
 import edu.kit.iai.webis.proofmodels.dao.TemplateDao;
+import edu.kit.iai.webis.proofmodels.dto.Execution;
+import edu.kit.iai.webis.proofmodels.dto.Template;
 import org.springframework.cache.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,7 +36,22 @@ public interface TemplateRepository extends JpaRepository<TemplateDao, String>, 
                     @CachePut(cacheNames = "templates", key = "#template.id", unless = "#template.id == null")
             }
     )
-    <S extends TemplateDao> S save(@NonNull S template);
+    <S extends TemplateDao> S save(@NonNull final S template);
+
+    @NonNull
+    @Override
+    @Caching(
+            evict = {
+                    @CacheEvict(cacheNames = "programs", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "attachments", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "blocks", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "connections", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "workflows", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "executions", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(cacheNames = "templates", allEntries = true, beforeInvocation = true),
+            }
+    )
+    <S extends TemplateDao> List<S> saveAll(@NonNull final Iterable<S> entities);
 
     @NonNull
     @Override

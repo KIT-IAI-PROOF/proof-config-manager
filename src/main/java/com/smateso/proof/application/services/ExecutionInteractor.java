@@ -13,8 +13,8 @@ import com.smateso.proof.adapter.repositories.ExecutionRepository;
 import com.smateso.proof.adapter.repositories.TemplateRepository;
 import edu.kit.iai.webis.proofmodels.dao.BlockDao;
 import edu.kit.iai.webis.proofmodels.dao.ExecutionDao;
+import edu.kit.iai.webis.proofmodels.dao.TemplateDao;
 import edu.kit.iai.webis.proofmodels.dto.Execution;
-import edu.kit.iai.webis.proofmodels.dto.Template;
 import edu.kit.iai.webis.proofmodels.mapper.ExecutionMapper;
 import edu.kit.iai.webis.proofmodels.mapper.TemplateMapper;
 import lombok.AllArgsConstructor;
@@ -170,17 +170,16 @@ public class ExecutionInteractor implements IExecutionInteractor {
     @Override
     public void importExecution(@NonNull final MultipartFile file, @Nullable final String sessionKey, @NonNull final String username) {
 
-        Execution execution = null;
-        List<Template> templates = null;
+        ExecutionDao execution = null;
+        List<TemplateDao> templates = null;
 
         try (ZipInputStream zis = new ZipInputStream(file.getInputStream())) {
             ZipEntry entry;
             while ((entry = zis.getNextEntry()) != null) {
                 if (entry.getName().equals("execution.json")) {
-                    execution = mapper.readValue(zis.readAllBytes(), Execution.class);
+                    execution = mapper.readValue(zis.readAllBytes(), ExecutionDao.class);
                 } else if (entry.getName().equals("templates.json")) {
-                    templates = mapper.readValue(zis.readAllBytes(), new TypeReference<List<Template>>() {
-                    });
+                    templates = mapper.readValue(zis.readAllBytes(), new TypeReference<List<TemplateDao>>() {});
                 } else if (entry.getName().startsWith("files/")) {
                     String fileName = entry.getName().substring(6);
                     Path targetPath = fileStorageRoot.resolve(fileName);
@@ -190,8 +189,8 @@ public class ExecutionInteractor implements IExecutionInteractor {
                 zis.closeEntry();
             }
 
-            System.out.println(execution);
-            System.out.println(templates);
+            if (nonNull(execution)) this.executionRepository.save(execution);
+            if (nonNull(templates)) this.templateRepository.saveAll(templates);
 
         } catch (final IOException e) {
             log.error("Failed to import execution", e);
