@@ -11,6 +11,8 @@ import java.io.Serializable;
 @Builder
 @ToString
 @Schema
+@AllArgsConstructor
+@NoArgsConstructor
 public class Message implements Serializable {
 
     private String id;
