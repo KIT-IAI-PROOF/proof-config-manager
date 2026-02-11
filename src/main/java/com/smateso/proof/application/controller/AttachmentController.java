@@ -79,12 +79,11 @@ public class AttachmentController implements IAttachmentController {
             final var filename = file.getOriginalFilename();
             try {
                 final var uuid = UUID.randomUUID().toString();
-                final var dirPath = this.fileStorageRoot.resolve(uuid);
+                final var dirPath = this.fileStorageRoot.resolve("attachments").resolve(uuid);
                 final var filePath = dirPath.resolve(requireNonNull(filename));
                 final var inputStream = file.getInputStream();
                 Files.createDirectories(dirPath);
                 copy(inputStream, filePath.normalize().toAbsolutePath(), REPLACE_EXISTING);
-                // Only store the relative path in the attachment entity
                 attachment.setPath(uuid + File.pathSeparator + filename);
                 attachment.setId(uuid);
             } catch (final Exception e) {
@@ -108,7 +107,7 @@ public class AttachmentController implements IAttachmentController {
         if (Objects.nonNull(file)) {
             final var filename = file.getOriginalFilename();
             try {
-                final var dirPath = this.fileStorageRoot.resolve(attachmentId);
+                final var dirPath = this.fileStorageRoot.resolve("attachments").resolve(attachmentId);
                 final var filePath = dirPath.resolve(requireNonNull(filename));
                 final var inputStream = file.getInputStream();
                 Files.createDirectories(dirPath);
@@ -132,7 +131,7 @@ public class AttachmentController implements IAttachmentController {
     @Override
     public ResponseEntity<?> downloadFile(final String path) {
         try {
-            final var filePath = this.fileStorageRoot.resolve(path).normalize();
+            final var filePath = this.fileStorageRoot.resolve("attachments").resolve(path).normalize();
             final Resource resource = new UrlResource(filePath.toUri());
             if (resource.exists()) {
                 String mimeType = Files.probeContentType(filePath);

@@ -1,5 +1,6 @@
 package com.smateso.proof.adapter.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smateso.proof.adapter.boundaries.controller.*;
 import com.smateso.proof.adapter.boundaries.services.*;
 import com.smateso.proof.adapter.repositories.*;
@@ -45,8 +46,8 @@ public class Beans {
     }
 
     @Bean(value = "executionInteractor", name = "executionInteractor")
-    public IExecutionInteractor executionInteractor(@Qualifier("executionRepository") @NonNull final ExecutionRepository executionRepository, @Qualifier("messageInteractor") @NonNull final IMessageInteractor messageInteractor, @NonNull final ExecutionMapper executionMapper) {
-        return new ExecutionInteractor(messageInteractor, executionRepository, executionMapper);
+    public IExecutionInteractor executionInteractor(@Qualifier("executionRepository") @NonNull final ExecutionRepository executionRepository, @Qualifier("messageInteractor") @NonNull final IMessageInteractor messageInteractor, @NonNull final TemplateRepository templateRepository, @NonNull final TemplateMapper templateMapper, @NonNull final ExecutionMapper executionMapper, @NonNull final ObjectMapper objectMapper) {
+        return new ExecutionInteractor(messageInteractor, executionRepository, templateRepository, executionMapper, templateMapper, Paths.get(this.fileStorageRoot), objectMapper);
     }
 
     @Bean(value = "attachmentInteractor", name = "attachmentInteractor")

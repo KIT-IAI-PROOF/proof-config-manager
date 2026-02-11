@@ -13,14 +13,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-import static org.springframework.http.MediaType.ALL_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.*;
 
 @Tag(name = "Execution Controller")
 @RestController
@@ -98,5 +99,28 @@ public interface IExecutionController {
             })
     @DeleteMapping(value = "{id}", consumes = ALL_VALUE, produces = ALL_VALUE)
     ResponseEntity<Void> deleteExecution(@PathVariable(value = "id") final String id, final Authentication authentication, @Nullable @RequestParam(required = false, defaultValue = "0") final String sessionKey);
+
+    @JsonView(Detail.class)
+    @Operation(
+            summary = "Export execution",
+            description = "Export execution to a ZIP file",
+            security = @SecurityRequirement(name = "oauth2"),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Retrieval successful", useReturnTypeSchema = true),
+                    @ApiResponse(responseCode = "500", description = "Retrieval incomplete", content = @Content(schema = @Schema(hidden = true))),
+            })
+    @GetMapping(value = "{id}/export", name = "{id}/export", consumes = ALL_VALUE)
+    ResponseEntity<?> exportExecution(@PathVariable(value = "id") final String id);
+
+    @Operation(
+            summary = "Import execution",
+            description = "Import execution from a ZIP file",
+            security = @SecurityRequirement(name = "oauth2"),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Import successful", useReturnTypeSchema = true),
+                    @ApiResponse(responseCode = "500", description = "Import failed", content = @Content(schema = @Schema(hidden = true))),
+            })
+    @PostMapping(value = "import", consumes = MULTIPART_FORM_DATA_VALUE)
+    ResponseEntity<Void> importExecution(@NonNull final MultipartFile file, @NonNull final Authentication authentication, @Nullable final String sessionKey);
 
 }

@@ -7,10 +7,13 @@ import edu.kit.iai.webis.proofmodels.dto.Execution;
 import edu.kit.iai.webis.proofmodels.paging.ExecutionPagingModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -63,6 +66,23 @@ public class ExecutionController implements IExecutionController {
     public ResponseEntity<Void> deleteExecution(@NonNull final String id, @NonNull final Authentication authentication, @Nullable final String sessionKey) {
         final var username = getUsername(authentication);
         this.executionInteractor.deleteExecution(id, sessionKey, username);
+        return ResponseEntity.ok().build();
+    }
+
+    @Override
+    public ResponseEntity<?> exportExecution(@NonNull final String id) {
+        final var resource = this.executionInteractor.exportExecution(id);
+        final var fileName = "execution-" + id + ".proof";
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                .body(resource);
+    }
+
+    @Override
+    public ResponseEntity<Void> importExecution(@NonNull final MultipartFile file, @NonNull final Authentication authentication, @Nullable final String sessionKey) {
+        final var username = getUsername(authentication);
+        this.executionInteractor.importExecution(file, sessionKey, username);
         return ResponseEntity.ok().build();
     }
 

@@ -2,9 +2,11 @@ package com.smateso.proof.adapter.boundaries.services;
 
 import com.smateso.proof.adapter.model.Request;
 import edu.kit.iai.webis.proofmodels.dto.Execution;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -21,4 +23,9 @@ public interface IExecutionInteractor {
     void deleteExecution(@NonNull final String id, @Nullable final String sessionKey, @NonNull final String username);
 
     List<Execution> getExecutions();
+
+    Resource exportExecution(@NonNull final String id);
+
+    void importExecution(@NonNull final MultipartFile file, @Nullable final String sessionKey, @NonNull final String username);
+
 }
