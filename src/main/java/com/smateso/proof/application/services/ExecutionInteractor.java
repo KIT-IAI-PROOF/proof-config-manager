@@ -144,9 +144,9 @@ public class ExecutionInteractor implements IExecutionInteractor {
                     for (var block : execution.getWorkflow().getBlocks()) {
                         if (nonNull(block.getProgram()) && nonNull(block.getProgram().getAttachments())) {
                             for (var attachment : block.getProgram().getAttachments()) {
-                                Path filePath = this.fileStorageRoot.resolve(requireNonNull(attachment.getPath()));
+                                final var filePath = this.fileStorageRoot.resolve(requireNonNull(attachment.getPath()));
                                 if (Files.exists(filePath)) {
-                                    zipOutputStream.putNextEntry(new ZipEntry("files/" + filePath.getFileName().toString()));
+                                    zipOutputStream.putNextEntry(new ZipEntry("files/" + attachment.getPath()));
                                     Files.copy(filePath, zipOutputStream);
                                     zipOutputStream.closeEntry();
                                 }
