@@ -22,7 +22,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -90,7 +89,6 @@ public class WorkflowInteractor implements IWorkflowInteractor {
     }
 
     @Override
-    @Transactional
     public void deleteWorkflow(@NonNull final String id, @Nullable final String sessionKey, @NonNull final String username) {
         try {
             this.workflowRepository.deleteById(id);
