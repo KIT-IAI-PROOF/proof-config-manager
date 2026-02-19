@@ -84,7 +84,7 @@ public class AttachmentController implements IAttachmentController {
                 final var inputStream = file.getInputStream();
                 Files.createDirectories(dirPath);
                 copy(inputStream, filePath.normalize().toAbsolutePath(), REPLACE_EXISTING);
-                attachment.setPath(uuid + File.pathSeparator + filename);
+                attachment.setPath(uuid + File.separator + filename);
                 attachment.setId(uuid);
             } catch (final Exception e) {
                 throw new RuntimeException(e);
@@ -112,7 +112,7 @@ public class AttachmentController implements IAttachmentController {
                 final var inputStream = file.getInputStream();
                 Files.createDirectories(dirPath);
                 copy(inputStream, filePath.normalize().toAbsolutePath(), REPLACE_EXISTING);
-                attachment.setPath(attachmentId + File.pathSeparator + filename);
+                attachment.setPath(attachmentId + File.separator + filename);
             } catch (final Exception e) {
                 throw new RuntimeException(e);
             }
