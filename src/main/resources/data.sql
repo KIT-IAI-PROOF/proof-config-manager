@@ -203,7 +203,7 @@ VALUES ('0cfb96b5-9935-4560-bbab-d25246eee29f', NULL, NULL, NULL, NULL, 0, 'inpu
 ON CONFLICT DO NOTHING;
 INSERT INTO public.input (id, created_by, creation_date, last_modified_by, last_modified_date, communication_type, description, label, model_var_name, phase, type, unit, required, template_id,
                           block_id)
-VALUES ('74fe2de3-08a6-4ba5-826a-3b1bde66a55c', NULL, NULL, NULL, NULL, 3, 'virtual processing time in seconds as Float, default is 1.0', 'proc_time', 'proc_time', 2, 2, NULL, false, 'id_ProcTimeSim',
+VALUES ('74fe2de3-08a6-4ba5-826a-3b1bde66a55c', NULL, NULL, NULL, NULL, 3, 'virtual processing time in seconds as Float, default is 1.0', 'proc_time', 'proc_time', 1, 2, NULL, false, 'id_ProcTimeSim',
         NULL)
 ON CONFLICT DO NOTHING;
 INSERT INTO public.input (id, created_by, creation_date, last_modified_by, last_modified_date, communication_type, description, label, model_var_name, phase, type, unit, required, template_id,
