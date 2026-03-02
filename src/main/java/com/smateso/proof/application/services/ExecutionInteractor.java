@@ -32,8 +32,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -130,25 +132,30 @@ public class ExecutionInteractor implements IExecutionInteractor {
         if (optionalExecution.isPresent()) {
             final var execution = optionalExecution.get();
             final var templates = this.templateRepository.findAll();
+            final Set<String> addedEntries = new HashSet<>();
             try (final var byteArrayOutputStream = new ByteArrayOutputStream(); final var zipOutputStream = new ZipOutputStream(byteArrayOutputStream)) {
 
                 zipOutputStream.putNextEntry(new ZipEntry("execution.json"));
                 zipOutputStream.write(mapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(this.executionMapper.convert(execution)));
                 zipOutputStream.closeEntry();
+                addedEntries.add("execution.json");
 
                 zipOutputStream.putNextEntry(new ZipEntry("templates.json"));
                 zipOutputStream.write(mapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(this.templateMapper.convert(templates)));
                 zipOutputStream.closeEntry();
+                addedEntries.add("templates.json");
 
                 if (nonNull(execution.getWorkflow()) && nonNull(execution.getWorkflow().getBlocks())) {
                     for (var block : execution.getWorkflow().getBlocks()) {
                         if (nonNull(block.getProgram()) && nonNull(block.getProgram().getAttachments())) {
                             for (var attachment : block.getProgram().getAttachments()) {
                                 final var filePath = this.fileStorageRoot.resolve(requireNonNull(attachment.getPath()));
-                                if (Files.exists(filePath)) {
-                                    zipOutputStream.putNextEntry(new ZipEntry("files/" + attachment.getPath()));
+                                final String entryName = "files/" + attachment.getPath();
+                                if (Files.exists(filePath) && !addedEntries.contains(entryName)) {
+                                    zipOutputStream.putNextEntry(new ZipEntry(entryName));
                                     Files.copy(filePath, zipOutputStream);
                                     zipOutputStream.closeEntry();
+                                    addedEntries.add(entryName);
                                 }
                             }
                         }
