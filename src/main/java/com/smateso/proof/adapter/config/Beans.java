@@ -100,6 +100,11 @@ public class Beans {
         return new MessageController();
     }
 
+    @Bean(value = "fileController", name = "fileController")
+    public IFileController fileController() {
+        return new FileController(Paths.get(this.fileStorageRoot));
+    }
+
     @Profile({"debug", "dev", "prod"})
     @Bean(value = "messageInteractor", name = "messageInteractor")
     public IMessageInteractor messageInteractor(@NonNull final SimpMessagingTemplate simpMessagingTemplate, @NonNull final AmqpAdmin amqpAdmin) {
