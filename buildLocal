@@ -2,14 +2,24 @@ set -e
 trap 'echo -e "\033[0;31mERROR: Command failed on line $LINENO\033[0m"; exit 1' ERR
 
 mvn clean install -f pom-local.xml
-cd generated/typescript && npm install
+
+# Extract version from pom-local.xml (reads version following the proof-config-manager artifactId)
+VERSION=$(awk '/<artifactId>proof-config-manager<\/artifactId>/{found=1; next} found && /<version>/{match($0,/<version>([^<]+)<\/version>/,a); print a[1]; exit}' pom-local.xml)
+echo $VERSION
+
+cd generated/typescript
+# Update version in package.json
+sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"$VERSION\"/" package.json
+npm install
+
 cd ../java
-# Adjust the version in the generated pom.xml to a local version.
-sed -i '/<name>config-manager-client<\/name>/,/<url>/s/<version>\([^<]*\)<\/version>/<version>\1-local<\/version>/' pom.xml 
+# Update version in the generated pom.xml
+sed -i "s/<version>[^<]*<\/version>/<version>$VERSION<\/version>/" pom.xml
 # install the generated client to the local maven repository
 mvn clean install -f pom.xml
 cd ../..
-mvn compile jib:dockerBuild -f pom-local.xml
+
+#mvn compile jib:dockerBuild -f pom-local.xml
 # To use in proof-orchestrator, reference the respective version and rebuild the proof-orchestrator image:
 #    mvn clean compile jib:dockerBuild
 # To use this locally built config-manager-client in the UI:

@@ -4,8 +4,7 @@ import com.smateso.proof.adapter.boundaries.controller.IWorkflowController;
 import com.smateso.proof.adapter.boundaries.services.IWorkflowInteractor;
 import com.smateso.proof.adapter.model.Request;
 import edu.kit.iai.webis.proofmodels.dto.Execution;
-import edu.kit.iai.webis.proofmodels.dto.WorkflowRequest;
-import edu.kit.iai.webis.proofmodels.dto.WorkflowResponse;
+import edu.kit.iai.webis.proofmodels.dto.Workflow;
 import edu.kit.iai.webis.proofmodels.paging.WorkflowPagingModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,31 +31,31 @@ public class WorkflowController implements IWorkflowController {
     }
 
     @Override
-    public ResponseEntity<List<WorkflowResponse>> getWorkflows() {
+    public ResponseEntity<List<Workflow>> getWorkflows() {
         final var workflows = this.workflowInteractor.getWorkflows();
         return ResponseEntity.ok(workflows);
     }
 
     @Override
-    public ResponseEntity<List<WorkflowResponse>> exportWorkflows() {
+    public ResponseEntity<List<Workflow>> exportWorkflows() {
         return this.getWorkflows();
     }
 
     @Override
-    public ResponseEntity<WorkflowResponse> getWorkflow(final String id) {
+    public ResponseEntity<Workflow> getWorkflow(final String id) {
         final var workflow = this.workflowInteractor.getWorkflow(id);
         return ResponseEntity.ok(workflow);
     }
 
     @Override
-    public ResponseEntity<WorkflowResponse> createWorkflow(@NonNull final WorkflowRequest workflow, @NonNull final Authentication authentication, @Nullable final String sessionKey) {
+    public ResponseEntity<Workflow> createWorkflow(@NonNull final Workflow workflow, @NonNull final Authentication authentication, @Nullable final String sessionKey) {
         final var username = getUsername(authentication);
         final var result = this.workflowInteractor.createWorkflow(workflow, sessionKey, username);
         return ResponseEntity.ok(result);
     }
 
     @Override
-    public ResponseEntity<WorkflowResponse> updateWorkflow(@NonNull final String workflowId, @NonNull final WorkflowRequest workflow, @NonNull final Authentication authentication, @Nullable final String sessionKey) {
+    public ResponseEntity<Workflow> updateWorkflow(@NonNull final String workflowId, @NonNull final Workflow workflow, @NonNull final Authentication authentication, @Nullable final String sessionKey) {
         final var username = getUsername(authentication);
         final var result = this.workflowInteractor.updateWorkflow(workflowId, workflow, sessionKey, username);
         return ResponseEntity.ok(result);
