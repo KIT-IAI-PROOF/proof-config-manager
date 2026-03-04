@@ -11,8 +11,7 @@ import com.smateso.proof.adapter.repositories.ExecutionRepository;
 import com.smateso.proof.adapter.repositories.WorkflowRepository;
 import edu.kit.iai.webis.proofmodels.dao.WorkflowDao;
 import edu.kit.iai.webis.proofmodels.dto.Execution;
-import edu.kit.iai.webis.proofmodels.dto.WorkflowRequest;
-import edu.kit.iai.webis.proofmodels.dto.WorkflowResponse;
+import edu.kit.iai.webis.proofmodels.dto.Workflow;
 import edu.kit.iai.webis.proofmodels.mapper.ExecutionMapper;
 import edu.kit.iai.webis.proofmodels.mapper.WorkflowMapper;
 import lombok.AllArgsConstructor;
@@ -43,7 +42,7 @@ public class WorkflowInteractor implements IWorkflowInteractor {
     private final WorkflowMapper workflowMapper;
 
     @Override
-    public Page<WorkflowResponse> searchWorkflows(@NonNull final Request request) {
+    public Page<Workflow> searchWorkflows(@NonNull final Request request) {
         final Specification<WorkflowDao> specification = createSpecification(request);
         final var pageable = createPageable(request);
         final var result = this.workflowRepository.findAll(specification, pageable);
@@ -51,20 +50,20 @@ public class WorkflowInteractor implements IWorkflowInteractor {
     }
 
     @Override
-    public List<WorkflowResponse> getWorkflows() {
+    public List<Workflow> getWorkflows() {
         final var result = this.workflowRepository.findAll();
         return this.workflowMapper.convert(result);
     }
 
     @Override
-    public WorkflowResponse getWorkflow(@NonNull final String id) {
+    public Workflow getWorkflow(@NonNull final String id) {
         final var result = this.workflowRepository.findById(id);
         if (result.isPresent()) return this.workflowMapper.convert(result.get());
         else throw new NotFoundException("Workflow with id %s not found".formatted(id));
     }
 
     @Override
-    public WorkflowResponse createWorkflow(@NonNull final WorkflowRequest workflow, @Nullable final String sessionKey, @NonNull final String username) {
+    public Workflow createWorkflow(@NonNull final Workflow workflow, @Nullable final String sessionKey, @NonNull final String username) {
         if (Objects.nonNull(workflow.getId()) && !workflowRepository.existsById(workflow.getId())) {
             final var result = this.workflowRepository.save(this.workflowMapper.convert(workflow));
             this.messageInteractor.sendUpdate(ENTITY_WORKFLOW, requireNonNull(result.getId()), CREATED, sessionKey, username);
@@ -75,12 +74,12 @@ public class WorkflowInteractor implements IWorkflowInteractor {
     }
 
     @Override
-    public WorkflowResponse updateWorkflow(@NonNull final String id, @NonNull final WorkflowRequest update, @Nullable final String sessionKey, @NonNull final String username) {
-        if (!Objects.equals(id, update.getId())) {
-            throw new MismatchException("ID mismatch: Path ID (%s) does not match Request ID (%s)".formatted(id, update.getId()));
+    public Workflow updateWorkflow(@NonNull final String id, @NonNull final Workflow workflow, @Nullable final String sessionKey, @NonNull final String username) {
+        if (!Objects.equals(id, workflow.getId())) {
+            throw new MismatchException("ID mismatch: Path ID (%s) does not match Request ID (%s)".formatted(id, workflow.getId()));
         }
         if (this.workflowRepository.existsById(id)) {
-            final var result = this.workflowRepository.save(this.workflowMapper.convert(update));
+            final var result = this.workflowRepository.save(this.workflowMapper.convert(workflow));
             this.messageInteractor.sendUpdate(ENTITY_WORKFLOW, requireNonNull(result.getId()), UPDATED, sessionKey, username);
             return this.workflowMapper.convert(result);
         } else {
