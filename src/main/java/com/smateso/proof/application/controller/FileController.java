@@ -14,10 +14,12 @@ import org.springframework.web.multipart.MultipartFile;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import static java.nio.file.Files.copy;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static java.util.Objects.requireNonNullElse;
+import static java.util.stream.Collectors.toList;
 import static org.springframework.http.HttpStatus.CONFLICT;
 
 @Builder
@@ -67,7 +69,38 @@ public class FileController implements IFileController {
                 return ResponseEntity.notFound().build();
             }
         } catch (final Exception e) {
-            return ResponseEntity.internalServerError().build();
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public ResponseEntity<List<String>> listFiles(final String type) {
+        try {
+            final Path directoryPath;
+            switch (type) {
+                case "userdata": {
+                    directoryPath = this.fileStorageRoot.resolve("userdata");
+                    break;
+                }
+                default: {
+                    throw new RuntimeException("Invalid type for file storage");
+                }
+            }
+
+            if (!Files.exists(directoryPath)) {
+                return ResponseEntity.ok(List.of());
+            }
+
+            try (final var stream = Files.list(directoryPath)) {
+                List<String> fileList = stream
+                        .filter(file -> !Files.isDirectory(file))
+                        .map(Path::getFileName)
+                        .map(Path::toString)
+                        .collect(toList());
+                return ResponseEntity.ok(fileList);
+            }
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 import static edu.kit.iai.webis.proofmodels.utils.Views.Detail;
 import static org.springframework.http.MediaType.*;
 
@@ -42,6 +44,18 @@ public interface IFileController {
             })
     @GetMapping(value = "download", name = "download", consumes = ALL_VALUE)
     ResponseEntity<?> downloadFile(@RequestParam(value = "path") final String path);
+
+    @JsonView(Detail.class)
+    @Operation(
+            summary = "Download file",
+            description = "Download file",
+            security = @SecurityRequirement(name = "oauth2"),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Download successful", useReturnTypeSchema = true),
+                    @ApiResponse(responseCode = "500", description = "Download incomplete", content = @Content(schema = @Schema(hidden = true))),
+            })
+    @GetMapping(value = "list", name = "list", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
+    ResponseEntity<List<String>> listFiles(@RequestParam(value = "type", defaultValue = "userdata", required = false) final String path);
 
 
 }
