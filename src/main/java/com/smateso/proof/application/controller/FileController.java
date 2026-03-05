@@ -45,7 +45,7 @@ public class FileController implements IFileController {
             final var inputStream = file.getInputStream();
             Files.createDirectories(this.fileStorageRoot);
             copy(inputStream, filePath.normalize().toAbsolutePath(), REPLACE_EXISTING);
-            return ResponseEntity.ok(filePath.normalize().toAbsolutePath().toString());
+            return ResponseEntity.ok(this.fileStorageRoot.resolve("userdata").relativize(filePath).toString());
         } catch (final FileAlreadyExistsException e) {
             return ResponseEntity.status(CONFLICT).body("A file of that name already exists.");
         } catch (final Exception e) {
