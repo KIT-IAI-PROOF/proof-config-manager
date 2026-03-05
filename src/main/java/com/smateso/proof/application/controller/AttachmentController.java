@@ -36,7 +36,6 @@ public class AttachmentController implements IAttachmentController {
     private final IAttachmentInteractor attachmentInteractor;
     private final Path fileStorageRoot;
 
-
     @Override
     public ResponseEntity<AttachmentPagingModel> searchAttachments(@NonNull final Request request) {
         final var attachments = this.attachmentInteractor.searchAttachments(request);
@@ -79,7 +78,7 @@ public class AttachmentController implements IAttachmentController {
             final var filename = file.getOriginalFilename();
             try {
                 final var uuid = UUID.randomUUID().toString();
-                final var dirPath = this.fileStorageRoot.resolve(uuid);
+                final var dirPath = this.fileStorageRoot.resolve("attachments").resolve(uuid);
                 final var filePath = dirPath.resolve(requireNonNull(filename));
                 final var inputStream = file.getInputStream();
                 Files.createDirectories(dirPath);
@@ -107,7 +106,7 @@ public class AttachmentController implements IAttachmentController {
         if (Objects.nonNull(file)) {
             final var filename = file.getOriginalFilename();
             try {
-                final var dirPath = this.fileStorageRoot.resolve(attachmentId);
+                final var dirPath = this.fileStorageRoot.resolve("attachments").resolve(attachmentId);
                 final var filePath = dirPath.resolve(requireNonNull(filename));
                 final var inputStream = file.getInputStream();
                 Files.createDirectories(dirPath);
@@ -131,7 +130,7 @@ public class AttachmentController implements IAttachmentController {
     @Override
     public ResponseEntity<?> downloadFile(final String path) {
         try {
-            final var filePath = this.fileStorageRoot.resolve(path).normalize();
+            final var filePath = this.fileStorageRoot.resolve("attachments").resolve(path).normalize();
             final Resource resource = new UrlResource(filePath.toUri());
             if (resource.exists()) {
                 String mimeType = Files.probeContentType(filePath);

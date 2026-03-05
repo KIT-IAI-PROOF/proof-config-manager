@@ -186,7 +186,8 @@ public class ExecutionInteractor implements IExecutionInteractor {
                 if (entry.getName().equals("execution.json")) {
                     execution = mapper.readValue(zis.readAllBytes(), ExecutionDao.class);
                 } else if (entry.getName().equals("templates.json")) {
-                    templates = mapper.readValue(zis.readAllBytes(), new TypeReference<List<TemplateDao>>() {});
+                    templates = mapper.readValue(zis.readAllBytes(), new TypeReference<List<TemplateDao>>() {
+                    });
                 } else if (entry.getName().startsWith("files/")) {
                     String fileName = entry.getName().substring(6);
                     Path targetPath = fileStorageRoot.resolve(fileName);
