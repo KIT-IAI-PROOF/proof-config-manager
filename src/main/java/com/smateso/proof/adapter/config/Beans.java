@@ -41,8 +41,8 @@ public class Beans {
     }
 
     @Bean(value = "templateInteractor", name = "templateInteractor")
-    public ITemplateInteractor templateInteractor(@Qualifier("templateRepository") @NonNull final TemplateRepository templateRepository, @Qualifier("blockRepository") @NonNull final BlockRepository blockRepository, @Qualifier("messageInteractor") @NonNull final IMessageInteractor messageInteractor, @NonNull final TemplateMapper templateMapper) {
-        return new TemplateInteractor(messageInteractor, templateRepository, blockRepository, templateMapper);
+    public ITemplateInteractor templateInteractor(@Qualifier("templateRepository") @NonNull final TemplateRepository templateRepository, @Qualifier("blockRepository") @NonNull final BlockRepository blockRepository, @Qualifier("messageInteractor") @NonNull final IMessageInteractor messageInteractor, @NonNull final TemplateMapper templateMapper, @NonNull final BlockMapper blockMapper) {
+        return new TemplateInteractor(messageInteractor, templateRepository, blockRepository, templateMapper, blockMapper);
     }
 
     @Bean(value = "executionInteractor", name = "executionInteractor")

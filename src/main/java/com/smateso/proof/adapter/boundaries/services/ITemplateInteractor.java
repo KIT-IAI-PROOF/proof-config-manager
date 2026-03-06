@@ -1,6 +1,7 @@
 package com.smateso.proof.adapter.boundaries.services;
 
 import com.smateso.proof.adapter.model.Request;
+import edu.kit.iai.webis.proofmodels.dto.Block;
 import edu.kit.iai.webis.proofmodels.dto.Template;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
@@ -21,5 +22,7 @@ public interface ITemplateInteractor {
     void deleteTemplate(@NonNull final String id, @Nullable final String sessionKey, @NonNull final String username);
 
     List<Template> getTemplates();
+
+    List<Block> getBlocksForTemplate(@NonNull final String id);
 
 }
