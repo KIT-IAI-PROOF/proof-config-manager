@@ -10,7 +10,10 @@ import com.smateso.proof.adapter.model.Request;
 import com.smateso.proof.adapter.repositories.BlockRepository;
 import com.smateso.proof.adapter.repositories.TemplateRepository;
 import edu.kit.iai.webis.proofmodels.dao.TemplateDao;
+import edu.kit.iai.webis.proofmodels.dto.Block;
+import edu.kit.iai.webis.proofmodels.dto.Execution;
 import edu.kit.iai.webis.proofmodels.dto.Template;
+import edu.kit.iai.webis.proofmodels.mapper.BlockMapper;
 import edu.kit.iai.webis.proofmodels.mapper.TemplateMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +40,7 @@ public class TemplateInteractor implements ITemplateInteractor {
     private final TemplateRepository templateRepository;
     private final BlockRepository blockRepository;
     private final TemplateMapper templateMapper;
+    private final BlockMapper blockMapper;
 
     @Override
     public Page<Template> searchTemplates(@NonNull final Request request) {
@@ -104,6 +108,12 @@ public class TemplateInteractor implements ITemplateInteractor {
         } catch (final DataIntegrityViolationException e) {
             throw new InUseException("Template with id %s is still in use by another entity".formatted(id));
         }
+    }
+
+    @Override
+    public List<Block> getBlocksForTemplate(@NonNull final String id) {
+        final var result = this.blockRepository.findByTemplateId(id);
+        return this.blockMapper.convert(result);
     }
 
 }
