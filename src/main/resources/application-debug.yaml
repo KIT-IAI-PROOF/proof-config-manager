@@ -26,6 +26,7 @@ spring:
     init:
       mode: always
       platform: all
+      separator: ";;"
   jpa:
     hibernate:
       ddl-auto: update
