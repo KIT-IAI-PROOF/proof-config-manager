@@ -1,6 +1,6 @@
 DO $$
 BEGIN
-IF NOT EXISTS (SELECT 1 FROM public.workflow WHERE id = '200f030b-e8fc-4e18-bd8f-31a8bd5d5bac') THEN
+IF NOT EXISTS (SELECT 1 FROM public.workflow WHERE id = 'FileReader2FileWriter') THEN
         --
         -- PostgreSQL database dump
         --
@@ -13,7 +13,7 @@ IF NOT EXISTS (SELECT 1 FROM public.workflow WHERE id = '200f030b-e8fc-4e18-bd8f
         --
 
         INSERT INTO public.step_based_config (id, created_by, creation_date, last_modified_by, last_modified_date, default_step_size, duration, end_point, end_time, start_point, start_time)
-        VALUES ('ee527d0c-8428-4f5d-ab55-e883a1cbde2b', 'test', '2026-02-06 11:24:39.858655+00', 'test', '2026-02-06 11:24:50.398361+00', 1, 500, 10, 1000, 0, 0)
+        VALUES ('ee527d0c-8428-4f5d-ab55-e883a1cbde2b', 'proof', '2026-02-06 11:24:39.858655+00', 'proof', '2026-02-06 11:24:50.398361+00', 1, 2000, 10, 1000, 0, 0)
         ON CONFLICT DO NOTHING;
 
 
@@ -22,7 +22,7 @@ IF NOT EXISTS (SELECT 1 FROM public.workflow WHERE id = '200f030b-e8fc-4e18-bd8f
         --
 
         INSERT INTO public.workflow (id, created_by, creation_date, last_modified_by, last_modified_date, communication_paradigm, description, label, simulation_strategy, step_based_config_id)
-        VALUES ('200f030b-e8fc-4e18-bd8f-31a8bd5d5bac', 'test', '2026-02-06 11:23:09.547596+00', 'test', '2026-02-06 11:24:50.398471+00', 0,
+        VALUES ('FileReader2FileWriter', 'proof', '2026-02-06 11:23:09.547596+00', 'proof', '2026-02-06 11:24:50.398471+00', 0,
                 'A simple test workflow that reads from a file and writes to another file', 'FileReader-to-FileWriter', 3, 'ee527d0c-8428-4f5d-ab55-e883a1cbde2b')
         ON CONFLICT DO NOTHING;
 
@@ -65,7 +65,6 @@ IF NOT EXISTS (SELECT 1 FROM public.workflow WHERE id = '200f030b-e8fc-4e18-bd8f
                 'id_attachment_tss_writer_4_values/tss_writer_4_values.py')
         ON CONFLICT DO NOTHING;
 
-
         --
         -- Data for Name: program; Type: TABLE DATA; Schema: public; Owner: admin
         --
@@ -94,22 +93,21 @@ IF NOT EXISTS (SELECT 1 FROM public.workflow WHERE id = '200f030b-e8fc-4e18-bd8f
                 'prog_tss_writer_4_values', 0, 'tss')
         ON CONFLICT DO NOTHING;
 
-
         --
         -- Data for Name: block; Type: TABLE DATA; Schema: public; Owner: admin
         --
 
         INSERT INTO public.block (id, created_by, creation_date, last_modified_by, last_modified_date, block_type, color, communication_paradigm, container_image, description, index, interface_type, label, x,
                                 y, shutdown_relevant, status, sync_strategy, template_id, template_name, type, program_id, workflow_id)
-        VALUES ('ebcc35c1-abcc-4b4f-9200-7472d475e9c9', 'test', '2026-02-06 11:24:50.376483+00', 'test', '2026-02-06 11:24:50.398608+00', 0, '#009000', 0, 'ghcr.io/kit-iai-proof/proof-worker-python:1.0.0',
-                'provide the workflow with lines from a given file for each SYNC', 1, 1, 'File Reader', 204, 227, false, NULL, 0, 'id_template_file_reader', 'File Reader', 'block', 'id_prog_file_reader',
-                '200f030b-e8fc-4e18-bd8f-31a8bd5d5bac')
+        VALUES ('Block_FileReader', 'proof', '2026-02-06 11:24:50.376483+00', 'proof', '2026-02-06 11:24:50.398608+00', 0, '#009000', 0, 'ghcr.io/kit-iai-proof/proof-worker-python:1.0.0',
+                'provide the workflow with lines from a given file for each SYNC', 1, 1, 'File Reader', 204, 227, true, NULL, 0, 'id_template_file_reader', 'File Reader', 'block', 'id_prog_file_reader',
+                'FileReader2FileWriter')
         ON CONFLICT DO NOTHING;
         INSERT INTO public.block (id, created_by, creation_date, last_modified_by, last_modified_date, block_type, color, communication_paradigm, container_image, description, index, interface_type, label, x,
                                 y, shutdown_relevant, status, sync_strategy, template_id, template_name, type, program_id, workflow_id)
-        VALUES ('728eab0d-b1dd-4b3e-b8be-8d629f032927', 'test', '2026-02-06 11:24:50.388598+00', 'test', '2026-02-06 11:24:50.398969+00', 0, '#009000', 0, 'ghcr.io/kit-iai-proof/proof-worker-python:1.0.0',
-                'Write data from an input line to a file', 2, 1, 'File Writer', 443, 227, false, NULL, 2, 'id_template_file_writer', 'File Writer', 'block', 'id_prog_file_writer',
-                '200f030b-e8fc-4e18-bd8f-31a8bd5d5bac')
+        VALUES ('Block_FileWriter', 'proof', '2026-02-06 11:24:50.388598+00', 'proof', '2026-02-06 11:24:50.398969+00', 0, '#009000', 0, 'ghcr.io/kit-iai-proof/proof-worker-python:1.0.0',
+                'Write data from an input line to a file', 2, 1, 'File Writer', 443, 227, false, NULL, 0, 'id_template_file_writer', 'File Writer', 'block', 'id_prog_file_writer',
+                'FileReader2FileWriter')
         ON CONFLICT DO NOTHING;
 
 
@@ -118,11 +116,10 @@ IF NOT EXISTS (SELECT 1 FROM public.workflow WHERE id = '200f030b-e8fc-4e18-bd8f
         --
 
         INSERT INTO public.connection (id, created_by, creation_date, last_modified_by, last_modified_date, algorithm, animated, connection_type, input, output, source, target, type, workflow_id)
-        VALUES ('81815e0f-cb92-457a-99a7-463c07b74272', 'test', '2026-02-06 11:24:50.397354+00', 'test', '2026-02-06 11:24:50.399151+00', 'bezier-catmull-rom', NULL, 'STRING',
-                '884c806c-e0f0-451a-a833-8b557e38f5b7', 'bdf9d634-b50d-46f2-b40a-0218be59e8e3', 'ebcc35c1-abcc-4b4f-9200-7472d475e9c9', '728eab0d-b1dd-4b3e-b8be-8d629f032927', 'block',
-                '200f030b-e8fc-4e18-bd8f-31a8bd5d5bac')
+        VALUES ('81815e0f-cb92-457a-99a7-463c07b74272', 'proof', '2026-02-06 11:24:50.397354+00', 'proof', '2026-02-06 11:24:50.399151+00', 'bezier-catmull-rom', NULL, 'STRING',
+                '884c806c-e0f0-451a-a833-8b557e38f5b7', 'bdf9d634-b50d-46f2-b40a-0218be59e8e3', 'Block_FileReader', 'Block_FileWriter', 'block',
+                'FileReader2FileWriter')
         ON CONFLICT DO NOTHING;
-
 
         --
         -- Data for Name: template; Type: TABLE DATA; Schema: public; Owner: admin
@@ -130,32 +127,32 @@ IF NOT EXISTS (SELECT 1 FROM public.workflow WHERE id = '200f030b-e8fc-4e18-bd8f
 
         INSERT INTO public.template (id, created_by, creation_date, last_modified_by, last_modified_date, block_type, color, communication_paradigm, container_image, description, interface_type, name,
                                 shutdown_relevant, status, sync_strategy, type, program_id)
-        VALUES ('id_template_file_reader', 'anonymous', '2026-02-06 11:22:03.871892+00', 'anonymous', '2026-02-06 11:22:03.871895+00', 0, '#009000', 0, 'ghcr.io/kit-iai-proof/proof-worker-python:1.0.0',
-                'provide the workflow with lines from a given file for each SYNC', 1, 'File Reader', false, NULL, 0, 'block', 'id_prog_file_reader')
+        VALUES ('id_template_file_reader', 'proof', '2026-02-06 11:22:03.871892+00', 'proof', '2026-02-06 11:22:03.871895+00', 0, '#009000', 0, 'ghcr.io/kit-iai-proof/proof-worker-python:1.0.0',
+                'provide the workflow with lines from a given file for each SYNC', 1, 'File Reader', true, NULL, 0, 'block', 'id_prog_file_reader')
         ON CONFLICT DO NOTHING;
         INSERT INTO public.template (id, created_by, creation_date, last_modified_by, last_modified_date, block_type, color, communication_paradigm, container_image, description, interface_type, name,
                                 shutdown_relevant, status, sync_strategy, type, program_id)
-        VALUES ('id_template_file_writer', 'anonymous', '2026-02-06 11:22:16.504007+00', 'anonymous', '2026-02-06 11:22:16.504011+00', 0, '#009000', 0, 'ghcr.io/kit-iai-proof/proof-worker-python:1.0.0',
-                'Write data from an input line to a file', 1, 'File Writer', false, NULL, 2, 'block', 'id_prog_file_writer')
+        VALUES ('id_template_file_writer', 'proof', '2026-02-06 11:22:16.504007+00', 'proof', '2026-02-06 11:22:16.504011+00', 0, '#009000', 0, 'ghcr.io/kit-iai-proof/proof-worker-python:1.0.0',
+                'Write data from an input line to a file', 1, 'File Writer', false, NULL, 0, 'block', 'id_prog_file_writer')
         ON CONFLICT DO NOTHING;
         INSERT INTO public.template (id, created_by, creation_date, last_modified_by, last_modified_date, block_type, color, communication_paradigm, container_image, description, interface_type, name,
                                 shutdown_relevant, status, sync_strategy, type, program_id)
-        VALUES ('id_template_float_2_string', 'anonymous', '2026-02-06 11:22:21.7428+00', 'anonymous', '2026-02-06 11:22:21.742803+00', 0, '#37e142', 0, 'ghcr.io/kit-iai-proof/proof-worker-python:1.0.0',
+        VALUES ('id_template_float_2_string', 'proof', '2026-02-06 11:22:21.7428+00', 'proof', '2026-02-06 11:22:21.742803+00', 0, '#37e142', 0, 'ghcr.io/kit-iai-proof/proof-worker-python:1.0.0',
                 'float to string converter that does not wait for sync', 1, 'Float2String', false, NULL, 2, 'block', 'id_prog_float_2_string')
         ON CONFLICT DO NOTHING;
         INSERT INTO public.template (id, created_by, creation_date, last_modified_by, last_modified_date, block_type, color, communication_paradigm, container_image, description, interface_type, name,
                                 shutdown_relevant, status, sync_strategy, type, program_id)
-        VALUES ('id_template_string_2_float', 'anonymous', '2026-02-06 11:22:28.531754+00', 'anonymous', '2026-02-06 11:22:28.531759+00', 0, '#37e142', 0, 'ghcr.io/kit-iai-proof/proof-worker-python:1.0.0',
+        VALUES ('id_template_string_2_float', 'proof', '2026-02-06 11:22:28.531754+00', 'proof', '2026-02-06 11:22:28.531759+00', 0, '#37e142', 0, 'ghcr.io/kit-iai-proof/proof-worker-python:1.0.0',
                 'string to float converter that does not wait for sync', 1, 'String2Float', false, NULL, 2, 'block', 'id_prog_string_2_float')
         ON CONFLICT DO NOTHING;
         INSERT INTO public.template (id, created_by, creation_date, last_modified_by, last_modified_date, block_type, color, communication_paradigm, container_image, description, interface_type, name,
                                 shutdown_relevant, status, sync_strategy, type, program_id)
-        VALUES ('id_ProcTimeSim', 'anonymous', '2026-02-06 11:22:33.209293+00', 'anonymous', '2026-02-06 11:22:33.209296+00', 0, '#009000', 0, 'ghcr.io/kit-iai-proof/proof-worker-python:1.0.0',
+        VALUES ('id_ProcTimeSim', 'proof', '2026-02-06 11:22:33.209293+00', 'proof', '2026-02-06 11:22:33.209296+00', 0, '#009000', 0, 'ghcr.io/kit-iai-proof/proof-worker-python:1.0.0',
                 'A simple block that simulates a long-lasting processing time.', 1, 'ProcTimeSim', false, NULL, 2, 'block', 'id_proc_time_sim_program')
         ON CONFLICT DO NOTHING;
         INSERT INTO public.template (id, created_by, creation_date, last_modified_by, last_modified_date, block_type, color, communication_paradigm, container_image, description, interface_type, name,
                                 shutdown_relevant, status, sync_strategy, type, program_id)
-        VALUES ('id_template_tss_writer_4_values', 'anonymous', '2026-02-06 11:22:39.498172+00', 'anonymous', '2026-02-06 11:22:39.498175+00', 0, '#009000', 0,
+        VALUES ('id_template_tss_writer_4_values', 'proof', '2026-02-06 11:22:39.498172+00', 'proof', '2026-02-06 11:22:39.498175+00', 0, '#009000', 0,
                 'ghcr.io/kit-iai-proof/proof-worker-python:1.0.0', 'Write up to 4 values to the Time Series Service', 1, 'TSS writer 4 Vals', false, NULL, 0, 'block', 'id_prog_tss_writer_4_values')
         ON CONFLICT DO NOTHING;
 
@@ -267,41 +264,40 @@ IF NOT EXISTS (SELECT 1 FROM public.workflow WHERE id = '200f030b-e8fc-4e18-bd8f
         ON CONFLICT DO NOTHING;
         INSERT INTO public.input (id, created_by, creation_date, last_modified_by, last_modified_date, communication_type, description, label, model_var_name, phase, type, unit, required, template_id,
                                 block_id)
-        VALUES ('077bd354-4124-4192-8b43-7e25004c9586', 'test', '2026-02-06 11:24:50.382421+00', 'test', '2026-02-06 11:24:50.382421+00', 3, 'Path to the input file to read lines from', 'file_name',
-                'file_name', 1, 0, NULL, true, NULL, 'ebcc35c1-abcc-4b4f-9200-7472d475e9c9')
+        VALUES ('077bd354-4124-4192-8b43-7e25004c9586', 'proof', '2026-02-06 11:24:50.382421+00', 'proof', '2026-02-06 11:24:50.382421+00', 3, 'Path to the input file to read lines from', 'file_name',
+                'file_name', 1, 0, NULL, true, NULL, 'Block_FileReader')
         ON CONFLICT DO NOTHING;
         INSERT INTO public.input (id, created_by, creation_date, last_modified_by, last_modified_date, communication_type, description, label, model_var_name, phase, type, unit, required, template_id,
                                 block_id)
-        VALUES ('def99dfe-9fd7-4bdf-9503-1d7e404be719', 'test', '2026-02-06 11:24:50.384013+00', 'test', '2026-02-06 11:24:50.384013+00', 3,
+        VALUES ('def99dfe-9fd7-4bdf-9503-1d7e404be719', 'proof', '2026-02-06 11:24:50.384013+00', 'proof', '2026-02-06 11:24:50.384013+00', 3,
                 'Number of steps to perform reading one line from the input file. Set to -1 to read the entire file.', 'num_steps', 'num_steps', 1, 1, NULL, false, NULL,
-                'ebcc35c1-abcc-4b4f-9200-7472d475e9c9')
+                'Block_FileReader')
         ON CONFLICT DO NOTHING;
         INSERT INTO public.input (id, created_by, creation_date, last_modified_by, last_modified_date, communication_type, description, label, model_var_name, phase, type, unit, required, template_id,
                                 block_id)
-        VALUES ('3b800d66-0beb-401b-8c3e-9eeac4676c11', 'test', '2026-02-06 11:24:50.385161+00', 'test', '2026-02-06 11:24:50.385161+00', 3,
-                'Whether to ignore the first line of the input file (e.g., header line)', 'ignore_first_line', 'ignore_first_line', 1, 0, NULL, false, NULL, 'ebcc35c1-abcc-4b4f-9200-7472d475e9c9')
+        VALUES ('3b800d66-0beb-401b-8c3e-9eeac4676c11', 'proof', '2026-02-06 11:24:50.385161+00', 'proof', '2026-02-06 11:24:50.385161+00', 3,
+                'Whether to ignore the first line of the input file (e.g., header line)', 'ignore_first_line', 'ignore_first_line', 1, 0, NULL, false, NULL, 'Block_FileReader')
         ON CONFLICT DO NOTHING;
         INSERT INTO public.input (id, created_by, creation_date, last_modified_by, last_modified_date, communication_type, description, label, model_var_name, phase, type, unit, required, template_id,
                                 block_id)
-        VALUES ('e6a7406b-79c7-498c-aace-914f87b1bc59', 'test', '2026-02-06 11:24:50.389663+00', 'test', '2026-02-06 11:24:50.389663+00', 3, 'Path to the output file where data will be written', 'file name',
-                'file_name', 1, 0, NULL, true, NULL, '728eab0d-b1dd-4b3e-b8be-8d629f032927')
+        VALUES ('e6a7406b-79c7-498c-aace-914f87b1bc59', 'proof', '2026-02-06 11:24:50.389663+00', 'proof', '2026-02-06 11:24:50.389663+00', 3, 'Path to the output file where data will be written', 'file name',
+                'file_name', 1, 0, NULL, true, NULL, 'Block_FileWriter')
         ON CONFLICT DO NOTHING;
         INSERT INTO public.input (id, created_by, creation_date, last_modified_by, last_modified_date, communication_type, description, label, model_var_name, phase, type, unit, required, template_id,
                                 block_id)
-        VALUES ('39c8bb64-0b29-481e-a40d-64a0912bcdda', 'test', '2026-02-06 11:24:50.390487+00', 'test', '2026-02-06 11:24:50.390487+00', 3, 'append mode (a) or overwrite mode (w)', 'mode', 'mode', 1, 0,
-                NULL, false, NULL, '728eab0d-b1dd-4b3e-b8be-8d629f032927')
+        VALUES ('39c8bb64-0b29-481e-a40d-64a0912bcdda', 'proof', '2026-02-06 11:24:50.390487+00', 'proof', '2026-02-06 11:24:50.390487+00', 3, 'append mode (a) or overwrite mode (w)', 'mode', 'mode', 1, 0,
+                NULL, false, NULL, 'Block_FileWriter')
         ON CONFLICT DO NOTHING;
         INSERT INTO public.input (id, created_by, creation_date, last_modified_by, last_modified_date, communication_type, description, label, model_var_name, phase, type, unit, required, template_id,
                                 block_id)
-        VALUES ('6df9f0aa-e5f6-4b3c-befe-8e560d817fac', 'test', '2026-02-06 11:24:50.390953+00', 'test', '2026-02-06 11:24:50.390953+00', 3,
-                'Whether to add an additional Carriage Return and Line Feed after each write (true/false)', 'additionalCRLF', 'additionalCRLF', 1, 0, NULL, false, NULL, '728eab0d-b1dd-4b3e-b8be-8d629f032927')
+        VALUES ('6df9f0aa-e5f6-4b3c-befe-8e560d817fac', 'proof', '2026-02-06 11:24:50.390953+00', 'proof', '2026-02-06 11:24:50.390953+00', 3,
+                'Whether to add an additional Carriage Return and Line Feed after each write (true/false)', 'additionalCRLF', 'additionalCRLF', 1, 0, NULL, false, NULL, 'Block_FileWriter')
         ON CONFLICT DO NOTHING;
         INSERT INTO public.input (id, created_by, creation_date, last_modified_by, last_modified_date, communication_type, description, label, model_var_name, phase, type, unit, required, template_id,
                                 block_id)
-        VALUES ('884c806c-e0f0-451a-a833-8b557e38f5b7', 'test', '2026-02-06 11:24:50.391234+00', 'test', '2026-02-06 11:24:50.391234+00', 0, 'data to be written to a file', 'data', 'data', 2, 0, NULL, false,
-                NULL, '728eab0d-b1dd-4b3e-b8be-8d629f032927')
+        VALUES ('884c806c-e0f0-451a-a833-8b557e38f5b7', 'proof', '2026-02-06 11:24:50.391234+00', 'proof', '2026-02-06 11:24:50.391234+00', 0, 'data to be written to a file', 'data', 'data', 2, 0, NULL, false,
+                NULL, 'Block_FileWriter')
         ON CONFLICT DO NOTHING;
-
 
         --
         -- Data for Name: output; Type: TABLE DATA; Schema: public; Owner: admin
@@ -320,11 +316,10 @@ IF NOT EXISTS (SELECT 1 FROM public.workflow WHERE id = '200f030b-e8fc-4e18-bd8f
         VALUES ('6c72d75d-ec65-47c3-8c1e-3343e85e71d3', NULL, NULL, NULL, NULL, 0, 'optional output as String', 'opt_out', 'opt_output', 2, 0, NULL, 'id_ProcTimeSim', NULL)
         ON CONFLICT DO NOTHING;
         INSERT INTO public.output (id, created_by, creation_date, last_modified_by, last_modified_date, communication_type, description, label, model_var_name, phase, type, unit, template_id, block_id)
-        VALUES ('bdf9d634-b50d-46f2-b40a-0218be59e8e3', 'test', '2026-02-06 11:24:50.386218+00', 'test', '2026-02-06 11:24:50.386218+00', 0, 'Line read from the input file at each SYNC', 'line', 'line', 2, 0,
-                NULL, NULL, 'ebcc35c1-abcc-4b4f-9200-7472d475e9c9')
+        VALUES ('bdf9d634-b50d-46f2-b40a-0218be59e8e3', 'proof', '2026-02-06 11:24:50.386218+00', 'proof', '2026-02-06 11:24:50.386218+00', 0, 'Line read from the input file at each SYNC', 'line', 'line', 2, 0,
+                NULL, NULL, 'Block_FileReader')
         ON CONFLICT DO NOTHING;
-
-
+        
         --
         -- Data for Name: point; Type: TABLE DATA; Schema: public; Owner: admin
         --
@@ -353,7 +348,6 @@ IF NOT EXISTS (SELECT 1 FROM public.workflow WHERE id = '200f030b-e8fc-4e18-bd8f
         VALUES ('id_prog_file_writer', 'id_attachment_file_writer')
         ON CONFLICT DO NOTHING;
 
-
         --
         -- Data for Name: step_size_definition; Type: TABLE DATA; Schema: public; Owner: admin
         --
@@ -367,5 +361,9 @@ IF NOT EXISTS (SELECT 1 FROM public.workflow WHERE id = '200f030b-e8fc-4e18-bd8f
         --
         -- PostgreSQL database dump complete
         --
+END IF;
+
+IF NOT EXISTS (SELECT 1 FROM public.workflow WHERE id = 'FileReader2FileWriter') THEN
+
 END IF;
 END $$;;
