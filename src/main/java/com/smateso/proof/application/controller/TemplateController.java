@@ -3,6 +3,7 @@ package com.smateso.proof.application.controller;
 import com.smateso.proof.adapter.boundaries.controller.ITemplateController;
 import com.smateso.proof.adapter.boundaries.services.ITemplateInteractor;
 import com.smateso.proof.adapter.model.Request;
+import edu.kit.iai.webis.proofmodels.dto.Block;
 import edu.kit.iai.webis.proofmodels.dto.Template;
 import edu.kit.iai.webis.proofmodels.paging.TemplatePagingModel;
 import lombok.AllArgsConstructor;
@@ -69,6 +70,12 @@ public class TemplateController implements ITemplateController {
         final var username = getUsername(authentication);
         this.templateInteractor.deleteTemplate(id, sessionKey, username);
         return ResponseEntity.ok().build();
+    }
+
+    @Override
+    public ResponseEntity<List<Block>> getBlocksForTemplate(@NonNull final String id) {
+        final var blocks = this.templateInteractor.getBlocksForTemplate(id);
+        return ResponseEntity.ok(blocks);
     }
 
 }

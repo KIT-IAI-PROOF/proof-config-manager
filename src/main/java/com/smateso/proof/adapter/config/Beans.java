@@ -41,8 +41,8 @@ public class Beans {
     }
 
     @Bean(value = "templateInteractor", name = "templateInteractor")
-    public ITemplateInteractor templateInteractor(@Qualifier("templateRepository") @NonNull final TemplateRepository templateRepository, @Qualifier("blockRepository") @NonNull final BlockRepository blockRepository, @Qualifier("messageInteractor") @NonNull final IMessageInteractor messageInteractor, @NonNull final TemplateMapper templateMapper) {
-        return new TemplateInteractor(messageInteractor, templateRepository, blockRepository, templateMapper);
+    public ITemplateInteractor templateInteractor(@Qualifier("templateRepository") @NonNull final TemplateRepository templateRepository, @Qualifier("blockRepository") @NonNull final BlockRepository blockRepository, @Qualifier("messageInteractor") @NonNull final IMessageInteractor messageInteractor, @NonNull final TemplateMapper templateMapper, @NonNull final BlockMapper blockMapper) {
+        return new TemplateInteractor(messageInteractor, templateRepository, blockRepository, templateMapper, blockMapper);
     }
 
     @Bean(value = "executionInteractor", name = "executionInteractor")
@@ -98,6 +98,11 @@ public class Beans {
     @Bean(value = "messageController", name = "messageController")
     public IMessageController messageController() {
         return new MessageController();
+    }
+
+    @Bean(value = "fileController", name = "fileController")
+    public IFileController fileController() {
+        return new FileController(Paths.get(this.fileStorageRoot));
     }
 
     @Profile({"debug", "dev", "prod"})
