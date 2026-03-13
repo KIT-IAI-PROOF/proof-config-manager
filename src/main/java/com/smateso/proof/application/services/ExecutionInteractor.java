@@ -113,9 +113,9 @@ public class ExecutionInteractor implements IExecutionInteractor {
             if (optionalExecution.isPresent()) {
                 final var execution = optionalExecution.get();
                 this.executionRepository.delete(execution);
-                if (nonNull(execution.getWorkflow())) {
+                if (nonNull(execution.getWorkflow()) && nonNull(execution.getId())) {
                     if (nonNull(execution.getWorkflow().getBlocks())) {
-                        this.messageInteractor.deleteBlockLoggingQueues(execution.getWorkflow().getBlocks().stream().map(BlockDao::getId).toList());
+                        this.messageInteractor.deleteBlockLoggingQueues(execution.getWorkflow().getBlocks().stream().map(BlockDao::getId).toList(), execution.getId());
                     }
                 }
                 this.messageInteractor.deleteExecutionLoggingQueue(id);

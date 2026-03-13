@@ -54,10 +54,10 @@ public class MessageInteractor implements IMessageInteractor {
     }
 
     @Override
-    public void deleteBlockLoggingQueues(@NonNull final Iterable<String> blockIds) {
+    public void deleteBlockLoggingQueues(@NonNull final Iterable<String> blockIds, @NonNull final String executionId) {
         log.info("Deleting logging queues for blocks");
         blockIds.forEach((final var blockId) -> {
-            final var queue = QueueBuilder.durable("logs.blocks." + blockId).build();
+            final var queue = QueueBuilder.durable("logs.blocks.%s.execution.%s".formatted(blockId, executionId)).build();
             final var binding = BindingBuilder.bind(queue).to(new TopicExchange("logs")).with("logs.blocks." + blockId);
             this.amqpAdmin.removeBinding(binding);
             this.amqpAdmin.deleteQueue(queue.getName());
@@ -67,7 +67,7 @@ public class MessageInteractor implements IMessageInteractor {
     @Override
     public void deleteExecutionLoggingQueue(@NonNull final String executionId) {
         log.info("Deleting logging queue for execution");
-        final var queue = QueueBuilder.durable("logs.execution." + executionId).build();
+        final var queue = QueueBuilder.durable("logs.execution.%s".formatted(executionId)).build();
         final var binding = BindingBuilder.bind(queue).to(new TopicExchange("logs")).with("logs.execution." + executionId);
         this.amqpAdmin.removeBinding(binding);
         this.amqpAdmin.deleteQueue(queue.getName());
