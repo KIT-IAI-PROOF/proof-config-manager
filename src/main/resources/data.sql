@@ -96,18 +96,18 @@ ON CONFLICT DO NOTHING;
 -- Data for Name: block; Type: TABLE DATA; Schema: public; Owner: admin
 --
 
-INSERT INTO public.block (id, created_by, creation_date, last_modified_by, last_modified_date, block_type, color, text_color, communication_paradigm, container_image, description, index, interface_type, label, x,
-                          y, shutdown_relevant, status, sync_strategy, template_id, template_name, type, program_id, workflow_id)
-VALUES ('ebcc35c1-abcc-4b4f-9200-7472d475e9c9', 'test', '2026-02-06 11:24:50.376483+00', 'test', '2026-02-06 11:24:50.398608+00', 0, '#009000', '#ffffff', 0, 'ghcr.io/kit-iai-proof/proof-worker-python:1.0.0',
-        'provide the workflow with lines from a given file for each SYNC', 1, 1, 'File Reader', 204, 227, false, NULL, 0, 'id_template_file_reader', 'File Reader', 'block', 'id_prog_file_reader',
-        '200f030b-e8fc-4e18-bd8f-31a8bd5d5bac')
-ON CONFLICT DO NOTHING;
-INSERT INTO public.block (id, created_by, creation_date, last_modified_by, last_modified_date, block_type, color, text_color, communication_paradigm, container_image, description, index, interface_type, label, x,
-                          y, shutdown_relevant, status, sync_strategy, template_id, template_name, type, program_id, workflow_id)
-VALUES ('728eab0d-b1dd-4b3e-b8be-8d629f032927', 'test', '2026-02-06 11:24:50.388598+00', 'test', '2026-02-06 11:24:50.398969+00', 0, '#009000','#ffffff', 0, 'ghcr.io/kit-iai-proof/proof-worker-python:1.0.0',
-        'Write data from an input line to a file', 2, 1, 'File Writer', 443, 227, false, NULL, 2, 'id_template_file_writer', 'File Writer', 'block', 'id_prog_file_writer',
-        '200f030b-e8fc-4e18-bd8f-31a8bd5d5bac')
-ON CONFLICT DO NOTHING;
+        INSERT INTO public.block (id, created_by, creation_date, last_modified_by, last_modified_date, block_type, color, text_color, communication_paradigm, container_image, description, index, interface_type, label, x,
+                                y, shutdown_relevant, status, sync_strategy, template_id, template_name, type, program_id, workflow_id)
+        VALUES ('Block_FileReader', 'proof', '2026-02-06 11:24:50.376483+00', 'proof', '2026-02-06 11:24:50.398608+00', 0, '#009000', '#ffffff', 0, 'ghcr.io/kit-iai-proof/proof-worker-python:1.1.0',
+                'provide the workflow with lines from a given file for each SYNC', 1, 1, 'File Reader', 204, 227, true, NULL, 0, 'id_template_file_reader', 'File Reader', 'block', 'id_prog_file_reader',
+                'FileReader2FileWriter')
+        ON CONFLICT DO NOTHING;
+        INSERT INTO public.block (id, created_by, creation_date, last_modified_by, last_modified_date, block_type, color, text_color, communication_paradigm, container_image, description, index, interface_type, label, x,
+                                y, shutdown_relevant, status, sync_strategy, template_id, template_name, type, program_id, workflow_id)
+        VALUES ('Block_FileWriter', 'proof', '2026-02-06 11:24:50.388598+00', 'proof', '2026-02-06 11:24:50.398969+00', 0, '#009000','#ffffff', 0, 'ghcr.io/kit-iai-proof/proof-worker-python:1.1.0',
+                'Write data from an input line to a file', 2, 1, 'File Writer', 443, 227, false, NULL, 0, 'id_template_file_writer', 'File Writer', 'block', 'id_prog_file_writer',
+                'FileReader2FileWriter')
+        ON CONFLICT DO NOTHING;
 
 
 --
@@ -125,36 +125,36 @@ ON CONFLICT DO NOTHING;
 -- Data for Name: template; Type: TABLE DATA; Schema: public; Owner: admin
 --
 
-INSERT INTO public.template (id, created_by, creation_date, last_modified_by, last_modified_date, block_type, color, text_color, communication_paradigm, container_image, description, interface_type, name,
-                             shutdown_relevant, status, sync_strategy, type, program_id)
-VALUES ('id_template_file_reader', 'anonymous', '2026-02-06 11:22:03.871892+00', 'anonymous', '2026-02-06 11:22:03.871895+00', 0, '#009000', '#ffffff', 0, 'ghcr.io/kit-iai-proof/proof-worker-python:1.0.0',
-        'provide the workflow with lines from a given file for each SYNC', 1, 'File Reader', false, NULL, 0, 'block', 'id_prog_file_reader')
-ON CONFLICT DO NOTHING;
-INSERT INTO public.template (id, created_by, creation_date, last_modified_by, last_modified_date, block_type, color, text_color, communication_paradigm, container_image, description, interface_type, name,
-                             shutdown_relevant, status, sync_strategy, type, program_id)
-VALUES ('id_template_file_writer', 'anonymous', '2026-02-06 11:22:16.504007+00', 'anonymous', '2026-02-06 11:22:16.504011+00', 0, '#009000', '#ffffff', 0, 'ghcr.io/kit-iai-proof/proof-worker-python:1.0.0',
-        'Write data from an input line to a file', 1, 'File Writer', false, NULL, 2, 'block', 'id_prog_file_writer')
-ON CONFLICT DO NOTHING;
-INSERT INTO public.template (id, created_by, creation_date, last_modified_by, last_modified_date, block_type, color, text_color, communication_paradigm, container_image, description, interface_type, name,
-                             shutdown_relevant, status, sync_strategy, type, program_id)
-VALUES ('id_template_float_2_string', 'anonymous', '2026-02-06 11:22:21.7428+00', 'anonymous', '2026-02-06 11:22:21.742803+00', 0, '#37e142', '#ffffff', 0, 'ghcr.io/kit-iai-proof/proof-worker-python:1.0.0',
-        'float to string converter that does not wait for sync', 1, 'Float2String', false, NULL, 2, 'block', 'id_prog_float_2_string')
-ON CONFLICT DO NOTHING;
-INSERT INTO public.template (id, created_by, creation_date, last_modified_by, last_modified_date, block_type, color, text_color, communication_paradigm, container_image, description, interface_type, name,
-                             shutdown_relevant, status, sync_strategy, type, program_id)
-VALUES ('id_template_string_2_float', 'anonymous', '2026-02-06 11:22:28.531754+00', 'anonymous', '2026-02-06 11:22:28.531759+00', 0, '#37e142', '#ffffff', 0, 'ghcr.io/kit-iai-proof/proof-worker-python:1.0.0',
-        'string to float converter that does not wait for sync', 1, 'String2Float', false, NULL, 2, 'block', 'id_prog_string_2_float')
-ON CONFLICT DO NOTHING;
-INSERT INTO public.template (id, created_by, creation_date, last_modified_by, last_modified_date, block_type, color, text_color, communication_paradigm, container_image, description, interface_type, name,
-                             shutdown_relevant, status, sync_strategy, type, program_id)
-VALUES ('id_ProcTimeSim', 'anonymous', '2026-02-06 11:22:33.209293+00', 'anonymous', '2026-02-06 11:22:33.209296+00', 0, '#009000', '#ffffff', 0, 'ghcr.io/kit-iai-proof/proof-worker-python:1.0.0',
-        'A simple block that simulates a long-lasting processing time.', 1, 'ProcTimeSim', false, NULL, 2, 'block', 'id_proc_time_sim_program')
-ON CONFLICT DO NOTHING;
-INSERT INTO public.template (id, created_by, creation_date, last_modified_by, last_modified_date, block_type, color, text_color, communication_paradigm, container_image, description, interface_type, name,
-                             shutdown_relevant, status, sync_strategy, type, program_id)
-VALUES ('id_template_tss_writer_4_values', 'anonymous', '2026-02-06 11:22:39.498172+00', 'anonymous', '2026-02-06 11:22:39.498175+00', 0, '#009000', '#ffffff', 0,
-        'ghcr.io/kit-iai-proof/proof-worker-python:1.0.0', 'Write up to 4 values to the Time Series Service', 1, 'TSS writer 4 Vals', false, NULL, 0, 'block', 'id_prog_tss_writer_4_values')
-ON CONFLICT DO NOTHING;
+        INSERT INTO public.template (id, created_by, creation_date, last_modified_by, last_modified_date, block_type, color, text_color, communication_paradigm, container_image, description, interface_type, name,
+                                shutdown_relevant, status, sync_strategy, type, program_id)
+        VALUES ('id_template_file_reader', 'proof', '2026-02-06 11:22:03.871892+00', 'proof', '2026-02-06 11:22:03.871895+00', 0, '#009000', '#ffffff', 0, 'ghcr.io/kit-iai-proof/proof-worker-python:1.1.0',
+                'provide the workflow with lines from a given file for each SYNC', 1, 'File Reader', true, NULL, 0, 'block', 'id_prog_file_reader')
+        ON CONFLICT DO NOTHING;
+        INSERT INTO public.template (id, created_by, creation_date, last_modified_by, last_modified_date, block_type, color, text_color, communication_paradigm, container_image, description, interface_type, name,
+                                shutdown_relevant, status, sync_strategy, type, program_id)
+        VALUES ('id_template_file_writer', 'proof', '2026-02-06 11:22:16.504007+00', 'proof', '2026-02-06 11:22:16.504011+00', 0, '#009000', '#ffffff', 0, 'ghcr.io/kit-iai-proof/proof-worker-python:1.1.0',
+                'Write data from an input line to a file', 1, 'File Writer', false, NULL, 0, 'block', 'id_prog_file_writer')
+        ON CONFLICT DO NOTHING;
+        INSERT INTO public.template (id, created_by, creation_date, last_modified_by, last_modified_date, block_type, color, text_color, communication_paradigm, container_image, description, interface_type, name,
+                                shutdown_relevant, status, sync_strategy, type, program_id)
+        VALUES ('id_template_float_2_string', 'proof', '2026-02-06 11:22:21.7428+00', 'proof', '2026-02-06 11:22:21.742803+00', 0, '#37e142', '#ffffff', 0, 'ghcr.io/kit-iai-proof/proof-worker-python:1.1.0',
+                'float to string converter that does not wait for sync', 1, 'Float2String', false, NULL, 2, 'block', 'id_prog_float_2_string')
+        ON CONFLICT DO NOTHING;
+        INSERT INTO public.template (id, created_by, creation_date, last_modified_by, last_modified_date, block_type, color, text_color, communication_paradigm, container_image, description, interface_type, name,
+                                shutdown_relevant, status, sync_strategy, type, program_id)
+        VALUES ('id_template_string_2_float', 'proof', '2026-02-06 11:22:28.531754+00', 'proof', '2026-02-06 11:22:28.531759+00', 0, '#37e142', '#ffffff', 0, 'ghcr.io/kit-iai-proof/proof-worker-python:1.1.0',
+                'string to float converter that does not wait for sync', 1, 'String2Float', false, NULL, 2, 'block', 'id_prog_string_2_float')
+        ON CONFLICT DO NOTHING;
+        INSERT INTO public.template (id, created_by, creation_date, last_modified_by, last_modified_date, block_type, color, text_color, communication_paradigm, container_image, description, interface_type, name,
+                                shutdown_relevant, status, sync_strategy, type, program_id)
+        VALUES ('id_ProcTimeSim', 'proof', '2026-02-06 11:22:33.209293+00', 'proof', '2026-02-06 11:22:33.209296+00', 0, '#009000', '#ffffff', 0, 'ghcr.io/kit-iai-proof/proof-worker-python:1.1.0',
+                'A simple block that simulates a long-lasting processing time.', 1, 'ProcTimeSim', false, NULL, 2, 'block', 'id_proc_time_sim_program')
+        ON CONFLICT DO NOTHING;
+        INSERT INTO public.template (id, created_by, creation_date, last_modified_by, last_modified_date, block_type, color, text_color, communication_paradigm, container_image, description, interface_type, name,
+                                shutdown_relevant, status, sync_strategy, type, program_id)
+        VALUES ('id_template_tss_writer_4_values', 'proof', '2026-02-06 11:22:39.498172+00', 'proof', '2026-02-06 11:22:39.498175+00', 0, '#009000', '#ffffff', 0,
+                'ghcr.io/kit-iai-proof/proof-worker-python:1.1.0', 'Write up to 4 values to the Time Series Service', 1, 'TSS writer 4 Vals', false, NULL, 0, 'block', 'id_prog_tss_writer_4_values')
+        ON CONFLICT DO NOTHING;
 
 
 --
