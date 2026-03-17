@@ -16,6 +16,7 @@ spring:
     init:
       mode: never
       platform: all
+      separator: ";;"
   jpa:
     hibernate:
       ddl-auto: create-drop
