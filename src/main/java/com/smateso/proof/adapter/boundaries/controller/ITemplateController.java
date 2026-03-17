@@ -112,7 +112,7 @@ public interface ITemplateController {
     @DeleteMapping(value = "{id}", consumes = ALL_VALUE, produces = ALL_VALUE)
     ResponseEntity<Void> deleteTemplate(@PathVariable(value = "id") final String id, final Authentication authentication, @Nullable @RequestParam(required = false, defaultValue = "0") final String sessionKey);
 
-    @JsonView(Listing.class)
+    @JsonView(Detail.class)
     @Operation(
             summary = "Retrieve blocks using template",
             description = "Retrieve blocks using template",
