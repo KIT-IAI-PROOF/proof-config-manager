@@ -114,14 +114,14 @@ public interface ITemplateController {
 
     @JsonView(Detail.class)
     @Operation(
-            summary = "Retrieve blocks using template",
-            description = "Retrieve blocks using template",
+            summary = "Retrieve workflows using template",
+            description = "Retrieve workflows using template",
             security = @SecurityRequirement(name = "oauth2"),
             responses = {
                     @ApiResponse(responseCode = "200", description = "Retrieval successful", useReturnTypeSchema = true),
                     @ApiResponse(responseCode = "500", description = "Retrieval incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
-    @GetMapping(value = "{id}/blocks", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
+    @GetMapping(value = "{id}/workflows", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
     ResponseEntity<List<Workflow>> getWorkflowsForTemplate(@PathVariable final String id);
 
 }
