@@ -10,6 +10,7 @@ import com.smateso.proof.adapter.model.Request;
 import com.smateso.proof.adapter.repositories.BlockRepository;
 import com.smateso.proof.adapter.repositories.TemplateRepository;
 import com.smateso.proof.adapter.repositories.WorkflowRepository;
+import edu.kit.iai.webis.proofmodels.dao.BlockDao;
 import edu.kit.iai.webis.proofmodels.dao.TemplateDao;
 import edu.kit.iai.webis.proofmodels.dto.Template;
 import edu.kit.iai.webis.proofmodels.dto.Workflow;
@@ -114,7 +115,7 @@ public class TemplateInteractor implements ITemplateInteractor {
     @Override
     public List<Workflow> getWorkflowsForTemplate(@NonNull final String id) {
         final var blocks = this.blockRepository.findByTemplateId(id);
-        final var workflows = this.workflowRepository.findByBlocks(blocks);
+        final var workflows = this.workflowRepository.findDistinctByBlocks_IdIn(blocks.stream().map(BlockDao::getId).toList());
         return this.workflowMapper.convert(workflows);
     }
 

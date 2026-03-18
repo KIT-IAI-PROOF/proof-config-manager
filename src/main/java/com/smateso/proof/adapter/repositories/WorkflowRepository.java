@@ -1,6 +1,5 @@
 package com.smateso.proof.adapter.repositories;
 
-import edu.kit.iai.webis.proofmodels.dao.BlockDao;
 import edu.kit.iai.webis.proofmodels.dao.WorkflowDao;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -68,6 +67,6 @@ public interface WorkflowRepository extends JpaRepository<WorkflowDao, String>, 
     Page<WorkflowDao> findAll(@Nullable final Specification<WorkflowDao> spec, @NonNull final Pageable pageable);
 
     @NonNull
-    List<WorkflowDao> findByBlocks(@NonNull final List<BlockDao> blocks);
+    List<WorkflowDao> findDistinctByBlocks_IdIn(@NonNull final List<String> blockIds);
 
 }
