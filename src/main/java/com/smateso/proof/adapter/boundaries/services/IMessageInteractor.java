@@ -8,7 +8,7 @@ public interface IMessageInteractor {
 
     void sendUpdate(@NonNull final String entity, @NonNull final String id, @NonNull final Action action, @Nullable final String sessionKey, @Nullable final String username);
 
-    void deleteBlockLoggingQueues(@NonNull Iterable<String> blockIds);
+    void deleteBlockLoggingQueues(@NonNull final Iterable<String> blockIds, @NonNull final String id);
 
     void deleteExecutionLoggingQueue(@NonNull final String id);
 

@@ -1,8 +1,8 @@
 package com.smateso.proof.adapter.boundaries.services;
 
 import com.smateso.proof.adapter.model.Request;
-import edu.kit.iai.webis.proofmodels.dto.Block;
 import edu.kit.iai.webis.proofmodels.dto.Template;
+import edu.kit.iai.webis.proofmodels.dto.Workflow;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -23,6 +23,6 @@ public interface ITemplateInteractor {
 
     List<Template> getTemplates();
 
-    List<Block> getBlocksForTemplate(@NonNull final String id);
+    List<Workflow> getWorkflowsForTemplate(@NonNull final String id);
 
 }

@@ -3,8 +3,8 @@ package com.smateso.proof.application.controller;
 import com.smateso.proof.adapter.boundaries.controller.ITemplateController;
 import com.smateso.proof.adapter.boundaries.services.ITemplateInteractor;
 import com.smateso.proof.adapter.model.Request;
-import edu.kit.iai.webis.proofmodels.dto.Block;
 import edu.kit.iai.webis.proofmodels.dto.Template;
+import edu.kit.iai.webis.proofmodels.dto.Workflow;
 import edu.kit.iai.webis.proofmodels.paging.TemplatePagingModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -73,8 +73,8 @@ public class TemplateController implements ITemplateController {
     }
 
     @Override
-    public ResponseEntity<List<Block>> getBlocksForTemplate(@NonNull final String id) {
-        final var blocks = this.templateInteractor.getBlocksForTemplate(id);
+    public ResponseEntity<List<Workflow>> getWorkflowsForTemplate(@NonNull final String id) {
+        final var blocks = this.templateInteractor.getWorkflowsForTemplate(id);
         return ResponseEntity.ok(blocks);
     }
 

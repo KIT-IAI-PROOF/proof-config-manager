@@ -9,12 +9,13 @@ import com.smateso.proof.adapter.exceptions.NotFoundException;
 import com.smateso.proof.adapter.model.Request;
 import com.smateso.proof.adapter.repositories.BlockRepository;
 import com.smateso.proof.adapter.repositories.TemplateRepository;
+import com.smateso.proof.adapter.repositories.WorkflowRepository;
+import edu.kit.iai.webis.proofmodels.dao.BlockDao;
 import edu.kit.iai.webis.proofmodels.dao.TemplateDao;
-import edu.kit.iai.webis.proofmodels.dto.Block;
-import edu.kit.iai.webis.proofmodels.dto.Execution;
 import edu.kit.iai.webis.proofmodels.dto.Template;
-import edu.kit.iai.webis.proofmodels.mapper.BlockMapper;
+import edu.kit.iai.webis.proofmodels.dto.Workflow;
 import edu.kit.iai.webis.proofmodels.mapper.TemplateMapper;
+import edu.kit.iai.webis.proofmodels.mapper.WorkflowMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -38,9 +39,10 @@ public class TemplateInteractor implements ITemplateInteractor {
     private static final String ENTITY_TEMPLATE = "templates";
     private final IMessageInteractor messageInteractor;
     private final TemplateRepository templateRepository;
+    private final WorkflowRepository workflowRepository;
     private final BlockRepository blockRepository;
     private final TemplateMapper templateMapper;
-    private final BlockMapper blockMapper;
+    private final WorkflowMapper workflowMapper;
 
     @Override
     public Page<Template> searchTemplates(@NonNull final Request request) {
@@ -111,9 +113,10 @@ public class TemplateInteractor implements ITemplateInteractor {
     }
 
     @Override
-    public List<Block> getBlocksForTemplate(@NonNull final String id) {
-        final var result = this.blockRepository.findByTemplateId(id);
-        return this.blockMapper.convert(result);
+    public List<Workflow> getWorkflowsForTemplate(@NonNull final String id) {
+        final var blocks = this.blockRepository.findByTemplateId(id);
+        final var workflows = this.workflowRepository.findDistinctByBlocks_IdIn(blocks.stream().map(BlockDao::getId).toList());
+        return this.workflowMapper.convert(workflows);
     }
 
 }

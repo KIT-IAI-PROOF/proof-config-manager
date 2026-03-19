@@ -2,9 +2,8 @@ package com.smateso.proof.adapter.boundaries.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.smateso.proof.adapter.model.Request;
-import edu.kit.iai.webis.proofmodels.dto.Block;
-import edu.kit.iai.webis.proofmodels.dto.Execution;
 import edu.kit.iai.webis.proofmodels.dto.Template;
+import edu.kit.iai.webis.proofmodels.dto.Workflow;
 import edu.kit.iai.webis.proofmodels.paging.TemplatePagingModel;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -113,16 +112,16 @@ public interface ITemplateController {
     @DeleteMapping(value = "{id}", consumes = ALL_VALUE, produces = ALL_VALUE)
     ResponseEntity<Void> deleteTemplate(@PathVariable(value = "id") final String id, final Authentication authentication, @Nullable @RequestParam(required = false, defaultValue = "0") final String sessionKey);
 
-    @JsonView(Listing.class)
+    @JsonView(Detail.class)
     @Operation(
-            summary = "Retrieve blocks using template",
-            description = "Retrieve blocks using template",
+            summary = "Retrieve workflows using template",
+            description = "Retrieve workflows using template",
             security = @SecurityRequirement(name = "oauth2"),
             responses = {
                     @ApiResponse(responseCode = "200", description = "Retrieval successful", useReturnTypeSchema = true),
                     @ApiResponse(responseCode = "500", description = "Retrieval incomplete", content = @Content(schema = @Schema(hidden = true))),
             })
-    @GetMapping(value = "{id}/blocks", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<List<Block>> getBlocksForTemplate(@PathVariable final String id);
+    @GetMapping(value = "{id}/workflows", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
+    ResponseEntity<List<Workflow>> getWorkflowsForTemplate(@PathVariable final String id);
 
 }
