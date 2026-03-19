@@ -66,4 +66,7 @@ public interface WorkflowRepository extends JpaRepository<WorkflowDao, String>, 
     @Override
     Page<WorkflowDao> findAll(@Nullable final Specification<WorkflowDao> spec, @NonNull final Pageable pageable);
 
+    @NonNull
+    List<WorkflowDao> findDistinctByBlocks_IdIn(@NonNull final List<String> blockIds);
+
 }
