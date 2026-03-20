@@ -166,7 +166,7 @@ $$
                                          shutdown_relevant, status, sync_strategy, type, program_id)
             VALUES ('id_template_float_2_string', 'proof', '2026-02-06 11:22:21.7428+00', 'proof', '2026-02-06 11:24:50.399000+00', 0, '#37e142', '#ffffff', 0,
                     'ghcr.io/kit-iai-proof/proof-worker-python:1.2.0',
-                    'float to string converter that does not wait for sync', 1, 'Float2String', false, NULL, 2, 'block', 'id_prog_float_2_string')
+                    'float to string converter that does not wait for sync', 1, 'Float2String', false, NULL, 0, 'block', 'id_prog_float_2_string')
             ON CONFLICT DO NOTHING;
             INSERT INTO public.template (id, created_by, creation_date, last_modified_by, last_modified_date, block_type, color, text_color, communication_paradigm, container_image, description,
                                          interface_type,
@@ -174,14 +174,14 @@ $$
                                          shutdown_relevant, status, sync_strategy, type, program_id)
             VALUES ('id_template_string_2_float', 'proof', '2026-02-06 11:22:28.531754+00', 'proof', '2026-02-06 11:24:50.399100+00', 0, '#37e142', '#ffffff', 0,
                     'ghcr.io/kit-iai-proof/proof-worker-python:1.2.0',
-                    'string to float converter that does not wait for sync', 1, 'String2Float', false, NULL, 2, 'block', 'id_prog_string_2_float')
+                    'string to float converter that does not wait for sync', 1, 'String2Float', false, NULL, 0, 'block', 'id_prog_string_2_float')
             ON CONFLICT DO NOTHING;
             INSERT INTO public.template (id, created_by, creation_date, last_modified_by, last_modified_date, block_type, color, text_color, communication_paradigm, container_image, description,
                                          interface_type,
                                 name,
                                          shutdown_relevant, status, sync_strategy, type, program_id)
             VALUES ('id_ProcTimeSim', 'proof', '2026-02-06 11:22:33.209293+00', 'proof', '2026-02-06 11:24:50.399200+00', 0, '#009000', '#ffffff', 0, 'ghcr.io/kit-iai-proof/proof-worker-python:1.2.0',
-                    'A simple block that simulates a long-lasting processing time.', 1, 'ProcTimeSim', false, NULL, 2, 'block', 'id_proc_time_sim_program')
+                    'A simple block that simulates a long-lasting processing time.', 1, 'ProcTimeSim', false, NULL, 0, 'block', 'id_proc_time_sim_program')
             ON CONFLICT DO NOTHING;
             INSERT INTO public.template (id, created_by, creation_date, last_modified_by, last_modified_date, block_type, color, text_color, communication_paradigm, container_image, description,
                                          interface_type,
