@@ -1,5 +1,6 @@
 package com.smateso.proof.adapter.repositories;
 
+import edu.kit.iai.webis.proofmodels.dao.BlockDao;
 import edu.kit.iai.webis.proofmodels.dao.WorkflowDao;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
