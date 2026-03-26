@@ -1,0 +1,61 @@
+app:
+  name: "config-manager"
+server:
+  port: 8100
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-exception: true
+spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+      - org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
+  sql:
+    init:
+      mode: never
+      platform: all
+      separator: ";;"
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    defer-datasource-initialization: true
+    open-in-view: false
+    show-sql: false
+    properties:
+      hibernate:
+        globally_quoted_identifiers: true
+        enable_lazy_load_no_trans: true
+        event:
+          merge:
+            entity_copy_observer: allow
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:test;DB_CLOSE_ON_EXIT=FALSE;CASE_INSENSITIVE_IDENTIFIERS=TRUE;DATABASE_TO_LOWER=TRUE;
+  application:
+    name: PROOF Config Manager
+  main:
+    lazy-initialization: false
+    banner-mode: off
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/proof
+  h2:
+    console:
+      enabled: false
+timezone: Europe/Berlin
+springdoc:
+  show-actuator: false
+logging:
+  level:
+    root: off
+  config: classpath:logback-spring-test.xml
+file:
+  storage:
+    root: "/tmp/proof"
+websocket:
+  broker:
+    relayHost: "localhost"
