@@ -1,7 +1,5 @@
-## Github-Mapping
-Table for mappings gitlab-version <--> github-version
+# PROOF-Config-Manager
+## Proof Dependencies
+- proof-models
 
-| gitlab | github |
-| ------ | ------ |
-| 1.14.5 | 1.1.0  |
-|        |        |
+**Disclaimer:** This code and the published configuration currently only work in an KIT-IAI surrounding. They will be updated soon to work in the github environment.
