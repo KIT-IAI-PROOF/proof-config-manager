@@ -1,0 +1,14 @@
+{
+  "properties": [
+    {
+      "name": "timezone",
+      "type": "java.lang.String",
+      "description": "Description for timezone."
+    },
+    {
+      "name": "app.name",
+      "type": "java.lang.String",
+      "description": "Description for app.name."
+    }
+  ]
+}

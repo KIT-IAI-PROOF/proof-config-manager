@@ -1,0 +1,87 @@
+app:
+  name: "config-manager"
+server:
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-exception: true
+  port: 8100
+spring:
+  servlet:
+    multipart:
+      max-file-size: 1000MB
+      max-request-size: 1000MB
+  rabbitmq:
+    password: admin
+    username: admin
+    host: localhost
+    port: 5672
+  data:
+    redis:
+      repositories:
+        enabled: false
+      host: localhost
+      port: 6379
+  sql:
+    init:
+      mode: always
+      platform: all
+      separator: ";;"
+  jpa:
+    hibernate:
+      ddl-auto: update
+    defer-datasource-initialization: true
+    open-in-view: false
+    show-sql: false
+    properties:
+      hibernate:
+        globally_quoted_identifiers: true
+        enable_lazy_load_no_trans: true
+        event:
+          merge:
+            entity_copy_observer: allow
+  datasource:
+    username: admin
+    password: admin
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/proof
+  application:
+    name: PROOF Config Manager
+  main:
+    lazy-initialization: false
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8080/realms/proof/protocol/openid-connect/certs
+      client:
+        provider:
+          keycloak:
+            token-uri: http://localhost:8080/realms/proof/protocol/openid-connect/token
+            user-name-attribute: preferred_username
+        registration:
+          keycloak:
+            client-id: proof
+            client-secret: GJyYTv97TtWI3TiEOTqtc9eiakgYP9bK
+            client-name: proof
+            authorization-grant-type: client_credentials
+timezone: Europe/Berlin
+springdoc:
+  show-actuator: false
+logging:
+  level:
+    root: debug
+  config: classpath:logback-spring-test.xml
+cors:
+  methods:
+    - "*"
+  origins:
+    - "*"
+  headers:
+    - "*"
+file:
+  storage:
+    root: "/tmp/proof"
+websocket:
+  broker:
+    relayHost: "localhost"
