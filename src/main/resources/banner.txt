@@ -1,0 +1,15 @@
+${AnsiColor.BRIGHT_MAGENTA}_______________________________________________________________________________________________________
+${AnsiColor.BLUE} ______ ______ _______ _______ _______
+(_____ (_____ (_______|_______|_______)
+ _____) )____) )     _ _     _ _____
+|  ____/  __  / |   | | |   | |  ___)
+| |    | |  \ \ |___| | |___| | |
+|_|    |_|   |_\_____/ \_____/|_|
+${AnsiStyle.NORMAL}
+${AnsiColor.BRIGHT_MAGENTA}______________________________________________________________________________________________________
+${AnsiStyle.NORMAL}PROOF Config Manager
+${AnsiStyle.NORMAL}© INSTITUTE FOR AUTOMATION AND APPLIED INFORMATICS, KARLSRUHE INSTITUTE OF TECHNOLOGY
+-> Application profile:            ${AnsiStyle.NORMAL}|${AnsiColor.BRIGHT_GREEN} ${spring.profiles.active}${AnsiStyle.NORMAL}
+-> Powered by Spring Boot:         ${AnsiStyle.NORMAL}|${AnsiColor.BRIGHT_YELLOW} v${spring-boot.version}${AnsiStyle.NORMAL}
+-> Java:                           ${AnsiStyle.NORMAL}|${AnsiColor.BRIGHT_YELLOW} ${java.vendor} ${java.version}${AnsiColor.BLUE}${AnsiStyle.NORMAL}
+${AnsiColor.BRIGHT_MAGENTA}______________________________________________________________________________________________________
