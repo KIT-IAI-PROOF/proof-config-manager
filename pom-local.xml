@@ -11,7 +11,7 @@
 
     <groupId>edu.kit.iai.webis</groupId>
     <artifactId>proof-config-manager</artifactId>
-    <version>1.4.17-local</version>
+    <version>1.2.0-local</version>
     <name>PROOF Config Manager</name>
     <description>PROOF Config Manager</description>
     <packaging>jar</packaging>
@@ -21,18 +21,18 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <gitHost>gitlab.kit.edu/</gitHost>
-        <gitUserId>kit/iai/webis/proof2</gitUserId>
+        <gitHost>github.com/</gitHost>
+        <gitUserId>KIT-IAI-PROOF</gitUserId>
         <gitRepoId>proof-config-manager</gitRepoId>
         <lombok.version>1.18.38</lombok.version>
-        <model.version>3.4.1</model.version>
+        <model.version>1.0.0</model.version>
     </properties>
 
     <dependencies>
 
         <!-- PROOF Dependencies-->
         <dependency>
-            <groupId>edu.kit.iai.webis</groupId>
+            <groupId>edu.kit.iai.webis.proof</groupId>
             <artifactId>proof-models</artifactId>
             <version>${model.version}</version>
         </dependency>
@@ -228,7 +228,7 @@
                                 <additionalProperty>supportsES6=true</additionalProperty>
                                 <additionalProperty>withInterfaces=true</additionalProperty>
                                 <additionalProperty>npmVersion=${project.version}</additionalProperty>
-                                <additionalProperty>npmName=@webis/proof-config-manager-client</additionalProperty>
+                                <additionalProperty>npmName=@kit-iai-proof/proof-config-manager-client</additionalProperty>
                             </additionalProperties>
                         </configuration>
                     </execution>
@@ -263,7 +263,6 @@
                             <gitHost>${gitHost}</gitHost>
                             <gitUserId>${gitUserId}</gitUserId>
                             <gitRepoId>${gitRepoId}</gitRepoId>
-                            <gitHost>gitlab.kit.edu</gitHost>
                             <artifactId>config-manager-client</artifactId>
                             <groupId>edu.kit.iai.webis.proof</groupId>
                             <artifactVersion>${project.version}</artifactVersion>
@@ -293,7 +292,6 @@
                             <gitHost>${gitHost}</gitHost>
                             <gitUserId>${gitUserId}</gitUserId>
                             <gitRepoId>${gitRepoId}</gitRepoId>
-                            <gitHost>gitlab.kit.edu</gitHost>
                         </configuration>
                     </execution>
                 </executions>
@@ -316,16 +314,15 @@
 
     <repositories>
         <repository>
-            <id>iai-artifactory</id>
-            <url>https://iai-artifactory.iai.kit.edu/artifactory/webis/</url>
+            <id>github-proof</id>
+            <url>https://maven.pkg.github.com/KIT-IAI-PROOF</url>
         </repository>
     </repositories>
 
     <distributionManagement>
         <repository>
-            <id>iai-artifactory</id>
-            <name>iai-artifactory</name>
-            <url>https://iai-artifactory.iai.kit.edu/artifactory/webis-common</url>
+            <id>github-proof</id>
+            <url>https://maven.pkg.github.com/KIT-IAI-PROOF/proof-config-manager</url>
         </repository>
     </distributionManagement>
 
