@@ -315,14 +315,14 @@
     <repositories>
         <repository>
             <id>github-proof</id>
-            <url>https://maven.pkg.github.com/KIT-IAI-PROOF</url>
+            <url>https://maven.pkg.github.com/KIT-IAI-PROOF/proof-maven-packages</url>
         </repository>
     </repositories>
 
     <distributionManagement>
         <repository>
             <id>github-proof</id>
-            <url>https://maven.pkg.github.com/KIT-IAI-PROOF/proof-config-manager</url>
+            <url>https://maven.pkg.github.com/KIT-IAI-PROOF/proof-maven-packages</url>
         </repository>
     </distributionManagement>
 
