@@ -149,9 +149,11 @@ public class ExecutionInteractor implements IExecutionInteractor {
                     for (var block : execution.getWorkflow().getBlocks()) {
                         if (nonNull(block.getProgram()) && nonNull(block.getProgram().getAttachments())) {
                             for (var attachment : block.getProgram().getAttachments()) {
-                                final var filePath = this.fileStorageRoot.resolve(requireNonNull(attachment.getPath()));
+                                final var filePath = this.fileStorageRoot.resolve("attachments").resolve(requireNonNull(attachment.getPath()));
+                                log.debug("Processing attachment with path {}", filePath);
                                 final String entryName = "files/" + attachment.getPath();
                                 if (Files.exists(filePath) && !addedEntries.contains(entryName)) {
+                                    log.debug("Added entry {} to zip file", entryName);
                                     zipOutputStream.putNextEntry(new ZipEntry(entryName));
                                     Files.copy(filePath, zipOutputStream);
                                     zipOutputStream.closeEntry();
@@ -190,7 +192,7 @@ public class ExecutionInteractor implements IExecutionInteractor {
                     });
                 } else if (entry.getName().startsWith("files/")) {
                     String fileName = entry.getName().substring(6);
-                    Path targetPath = fileStorageRoot.resolve(fileName);
+                    Path targetPath = fileStorageRoot.resolve("attachments").resolve(fileName);
                     Files.createDirectories(targetPath.getParent());
                     Files.copy(zis, targetPath, REPLACE_EXISTING);
                 }
