@@ -25,7 +25,7 @@
         <gitUserId>kit/iai/webis/proof2</gitUserId>
         <gitRepoId>proof-config-manager</gitRepoId>
         <lombok.version>1.18.38</lombok.version>
-        <model.version>3.4.1</model.version>
+        <model.version>3.4.2-local</model.version>
     </properties>
 
     <dependencies>
