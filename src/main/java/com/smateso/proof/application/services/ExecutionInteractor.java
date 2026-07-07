@@ -131,7 +131,6 @@ public class ExecutionInteractor implements IExecutionInteractor {
         final var optionalExecution = this.executionRepository.findById(id);
         if (optionalExecution.isPresent()) {
             final var execution = optionalExecution.get();
-            final var templates = this.templateRepository.findAll();
             final Set<String> addedEntries = new HashSet<>();
             try (final var byteArrayOutputStream = new ByteArrayOutputStream(); final var zipOutputStream = new ZipOutputStream(byteArrayOutputStream)) {
 
@@ -140,12 +139,15 @@ public class ExecutionInteractor implements IExecutionInteractor {
                 zipOutputStream.closeEntry();
                 addedEntries.add("execution.json");
 
-                zipOutputStream.putNextEntry(new ZipEntry("templates.json"));
-                zipOutputStream.write(mapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(this.templateMapper.convert(templates)));
-                zipOutputStream.closeEntry();
-                addedEntries.add("templates.json");
-
                 if (nonNull(execution.getWorkflow()) && nonNull(execution.getWorkflow().getBlocks())) {
+
+                    final var templateIds = execution.getWorkflow().getBlocks().stream().map(BlockDao::getTemplateId).toList();
+                    final var templates = this.templateRepository.findByIdIn(templateIds).stream().toList();
+                    zipOutputStream.putNextEntry(new ZipEntry("templates.json"));
+                    zipOutputStream.write(mapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(this.templateMapper.convert(templates)));
+                    zipOutputStream.closeEntry();
+                    addedEntries.add("templates.json");
+
                     for (var block : execution.getWorkflow().getBlocks()) {
                         if (nonNull(block.getProgram()) && nonNull(block.getProgram().getAttachments())) {
                             for (var attachment : block.getProgram().getAttachments()) {
@@ -188,8 +190,7 @@ public class ExecutionInteractor implements IExecutionInteractor {
                 if (entry.getName().equals("execution.json")) {
                     execution = mapper.readValue(zis.readAllBytes(), ExecutionDao.class);
                 } else if (entry.getName().equals("templates.json")) {
-                    templates = mapper.readValue(zis.readAllBytes(), new TypeReference<List<TemplateDao>>() {
-                    });
+                    templates = mapper.readValue(zis.readAllBytes(), new TypeReference<>() {});
                 } else if (entry.getName().startsWith("files/")) {
                     String fileName = entry.getName().substring(6);
                     Path targetPath = fileStorageRoot.resolve("attachments").resolve(fileName);
