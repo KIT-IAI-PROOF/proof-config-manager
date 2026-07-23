@@ -11,6 +11,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,6 +61,10 @@ public interface TemplateRepository extends JpaRepository<TemplateDao, String>, 
     @Override
     @Cacheable(value = "templates", key = "#templateId", unless = "#result == null")
     Optional<TemplateDao> findById(@NonNull final String templateId);
+
+    @NonNull
+    @Cacheable(value = "templates", key = "#templateIds", unless = "#result == null")
+    Collection<TemplateDao> findByIdIn(@NonNull final List<String> templateIds);
 
     @Override
     @Caching(
