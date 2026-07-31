@@ -25,7 +25,7 @@
         <gitUserId>KIT-IAI-PROOF</gitUserId>
         <gitRepoId>proof-config-manager</gitRepoId>
         <lombok.version>1.18.38</lombok.version>
-        <model.version>1.0.0</model.version>
+        <model.version>1.1.0</model.version>
     </properties>
 
     <dependencies>

@@ -31,7 +31,7 @@
         <durable>true</durable>
         <deliveryMode>PERSISTENT</deliveryMode>
     </appender>
-    <root level="info">
+    <root level="INFO">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="AMQP"/>
     </root>
