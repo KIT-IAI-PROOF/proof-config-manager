@@ -2,4 +2,9 @@
 ## Proof Dependencies
 - proof-models
 
-**Disclaimer:** This code and the published configuration currently only work in an KIT-IAI surrounding. They will be updated soon to work in the github environment.
+## Github-Mapping
+Table for mappings gitlab-version <--> github-version
+| gitlab | github |
+| ------ | ------ |
+| 1.4.17 | 1.2.0  |
+| 1.4.15 | 1.1.0  |
