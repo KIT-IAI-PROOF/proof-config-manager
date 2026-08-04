@@ -306,7 +306,7 @@
                         <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
                     </container>
                     <from>
-                        <image>azul/zulu-openjdk:21</image>
+                        <image>eclipse-temurin:21</image>
                     </from>
                 </configuration>
             </plugin>
