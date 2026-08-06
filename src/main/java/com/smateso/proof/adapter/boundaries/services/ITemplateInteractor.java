@@ -25,4 +25,6 @@ public interface ITemplateInteractor {
 
     List<Workflow> getWorkflowsForTemplate(@NonNull final String id);
 
+    List<String> getContainerImages();
+
 }

@@ -84,4 +84,8 @@ public interface TemplateRepository extends JpaRepository<TemplateDao, String>, 
     @Override
     Page<TemplateDao> findAll(@Nullable final Specification<TemplateDao> spec, @NonNull final Pageable pageable);
 
+    @NonNull
+    @Cacheable(value = "images")
+    List<TemplateDao> findDistinctByContainerImageNotNull();
+
 }

@@ -119,4 +119,13 @@ public class TemplateInteractor implements ITemplateInteractor {
         return this.workflowMapper.convert(workflows);
     }
 
+    @Override
+    public List<String> getContainerImages() {
+        final var templates = this.templateRepository.findDistinctByContainerImageNotNull();
+        return templates.stream()
+                .map(TemplateDao::getContainerImage)
+                .distinct()
+                .toList();
+    }
+
 }

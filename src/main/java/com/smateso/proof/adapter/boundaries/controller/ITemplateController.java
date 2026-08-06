@@ -124,4 +124,16 @@ public interface ITemplateController {
     @GetMapping(value = "{id}/workflows", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
     ResponseEntity<List<Workflow>> getWorkflowsForTemplate(@PathVariable final String id);
 
+    @JsonView(Detail.class)
+    @Operation(
+            summary = "Retrieve used container images",
+            description = "Retrieve used container images",
+            security = @SecurityRequirement(name = "oauth2"),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Retrieval successful", useReturnTypeSchema = true),
+                    @ApiResponse(responseCode = "500", description = "Retrieval incomplete", content = @Content(schema = @Schema(hidden = true))),
+            })
+    @GetMapping(value = "images", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
+    ResponseEntity<List<String>> getContainerImages();
+
 }

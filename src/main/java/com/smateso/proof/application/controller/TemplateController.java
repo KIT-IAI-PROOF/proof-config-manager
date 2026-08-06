@@ -78,4 +78,10 @@ public class TemplateController implements ITemplateController {
         return ResponseEntity.ok(blocks);
     }
 
+    @Override
+    public ResponseEntity<List<String>> getContainerImages() {
+        final var blocks = this.templateInteractor.getContainerImages();
+        return ResponseEntity.ok(blocks);
+    }
+
 }
