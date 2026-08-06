@@ -222,6 +222,7 @@
                             <gitUserId>${gitUserId}</gitUserId>
                             <gitRepoId>${gitRepoId}</gitRepoId>
                             <additionalProperties>
+                                <additionalProperty>axiosVersion=1.18.1</additionalProperty>
                                 <additionalProperty>apiPackage=api</additionalProperty>
                                 <additionalProperty>modelPackage=model</additionalProperty>
                                 <additionalProperty>withSeparateModelsAndApi=true</additionalProperty>
