@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2025-2026
+ * Karlsruhe Institute of Technology - Institute for Automation and Applied Informatics (IAI)
+ */
 package com.smateso.proof.adapter.config.messaging;
 
 import lombok.extern.slf4j.Slf4j;
