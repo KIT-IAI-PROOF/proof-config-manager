@@ -4,6 +4,7 @@
  */
 package com.smateso.proof.application.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smateso.proof.adapter.boundaries.services.IMessageInteractor;
 import com.smateso.proof.adapter.boundaries.services.ITemplateInteractor;
 import com.smateso.proof.adapter.exceptions.AlreadyExistsException;
@@ -22,18 +23,29 @@ import edu.kit.iai.webis.proofmodels.mapper.TemplateMapper;
 import edu.kit.iai.webis.proofmodels.mapper.WorkflowMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import static com.smateso.proof.adapter.model.Action.*;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createPageable;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createSpecification;
+import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 
 @Slf4j
@@ -47,6 +59,8 @@ public class TemplateInteractor implements ITemplateInteractor {
     private final BlockRepository blockRepository;
     private final TemplateMapper templateMapper;
     private final WorkflowMapper workflowMapper;
+    private final Path fileStorageRoot;
+    private final ObjectMapper mapper;
 
     @Override
     public Page<Template> searchTemplates(@NonNull final Request request) {
@@ -130,6 +144,46 @@ public class TemplateInteractor implements ITemplateInteractor {
                 .map(TemplateDao::getContainerImage)
                 .distinct()
                 .toList();
+    }
+
+    @Override
+    public Resource exportTemplate(@NonNull final String id) {
+        final var optionalTemplate = this.templateRepository.findById(id);
+        if (optionalTemplate.isPresent()) {
+            final var template = optionalTemplate.get();
+            final Set<String> addedEntries = new HashSet<>();
+            try (final var byteArrayOutputStream = new ByteArrayOutputStream(); final var zipOutputStream = new ZipOutputStream(byteArrayOutputStream)) {
+
+                zipOutputStream.putNextEntry(new ZipEntry("template.json"));
+                zipOutputStream.write(mapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(this.templateMapper.convert(template)));
+                zipOutputStream.closeEntry();
+                addedEntries.add("template.json");
+
+                if (nonNull(template.getProgram()) && nonNull(template.getProgram().getAttachments())) {
+                    for (var attachment : template.getProgram().getAttachments()) {
+                        final var filePath = this.fileStorageRoot.resolve("attachments").resolve(requireNonNull(attachment.getPath()));
+                        log.debug("Processing attachment with path {}", filePath);
+                        final String entryName = "files/" + attachment.getPath();
+                        if (Files.exists(filePath) && !addedEntries.contains(entryName)) {
+                            log.debug("Added entry {} to zip file", entryName);
+                            zipOutputStream.putNextEntry(new ZipEntry(entryName));
+                            Files.copy(filePath, zipOutputStream);
+                            zipOutputStream.closeEntry();
+                            addedEntries.add(entryName);
+                        }
+                    }
+                }
+
+                zipOutputStream.finish();
+                return new ByteArrayResource(byteArrayOutputStream.toByteArray());
+
+            } catch (final IOException e) {
+                log.error("Failed to create export ZIP for template {}", id, e);
+                throw new RuntimeException("Export failed", e);
+            }
+        } else {
+            throw new NotFoundException("Template with id %s not found".formatted(id));
+        }
     }
 
 }

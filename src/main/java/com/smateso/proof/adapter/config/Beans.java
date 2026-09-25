@@ -45,8 +45,8 @@ public class Beans {
     }
 
     @Bean(value = "templateInteractor", name = "templateInteractor")
-    public ITemplateInteractor templateInteractor(@Qualifier("templateRepository") @NonNull final TemplateRepository templateRepository, @Qualifier("blockRepository") @NonNull final BlockRepository blockRepository, @Qualifier("workflowRepository") @NonNull final WorkflowRepository workflowRepository, @Qualifier("messageInteractor") @NonNull final IMessageInteractor messageInteractor, @NonNull final TemplateMapper templateMapper, @NonNull final WorkflowMapper workflowMapper) {
-        return new TemplateInteractor(messageInteractor, templateRepository, workflowRepository, blockRepository, templateMapper, workflowMapper);
+    public ITemplateInteractor templateInteractor(@Qualifier("templateRepository") @NonNull final TemplateRepository templateRepository, @Qualifier("blockRepository") @NonNull final BlockRepository blockRepository, @Qualifier("workflowRepository") @NonNull final WorkflowRepository workflowRepository, @Qualifier("messageInteractor") @NonNull final IMessageInteractor messageInteractor, @NonNull final TemplateMapper templateMapper, @NonNull final WorkflowMapper workflowMapper, @NonNull final ObjectMapper objectMapper) {
+        return new TemplateInteractor(messageInteractor, templateRepository, workflowRepository, blockRepository, templateMapper, workflowMapper, Paths.get(this.fileStorageRoot), objectMapper);
     }
 
     @Bean(value = "executionInteractor", name = "executionInteractor")
