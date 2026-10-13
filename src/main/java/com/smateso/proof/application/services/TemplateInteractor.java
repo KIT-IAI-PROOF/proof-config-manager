@@ -4,6 +4,7 @@
  */
 package com.smateso.proof.application.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smateso.proof.adapter.boundaries.services.IMessageInteractor;
 import com.smateso.proof.adapter.boundaries.services.ITemplateInteractor;
 import com.smateso.proof.adapter.exceptions.AlreadyExistsException;
@@ -15,6 +16,7 @@ import com.smateso.proof.adapter.repositories.BlockRepository;
 import com.smateso.proof.adapter.repositories.TemplateRepository;
 import com.smateso.proof.adapter.repositories.WorkflowRepository;
 import edu.kit.iai.webis.proofmodels.dao.BlockDao;
+import edu.kit.iai.webis.proofmodels.dao.ProgramDao;
 import edu.kit.iai.webis.proofmodels.dao.TemplateDao;
 import edu.kit.iai.webis.proofmodels.dto.Template;
 import edu.kit.iai.webis.proofmodels.dto.Workflow;
@@ -22,18 +24,22 @@ import edu.kit.iai.webis.proofmodels.mapper.TemplateMapper;
 import edu.kit.iai.webis.proofmodels.mapper.WorkflowMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 
 import static com.smateso.proof.adapter.model.Action.*;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createPageable;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createSpecification;
+import static com.smateso.proof.application.utils.ExportHelper.createExportZip;
+import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 
 @Slf4j
@@ -47,6 +53,8 @@ public class TemplateInteractor implements ITemplateInteractor {
     private final BlockRepository blockRepository;
     private final TemplateMapper templateMapper;
     private final WorkflowMapper workflowMapper;
+    private final Path fileStorageRoot;
+    private final ObjectMapper mapper;
 
     @Override
     public Page<Template> searchTemplates(@NonNull final Request request) {
@@ -130,6 +138,19 @@ public class TemplateInteractor implements ITemplateInteractor {
                 .map(TemplateDao::getContainerImage)
                 .distinct()
                 .toList();
+    }
+
+    @Override
+    public Resource exportTemplate(@NonNull final String id) {
+        final var optionalTemplate = this.templateRepository.findById(id);
+        if (optionalTemplate.isPresent()) {
+            final var template = optionalTemplate.get();
+            final var programs = nonNull(template.getProgram()) ? List.of(template.getProgram()) : List.<ProgramDao>of();
+            return createExportZip(this.mapper, this.fileStorageRoot, "template", id,
+                    this.templateMapper.convert(template), null, programs);
+        } else {
+            throw new NotFoundException("Template with id %s not found".formatted(id));
+        }
     }
 
 }
