@@ -218,11 +218,11 @@
                             <inputSpec>${project.build.directory}/api.json</inputSpec>
                             <output>${project.basedir}/generated/typescript</output>
                             <generatorName>typescript-axios</generatorName>
-                            <templateDirectory>${project.basedir}/openapi-templates/typescript-axios</templateDirectory>
                             <gitHost>${gitHost}</gitHost>
                             <gitUserId>${gitUserId}</gitUserId>
                             <gitRepoId>${gitRepoId}</gitRepoId>
                             <additionalProperties>
+                                <additionalProperty>axiosVersion=1.18.1</additionalProperty>
                                 <additionalProperty>apiPackage=api</additionalProperty>
                                 <additionalProperty>modelPackage=model</additionalProperty>
                                 <additionalProperty>withSeparateModelsAndApi=true</additionalProperty>
@@ -306,7 +306,7 @@
                         <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
                     </container>
                     <from>
-                        <image>eclipse-temurin:21</image>
+                        <image>azul/zulu-openjdk:21</image>
                     </from>
                 </configuration>
             </plugin>
