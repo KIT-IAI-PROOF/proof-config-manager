@@ -12,6 +12,8 @@ import edu.kit.iai.webis.proofmodels.dto.Workflow;
 import edu.kit.iai.webis.proofmodels.paging.TemplatePagingModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -80,6 +82,23 @@ public class TemplateController implements ITemplateController {
     public ResponseEntity<List<Workflow>> getWorkflowsForTemplate(@NonNull final String id) {
         final var blocks = this.templateInteractor.getWorkflowsForTemplate(id);
         return ResponseEntity.ok(blocks);
+    }
+
+    @Override
+    public ResponseEntity<List<String>> getContainerImages() {
+        final var blocks = this.templateInteractor.getContainerImages();
+        return ResponseEntity.ok(blocks);
+    }
+
+    @Override
+    public ResponseEntity<?> exportTemplate(@NonNull final String id) {
+        final var resource = this.templateInteractor.exportTemplate(id);
+        final var template = this.templateInteractor.getTemplate(id);
+        final var fileName = "template-" + template.getName() + "_" + id + ".proof";
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                .body(resource);
     }
 
 }

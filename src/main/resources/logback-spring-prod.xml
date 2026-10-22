@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
+<configuration>    
     <springProperty scope="context" name="HOST" source="spring.rabbitmq.host"/>
     <springProperty scope="context" name="PORT" source="spring.rabbitmq.port"/>
     <springProperty scope="context" name="USER" source="spring.rabbitmq.username"/>
@@ -33,6 +33,5 @@
     </appender>
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="AMQP"/>
     </root>
 </configuration>
