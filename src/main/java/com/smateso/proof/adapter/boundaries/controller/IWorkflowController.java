@@ -128,16 +128,4 @@ public interface IWorkflowController {
     @GetMapping(value = "{id}/executions", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
     ResponseEntity<List<Execution>> getExecutionsOfWorkflow(@PathVariable final String id);
 
-    @JsonView(Detail.class)
-    @Operation(
-            summary = "Export workflow",
-            description = "Export workflow to a ZIP file",
-            security = @SecurityRequirement(name = "oauth2"),
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Retrieval successful", useReturnTypeSchema = true),
-                    @ApiResponse(responseCode = "500", description = "Retrieval incomplete", content = @Content(schema = @Schema(hidden = true))),
-            })
-    @GetMapping(value = "{id}/export", name = "{id}/export", consumes = ALL_VALUE)
-    ResponseEntity<?> exportWorkflow(@PathVariable(value = "id") final String id);
-
 }

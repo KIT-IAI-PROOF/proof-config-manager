@@ -9,7 +9,10 @@ import com.smateso.proof.adapter.model.Action;
 import com.smateso.proof.adapter.model.Message;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.core.*;
+import org.springframework.amqp.core.AmqpAdmin;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.QueueBuilder;
+import org.springframework.amqp.core.TopicExchange;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -54,26 +57,24 @@ public class MessageInteractor implements IMessageInteractor {
         this.simpMessagingTemplate.convertAndSend("/topic/updates", message);
     }
 
-    private void deleteQueue(final String queueName) {
-        this.amqpAdmin.deleteQueue(queueName);
-    }
-
     @Override
     public void deleteBlockLoggingQueues(@NonNull final Iterable<String> blockIds, @NonNull final String executionId) {
         log.info("Deleting logging queues for blocks");
-        blockIds.forEach((final var blockId) -> deleteQueue("logs.block.%s.execution.%s".formatted(blockId, executionId)));
+        blockIds.forEach((final var blockId) -> {
+            final var queue = QueueBuilder.durable("logs.block.%s.execution.%s".formatted(blockId, executionId)).build();
+            final var binding = BindingBuilder.bind(queue).to(new TopicExchange("logs")).with("logs.blocks." + blockId);
+            this.amqpAdmin.removeBinding(binding);
+            this.amqpAdmin.deleteQueue(queue.getName());
+        });
     }
 
     @Override
     public void deleteExecutionLoggingQueue(@NonNull final String executionId) {
         log.info("Deleting logging queue for execution");
-        deleteQueue("logs.execution.%s".formatted(executionId));
+        final var queue = QueueBuilder.durable("logs.execution.%s".formatted(executionId)).build();
+        final var binding = BindingBuilder.bind(queue).to(new TopicExchange("logs")).with("logs.execution." + executionId);
+        this.amqpAdmin.removeBinding(binding);
+        this.amqpAdmin.deleteQueue(queue.getName());
     }
 
-    @Override
-    public void deleteExecutionStatusValueQueues(@NonNull final String executionId) {
-        log.info("Deleting status and value queues for execution");
-        deleteQueue("status.execution.%s".formatted(executionId));
-        deleteQueue("value.execution.%s".formatted(executionId));
-    }
 }
