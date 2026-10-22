@@ -17,13 +17,13 @@ import com.smateso.proof.adapter.repositories.ExecutionRepository;
 import com.smateso.proof.adapter.repositories.TemplateRepository;
 import edu.kit.iai.webis.proofmodels.dao.BlockDao;
 import edu.kit.iai.webis.proofmodels.dao.ExecutionDao;
-import edu.kit.iai.webis.proofmodels.dao.ProgramDao;
 import edu.kit.iai.webis.proofmodels.dao.TemplateDao;
 import edu.kit.iai.webis.proofmodels.dto.Execution;
 import edu.kit.iai.webis.proofmodels.mapper.ExecutionMapper;
 import edu.kit.iai.webis.proofmodels.mapper.TemplateMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -32,18 +32,21 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 import static com.smateso.proof.adapter.model.Action.*;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createPageable;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createSpecification;
-import static com.smateso.proof.application.utils.ExportHelper.createExportZip;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
@@ -120,7 +123,6 @@ public class ExecutionInteractor implements IExecutionInteractor {
                     }
                 }
                 this.messageInteractor.deleteExecutionLoggingQueue(id);
-                this.messageInteractor.deleteExecutionStatusValueQueues(id);
                 this.messageInteractor.sendUpdate(ENTITY_EXECUTION, id, DELETED, sessionKey, username);
             }
         } catch (final DataIntegrityViolationException e) {
@@ -133,16 +135,48 @@ public class ExecutionInteractor implements IExecutionInteractor {
         final var optionalExecution = this.executionRepository.findById(id);
         if (optionalExecution.isPresent()) {
             final var execution = optionalExecution.get();
-            Object templatesEntity = null;
-            var programs = List.<ProgramDao>of();
-            if (nonNull(execution.getWorkflow()) && nonNull(execution.getWorkflow().getBlocks())) {
-                final var templateIds = execution.getWorkflow().getBlocks().stream().map(BlockDao::getTemplateId).toList();
-                final var templates = this.templateRepository.findByIdIn(templateIds).stream().toList();
-                templatesEntity = this.templateMapper.convert(templates);
-                programs = execution.getWorkflow().getBlocks().stream().map(BlockDao::getProgram).toList();
+            final Set<String> addedEntries = new HashSet<>();
+            try (final var byteArrayOutputStream = new ByteArrayOutputStream(); final var zipOutputStream = new ZipOutputStream(byteArrayOutputStream)) {
+
+                zipOutputStream.putNextEntry(new ZipEntry("execution.json"));
+                zipOutputStream.write(mapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(this.executionMapper.convert(execution)));
+                zipOutputStream.closeEntry();
+                addedEntries.add("execution.json");
+
+                if (nonNull(execution.getWorkflow()) && nonNull(execution.getWorkflow().getBlocks())) {
+
+                    final var templateIds = execution.getWorkflow().getBlocks().stream().map(BlockDao::getTemplateId).toList();
+                    final var templates = this.templateRepository.findByIdIn(templateIds).stream().toList();
+                    zipOutputStream.putNextEntry(new ZipEntry("templates.json"));
+                    zipOutputStream.write(mapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(this.templateMapper.convert(templates)));
+                    zipOutputStream.closeEntry();
+                    addedEntries.add("templates.json");
+
+                    for (var block : execution.getWorkflow().getBlocks()) {
+                        if (nonNull(block.getProgram()) && nonNull(block.getProgram().getAttachments())) {
+                            for (var attachment : block.getProgram().getAttachments()) {
+                                final var filePath = this.fileStorageRoot.resolve("attachments").resolve(requireNonNull(attachment.getPath()));
+                                log.debug("Processing attachment with path {}", filePath);
+                                final String entryName = "files/" + attachment.getPath();
+                                if (Files.exists(filePath) && !addedEntries.contains(entryName)) {
+                                    log.debug("Added entry {} to zip file", entryName);
+                                    zipOutputStream.putNextEntry(new ZipEntry(entryName));
+                                    Files.copy(filePath, zipOutputStream);
+                                    zipOutputStream.closeEntry();
+                                    addedEntries.add(entryName);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                zipOutputStream.finish();
+                return new ByteArrayResource(byteArrayOutputStream.toByteArray());
+
+            } catch (final IOException e) {
+                log.error("Failed to create export ZIP for execution {}", id, e);
+                throw new RuntimeException("Export failed", e);
             }
-            return createExportZip(this.mapper, this.fileStorageRoot, "execution", id,
-                    this.executionMapper.convert(execution), templatesEntity, programs);
         } else {
             throw new NotFoundException("Execution with id %s not found".formatted(id));
         }

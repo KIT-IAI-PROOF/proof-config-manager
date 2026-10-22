@@ -12,8 +12,6 @@ import edu.kit.iai.webis.proofmodels.dto.Workflow;
 import edu.kit.iai.webis.proofmodels.paging.WorkflowPagingModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -78,17 +76,6 @@ public class WorkflowController implements IWorkflowController {
     public ResponseEntity<List<Execution>> getExecutionsOfWorkflow(@NonNull final String id) {
         final var executions = this.workflowInteractor.getExecutionsOfWorkflow(id);
         return ResponseEntity.ok(executions);
-    }
-
-    @Override
-    public ResponseEntity<?> exportWorkflow(@NonNull final String id) {
-        final var resource = this.workflowInteractor.exportWorkflow(id);
-        final var workflow = this.workflowInteractor.getWorkflow(id);
-        final var fileName = "workflow-" + workflow.getLabel() + "_" + id + ".proof";
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
-                .body(resource);
     }
 
 }
