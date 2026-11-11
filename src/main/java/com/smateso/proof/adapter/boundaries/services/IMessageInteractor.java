@@ -16,6 +16,4 @@ public interface IMessageInteractor {
 
     void deleteExecutionLoggingQueue(@NonNull final String id);
 
-    void deleteExecutionStatusValueQueues(@NonNull final String id);
-
 }

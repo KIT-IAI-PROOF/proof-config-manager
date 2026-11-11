@@ -7,7 +7,6 @@ package com.smateso.proof.adapter.boundaries.services;
 import com.smateso.proof.adapter.model.Request;
 import edu.kit.iai.webis.proofmodels.dto.Template;
 import edu.kit.iai.webis.proofmodels.dto.Workflow;
-import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -29,9 +28,5 @@ public interface ITemplateInteractor {
     List<Template> getTemplates();
 
     List<Workflow> getWorkflowsForTemplate(@NonNull final String id);
-
-    List<String> getContainerImages();
-
-    Resource exportTemplate(@NonNull final String id);
 
 }

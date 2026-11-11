@@ -4,7 +4,6 @@
  */
 package com.smateso.proof.application.services;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smateso.proof.adapter.boundaries.services.IMessageInteractor;
 import com.smateso.proof.adapter.boundaries.services.IWorkflowInteractor;
 import com.smateso.proof.adapter.exceptions.AlreadyExistsException;
@@ -13,34 +12,26 @@ import com.smateso.proof.adapter.exceptions.MismatchException;
 import com.smateso.proof.adapter.exceptions.NotFoundException;
 import com.smateso.proof.adapter.model.Request;
 import com.smateso.proof.adapter.repositories.ExecutionRepository;
-import com.smateso.proof.adapter.repositories.TemplateRepository;
 import com.smateso.proof.adapter.repositories.WorkflowRepository;
-import edu.kit.iai.webis.proofmodels.dao.BlockDao;
-import edu.kit.iai.webis.proofmodels.dao.ProgramDao;
 import edu.kit.iai.webis.proofmodels.dao.WorkflowDao;
 import edu.kit.iai.webis.proofmodels.dto.Execution;
 import edu.kit.iai.webis.proofmodels.dto.Workflow;
 import edu.kit.iai.webis.proofmodels.mapper.ExecutionMapper;
-import edu.kit.iai.webis.proofmodels.mapper.TemplateMapper;
 import edu.kit.iai.webis.proofmodels.mapper.WorkflowMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.Resource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 
 import static com.smateso.proof.adapter.model.Action.*;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createPageable;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createSpecification;
-import static com.smateso.proof.application.utils.ExportHelper.createExportZip;
-import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 
 @Slf4j
@@ -51,12 +42,8 @@ public class WorkflowInteractor implements IWorkflowInteractor {
     private final IMessageInteractor messageInteractor;
     private final WorkflowRepository workflowRepository;
     private final ExecutionRepository executionRepository;
-    private final TemplateRepository templateRepository;
     private final ExecutionMapper executionMapper;
     private final WorkflowMapper workflowMapper;
-    private final TemplateMapper templateMapper;
-    private final Path fileStorageRoot;
-    private final ObjectMapper mapper;
 
     @Override
     public Page<Workflow> searchWorkflows(@NonNull final Request request) {
@@ -118,26 +105,6 @@ public class WorkflowInteractor implements IWorkflowInteractor {
     public List<Execution> getExecutionsOfWorkflow(@NonNull String id) {
         final var result = this.executionRepository.findAllByWorkflowId(id);
         return this.executionMapper.convert(result);
-    }
-
-    @Override
-    public Resource exportWorkflow(@NonNull final String id) {
-        final var optionalWorkflow = this.workflowRepository.findById(id);
-        if (optionalWorkflow.isPresent()) {
-            final var workflow = optionalWorkflow.get();
-            Object templatesEntity = null;
-            var programs = List.<ProgramDao>of();
-            if (nonNull(workflow.getBlocks())) {
-                final var templateIds = workflow.getBlocks().stream().map(BlockDao::getTemplateId).toList();
-                final var templates = this.templateRepository.findByIdIn(templateIds).stream().toList();
-                templatesEntity = this.templateMapper.convert(templates);
-                programs = workflow.getBlocks().stream().map(BlockDao::getProgram).toList();
-            }
-            return createExportZip(this.mapper, this.fileStorageRoot, "workflow", id,
-                    this.workflowMapper.convert(workflow), templatesEntity, programs);
-        } else {
-            throw new NotFoundException("Workflow with id %s not found".formatted(id));
-        }
     }
 
 }
