@@ -74,4 +74,8 @@ public interface BlockRepository extends JpaRepository<BlockDao, String>, JpaSpe
     @NonNull
     List<BlockDao> findByTemplateId(@NonNull final String templateId);
 
+    @NonNull
+    @Cacheable(value = "blockImages")
+    List<BlockDao> findDistinctByContainerImageNotNull();
+
 }

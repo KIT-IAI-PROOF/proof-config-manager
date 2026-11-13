@@ -7,6 +7,7 @@ package com.smateso.proof.adapter.boundaries.services;
 import com.smateso.proof.adapter.model.Request;
 import edu.kit.iai.webis.proofmodels.dto.Execution;
 import edu.kit.iai.webis.proofmodels.dto.Workflow;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -28,5 +29,7 @@ public interface IWorkflowInteractor {
     List<Workflow> getWorkflows();
 
     List<Execution> getExecutionsOfWorkflow(@NonNull final String id);
+
+    Resource exportWorkflow(@NonNull final String id);
 
 }
