@@ -34,6 +34,7 @@ import org.springframework.lang.Nullable;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 import static com.smateso.proof.adapter.model.Action.*;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createPageable;
@@ -134,8 +135,10 @@ public class TemplateInteractor implements ITemplateInteractor {
     @Override
     public List<String> getContainerImages() {
         final var templates = this.templateRepository.findDistinctByContainerImageNotNull();
-        return templates.stream()
-                .map(TemplateDao::getContainerImage)
+        final var blocks = this.blockRepository.findDistinctByContainerImageNotNull();
+        final var blockImages = blocks.stream().map(BlockDao::getContainerImage);
+        final var templateImages = templates.stream().map(TemplateDao::getContainerImage);
+        return Stream.concat(templateImages, blockImages)
                 .distinct()
                 .toList();
     }

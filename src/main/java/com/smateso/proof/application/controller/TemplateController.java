@@ -86,8 +86,8 @@ public class TemplateController implements ITemplateController {
 
     @Override
     public ResponseEntity<List<String>> getContainerImages() {
-        final var blocks = this.templateInteractor.getContainerImages();
-        return ResponseEntity.ok(blocks);
+        final var images = this.templateInteractor.getContainerImages();
+        return ResponseEntity.ok(images);
     }
 
     @Override
