@@ -43,7 +43,7 @@ import java.util.zip.ZipInputStream;
 import static com.smateso.proof.adapter.model.Action.*;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createPageable;
 import static com.smateso.proof.application.utils.CriteriaBuilderHelper.createSpecification;
-import static com.smateso.proof.application.utils.ExportHelper.createExportZip;
+import static com.smateso.proof.application.utils.ExportHelper.createExecutionExportZip;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
@@ -141,7 +141,7 @@ public class ExecutionInteractor implements IExecutionInteractor {
                 templatesEntity = this.templateMapper.convert(templates);
                 programs = execution.getWorkflow().getBlocks().stream().map(BlockDao::getProgram).toList();
             }
-            return createExportZip(this.mapper, this.fileStorageRoot, "execution", id,
+            return createExecutionExportZip(this.mapper, this.fileStorageRoot, "execution", id,
                     this.executionMapper.convert(execution), templatesEntity, programs);
         } else {
             throw new NotFoundException("Execution with id %s not found".formatted(id));
@@ -166,6 +166,11 @@ public class ExecutionInteractor implements IExecutionInteractor {
                     Path targetPath = fileStorageRoot.resolve("attachments").resolve(fileName);
                     Files.createDirectories(targetPath.getParent());
                     Files.copy(zis, targetPath, REPLACE_EXISTING);
+                } else if (entry.getName().startsWith("logs/") && nonNull(execution)) {
+                    String logFileName = entry.getName().substring(5);
+                    Path targetLogPath = fileStorageRoot.resolve("executions").resolve(execution.getId()).resolve("logs").resolve(logFileName);
+                    Files.createDirectories(targetLogPath.getParent());
+                    Files.copy(zis, targetLogPath, REPLACE_EXISTING);
                 }
                 zis.closeEntry();
             }

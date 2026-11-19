@@ -19,6 +19,7 @@ import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -77,6 +78,83 @@ public class ExportHelper {
         } catch (final IOException e) {
             log.error("Failed to create export ZIP for {} {}", entityName, id, e);
             throw new RuntimeException("Export failed", e);
+        }
+    }
+
+    /**
+     * Overloaded variant of {@link #createExportZip(ObjectMapper, Path, String, String, Object, Object, List)} that
+     * additionally embeds all files found in {@code logsDirectory} (if it exists) into the ZIP under a {@code logs/}
+     * prefix. This is used for execution exports, where the orchestrator and worker log files are written to
+     * {@code <fileStorageRoot>/executions/<executionId>/logs/}.
+     */
+    public static Resource createExecutionExportZip(@NonNull final ObjectMapper mapper,
+                                                    @NonNull final Path fileStorageRoot,
+                                                    @NonNull final String entityName,
+                                                    @NonNull final String id,
+                                                    @NonNull final Object primaryEntity,
+                                                    @Nullable final Object templatesEntity,
+                                                    @NonNull final List<ProgramDao> programs) {
+        final Set<String> addedEntries = new HashSet<>();
+        try (final var byteArrayOutputStream = new ByteArrayOutputStream(); final var zipOutputStream = new ZipOutputStream(byteArrayOutputStream)) {
+
+            writeJsonEntry(zipOutputStream, mapper, entityName + ".json", primaryEntity, addedEntries);
+
+            if (nonNull(templatesEntity)) {
+                writeJsonEntry(zipOutputStream, mapper, "templates.json", templatesEntity, addedEntries);
+            }
+
+            for (final var program : programs) {
+                if (nonNull(program) && nonNull(program.getAttachments())) {
+                    for (final var attachment : program.getAttachments()) {
+                        final var filePath = fileStorageRoot.resolve("attachments").resolve(requireNonNull(attachment.getPath()));
+                        log.debug("Processing attachment with path {}", filePath);
+                        final String entryName = "files/" + attachment.getPath();
+                        if (Files.exists(filePath) && !addedEntries.contains(entryName)) {
+                            log.debug("Added entry {} to zip file", entryName);
+                            zipOutputStream.putNextEntry(new ZipEntry(entryName));
+                            Files.copy(filePath, zipOutputStream);
+                            zipOutputStream.closeEntry();
+                            addedEntries.add(entryName);
+                        }
+                    }
+                }
+            }
+
+            embedLogs(zipOutputStream, fileStorageRoot.resolve("executions").resolve(id).resolve("logs"), addedEntries);
+
+            zipOutputStream.finish();
+            return new ByteArrayResource(byteArrayOutputStream.toByteArray());
+
+        } catch (final IOException e) {
+            log.error("Failed to create export ZIP for {} {}", entityName, id, e);
+            throw new RuntimeException("Export failed", e);
+        }
+    }
+
+    /**
+     * Writes every file found under {@code logsDir} into the ZIP under a {@code logs/} prefix, preserving the
+     * original file names. If the directory does not exist or is empty, nothing is added.
+     */
+    private static void embedLogs(@NonNull final ZipOutputStream zipOutputStream,
+                                  @NonNull final Path logsDir,
+                                  @NonNull final Set<String> addedEntries) throws IOException {
+        if (!Files.isDirectory(logsDir)) {
+            return;
+        }
+        try (final Stream<Path> logFiles = Files.list(logsDir)) {
+            final List<Path> files = logFiles
+                    .filter(Files::isRegularFile)
+                    .toList();
+            for (final var file : files) {
+                final String entryName = "logs/" + file.getFileName();
+                if (!addedEntries.contains(entryName)) {
+                    log.debug("Added log entry {} to zip file", entryName);
+                    zipOutputStream.putNextEntry(new ZipEntry(entryName));
+                    Files.copy(file, zipOutputStream);
+                    zipOutputStream.closeEntry();
+                    addedEntries.add(entryName);
+                }
+            }
         }
     }
 
