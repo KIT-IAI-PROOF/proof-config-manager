@@ -5,13 +5,13 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.8</version>
+        <version>3.5.16</version>
         <relativePath/>
     </parent>
 
     <groupId>edu.kit.iai.webis.proof</groupId>
     <artifactId>proof-config-manager</artifactId>
-    <version>1.4.0-local</version>
+    <version>1.5.0-dev0-local</version>
     <name>PROOF Config Manager</name>
     <description>PROOF Config Manager</description>
     <packaging>jar</packaging>
@@ -84,7 +84,7 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.3.0</version>
+            <version>2.6.0</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -112,15 +112,17 @@
             <groupId>io.netty</groupId>
             <artifactId>netty-resolver-dns-native-macos</artifactId>
             <classifier>osx-aarch_64</classifier>
-            <version>4.1.112.Final</version>
+            <version>4.2.18.Final</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.amqp</groupId>
             <artifactId>spring-rabbit</artifactId>
+            <version>3.2.12</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>2.22.3</version>
         </dependency>
     </dependencies>
 
@@ -129,7 +131,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.14.1</version>
+                <version>3.16.0</version>
                 <configuration>
                     <excludes>
                         <exclude>generated/**</exclude>
@@ -146,7 +148,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.5.4</version>
+                <version>3.6.0</version>
                 <configuration>
                     <argLine>-ea -XX:+EnableDynamicAgentLoading -Xshare:off</argLine>
                 </configuration>
@@ -154,7 +156,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>3.5.8</version>
+                <version>${project.parent.version}</version>
                 <configuration>
                     <jmxPort>9009</jmxPort>
                     <jvmArguments>-ea -XX:+EnableDynamicAgentLoading -Xshare:off</jvmArguments>
@@ -298,7 +300,7 @@
             <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
-                <version>3.4.6</version>
+                <version>3.5.2</version>
                 <configuration>
                     <container>
                         <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
